@@ -285,17 +285,20 @@
                 this.x += this.vx;
                 this.y += this.vy;
 
+                // Account for fish size and tail extension (tail extends ~1.4x the body size)
+                const fishExtent = this.type.size * 1.5;
+                
                 // Bounce off left and right aquarium walls
-                if (this.x < aquariumBounds.left) {
-                    this.x = aquariumBounds.left;
+                if (this.x - fishExtent < aquariumBounds.left) {
+                    this.x = aquariumBounds.left + fishExtent;
                     this.vx = Math.abs(this.vx); // Reverse direction
                 }
-                if (this.x > aquariumBounds.right) {
-                    this.x = aquariumBounds.right;
+                if (this.x + fishExtent > aquariumBounds.right) {
+                    this.x = aquariumBounds.right - fishExtent;
                     this.vx = -Math.abs(this.vx); // Reverse direction
                 }
-                if (this.y < aquariumBounds.top) this.y = aquariumBounds.top;
-                if (this.y > aquariumBounds.bottom) this.y = aquariumBounds.bottom;
+                if (this.y - this.type.size * 0.6 < aquariumBounds.top) this.y = aquariumBounds.top + this.type.size * 0.6;
+                if (this.y + this.type.size * 0.6 > aquariumBounds.bottom) this.y = aquariumBounds.bottom - this.type.size * 0.6;
 
                 // Update angle for drawing
                 if (Math.abs(this.vx) > 0.1 || Math.abs(this.vy) > 0.1) {
@@ -518,17 +521,20 @@
                 this.y += this.vy;
                 this.waveOffset += 0.03;
 
+                // Account for jellyfish size when bouncing
+                const jellyfishExtent = this.size / 2;
+                
                 // Bounce off left and right aquarium walls
-                if (this.x < aquariumBounds.left) {
-                    this.x = aquariumBounds.left;
+                if (this.x - jellyfishExtent < aquariumBounds.left) {
+                    this.x = aquariumBounds.left + jellyfishExtent;
                     this.vx = Math.abs(this.vx);
                 }
-                if (this.x > aquariumBounds.right) {
-                    this.x = aquariumBounds.right;
+                if (this.x + jellyfishExtent > aquariumBounds.right) {
+                    this.x = aquariumBounds.right - jellyfishExtent;
                     this.vx = -Math.abs(this.vx);
                 }
-                if (this.y < aquariumBounds.top) this.y = aquariumBounds.top;
-                if (this.y > aquariumBounds.bottom) this.y = aquariumBounds.bottom;
+                if (this.y - jellyfishExtent < aquariumBounds.top) this.y = aquariumBounds.top + jellyfishExtent;
+                if (this.y + jellyfishExtent > aquariumBounds.bottom) this.y = aquariumBounds.bottom - jellyfishExtent;
             }
 
             draw(ctx) {
