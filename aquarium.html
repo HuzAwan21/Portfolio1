@@ -9,6 +9,11 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            cursor: url('assets/images/aquarium/indexFinger.png') 10 0, pointer;
+        }
+
+        html {
+            cursor: url('assets/images/aquarium/indexFinger.png') 10 0, pointer;
         }
 
         body {
@@ -20,6 +25,7 @@
             justify-content: center;
             min-height: 100vh;
             padding: 20px;
+            cursor: url('assets/images/aquarium/indexFinger.png') 10 0, pointer;
         }
 
         .aquarium-container {
@@ -41,7 +47,7 @@
                 rgba(13, 42, 58, 0.9) 100%);
             width: 100%;
             height: auto;
-            cursor: url('assets/images/indexFinger.png'), pointer;
+            cursor: url('assets/images/aquarium/indexFinger.png') 10 0, pointer;
         }
 
         .popup-message {
@@ -135,15 +141,15 @@
 <body>
     <div class="aquarium-container">
         <button class="exit-button" id="exitButton">
-            <img src="assets/images/exitButton.png" alt="Exit Aquarium">
+            <img src="assets/images/aquarium/exitButton.png" alt="Exit Aquarium">
         </button>
         <canvas id="aquariumCanvas"></canvas>
     </div>
     <div class="popup-message" id="popupMessage">
-        <img src="assets/images/pressSpaceToFeed.png" alt="Press Space to Feed">
+        <img src="assets/images/aquarium/pressSpaceToFeed.png" alt="Press Space to Feed">
     </div>
     <div class="thank-you-message" id="thankYouMessage" style="display: none;">
-        <img src="assets/images/thanksForSwimmingBy.png" alt="Thanks for Swimming By">
+        <img src="assets/images/aquarium/thanksForSwimmingBy.png" alt="Thanks for Swimming By">
     </div>
 
     <script>
@@ -183,7 +189,7 @@
 
         // Load background video
         const backgroundVideo = document.createElement('video');
-        backgroundVideo.src = 'assets/images/aquariumBackground.mp4';
+        backgroundVideo.src = 'assets/images/aquarium/aquariumBackground.mp4';
         backgroundVideo.loop = true;
         backgroundVideo.muted = true;
         backgroundVideo.autoplay = true;
@@ -343,7 +349,7 @@
                 this.size = 40;
                 this.waveOffset = Math.random() * Math.PI * 2;
                 this.image = new Image();
-                this.image.src = 'assets/images/jellyfish1.png';
+                this.image.src = 'assets/images/aquarium/jellyfish1.png';
                 this.imageLoaded = false;
                 this.image.onload = () => {
                     this.imageLoaded = true;
@@ -412,7 +418,7 @@
                 this.size = 40;
                 this.waveOffset = Math.random() * Math.PI * 2;
                 this.image = new Image();
-                this.image.src = 'assets/images/jellyfish2.png';
+                this.image.src = 'assets/images/aquarium/jellyfish2.png';
                 this.imageLoaded = false;
                 this.image.onload = () => {
                     this.imageLoaded = true;
@@ -481,7 +487,7 @@
                 this.size = 65;
                 this.groundY = aquariumBounds.bottom - 25;
                 this.image = new Image();
-                this.image.src = 'assets/images/crab.png';
+                this.image.src = 'assets/images/aquarium/crab.png';
                 this.imageLoaded = false;
                 this.image.onload = () => {
                     this.imageLoaded = true;
@@ -556,7 +562,7 @@
                 this.vy = (Math.random() - 0.5) * 1;
                 this.size = 50;
                 this.image = new Image();
-                this.image.src = 'assets/images/clownfish.png';
+                this.image.src = 'assets/images/aquarium/clownfish.png';
                 this.imageLoaded = false;
                 this.image.onload = () => {
                     this.imageLoaded = true;
@@ -679,7 +685,7 @@
                 this.vy = (Math.random() - 0.5) * 1;
                 this.size = 55;
                 this.image = new Image();
-                this.image.src = 'assets/images/bettafish.png';
+                this.image.src = 'assets/images/aquarium/bettafish.png';
                 this.imageLoaded = false;
                 this.image.onload = () => {
                     this.imageLoaded = true;
@@ -802,7 +808,7 @@
                 this.vy = (Math.random() - 0.5) * 1;
                 this.size = 48;
                 this.image = new Image();
-                this.image.src = 'assets/images/angelfish.png';
+                this.image.src = 'assets/images/aquarium/angelfish.png';
                 this.imageLoaded = false;
                 this.image.onload = () => {
                     this.imageLoaded = true;
@@ -925,7 +931,7 @@
                 this.vy = (Math.random() - 0.5) * 1;
                 this.size = 48;
                 this.image = new Image();
-                this.image.src = 'assets/images/angelfish2.png';
+                this.image.src = 'assets/images/aquarium/angelfish2.png';
                 this.imageLoaded = false;
                 this.image.onload = () => { this.imageLoaded = true; };
                 this.direction = this.vx > 0 ? 1 : -1;
@@ -995,7 +1001,7 @@
                 this.vy = (Math.random() - 0.5) * 1;
                 this.size = 50;
                 this.image = new Image();
-                this.image.src = 'assets/images/bettafish2.png';
+                this.image.src = 'assets/images/aquarium/bettafish2.png';
                 this.imageLoaded = false;
                 this.image.onload = () => { this.imageLoaded = true; };
                 this.direction = this.vx > 0 ? 1 : -1;
@@ -1065,7 +1071,7 @@
                 this.vy = (Math.random() - 0.5) * 1;
                 this.size = 45;
                 this.image = new Image();
-                this.image.src = 'assets/images/corydoras.png';
+                this.image.src = 'assets/images/aquarium/corydoras.png';
                 this.imageLoaded = false;
                 this.image.onload = () => { this.imageLoaded = true; };
                 this.direction = this.vx > 0 ? 1 : -1;
@@ -1135,7 +1141,7 @@
                 this.vy = (Math.random() - 0.5) * 1;
                 this.size = 50;
                 this.image = new Image();
-                this.image.src = 'assets/images/discus.png';
+                this.image.src = 'assets/images/aquarium/discus.png';
                 this.imageLoaded = false;
                 this.image.onload = () => { this.imageLoaded = true; };
                 this.direction = this.vx > 0 ? 1 : -1;
@@ -1205,7 +1211,7 @@
                 this.vy = (Math.random() - 0.5) * 1;
                 this.size = 45;
                 this.image = new Image();
-                this.image.src = 'assets/images/fancyGoldfish.png';
+                this.image.src = 'assets/images/aquarium/fancyGoldfish.png';
                 this.imageLoaded = false;
                 this.image.onload = () => { this.imageLoaded = true; };
                 this.direction = this.vx > 0 ? 1 : -1;
@@ -1275,7 +1281,7 @@
                 this.vy = (Math.random() - 0.5) * 1;
                 this.size = 48;
                 this.image = new Image();
-                this.image.src = 'assets/images/goldfish.png';
+                this.image.src = 'assets/images/aquarium/goldfish.png';
                 this.imageLoaded = false;
                 this.image.onload = () => { this.imageLoaded = true; };
                 this.direction = this.vx > 0 ? 1 : -1;
@@ -1345,7 +1351,7 @@
                 this.vy = (Math.random() - 0.5) * 1;
                 this.size = 35;
                 this.image = new Image();
-                this.image.src = 'assets/images/guppyfish.png';
+                this.image.src = 'assets/images/aquarium/guppyfish.png';
                 this.imageLoaded = false;
                 this.image.onload = () => { this.imageLoaded = true; };
                 this.direction = this.vx > 0 ? 1 : -1;
@@ -1415,7 +1421,7 @@
                 this.vy = (Math.random() - 0.5) * 1;
                 this.size = 60;
                 this.image = new Image();
-                this.image.src = 'assets/images/koifish.png';
+                this.image.src = 'assets/images/aquarium/koifish.png';
                 this.imageLoaded = false;
                 this.image.onload = () => { this.imageLoaded = true; };
                 this.direction = this.vx > 0 ? 1 : -1;
@@ -1485,7 +1491,7 @@
                 this.vy = (Math.random() - 0.5) * 1;
                 this.size = 30;
                 this.image = new Image();
-                this.image.src = 'assets/images/neontetra.png';
+                this.image.src = 'assets/images/aquarium/neontetra.png';
                 this.imageLoaded = false;
                 this.image.onload = () => { this.imageLoaded = true; };
                 this.direction = this.vx > 0 ? 1 : -1;
@@ -1555,7 +1561,7 @@
                 this.vy = (Math.random() - 0.5) * 1;
                 this.size = 38;
                 this.image = new Image();
-                this.image.src = 'assets/images/zebradanio.png';
+                this.image.src = 'assets/images/aquarium/zebradanio.png';
                 this.imageLoaded = false;
                 this.image.onload = () => { this.imageLoaded = true; };
                 this.direction = this.vx > 0 ? 1 : -1;
@@ -1625,7 +1631,7 @@
                 this.vy = (Math.random() - 0.5) * 0.8;
                 this.size = 12;
                 this.image = new Image();
-                this.image.src = 'assets/images/shrimp.png';
+                this.image.src = 'assets/images/aquarium/shrimp.png';
                 this.imageLoaded = false;
                 this.image.onload = () => { this.imageLoaded = true; };
                 this.direction = this.vx > 0 ? 1 : -1;
@@ -1676,7 +1682,7 @@
                 this.vy = (Math.random() - 0.5) * 0.8;
                 this.size = 60;
                 this.image = new Image();
-                this.image.src = 'assets/images/pufferfish.png';
+                this.image.src = 'assets/images/aquarium/pufferfish.png';
                 this.imageLoaded = false;
                 this.image.onload = () => { this.imageLoaded = true; };
                 this.direction = this.vx > 0 ? 1 : -1;
