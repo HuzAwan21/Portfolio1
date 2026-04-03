@@ -327,7 +327,7 @@
             }
         }
 
-        class Jellyfish {
+        class Jellyfish1 {
             constructor(x, y) {
                 this.x = x;
                 this.y = y;
@@ -336,7 +336,76 @@
                 this.size = 40;
                 this.waveOffset = Math.random() * Math.PI * 2;
                 this.image = new Image();
-                this.image.src = 'assets/images/jellyFish.png';
+                this.image.src = 'assets/images/jellyfish1.png';
+                this.imageLoaded = false;
+                this.image.onload = () => {
+                    this.imageLoaded = true;
+                };
+            }
+
+            update(mouseX, mouseY) {
+                // Check distance to mouse
+                const mouseDistX = mouseX - this.x;
+                const mouseDistY = mouseY - this.y;
+                const mouseDist = Math.hypot(mouseDistX, mouseDistY);
+
+                if (mouseDist < 150) {
+                    // Flee from mouse
+                    this.vx = -mouseDistX / mouseDist * 1.2;
+                    this.vy = -mouseDistY / mouseDist * 1.2;
+                } else {
+                    // Gentle wandering behavior
+                    if (Math.random() < 0.03) {
+                        this.vx = (Math.random() - 0.5) * 1.5;
+                        this.vy = (Math.random() - 0.5) * 0.8;
+                    }
+                }
+
+                // Update position
+                this.x += this.vx;
+                this.y += this.vy;
+                this.waveOffset += 0.03;
+
+                // Account for jellyfish size when bouncing
+                const jellyfishExtent = this.size / 2;
+                
+                // Bounce off left and right aquarium walls
+                if (this.x - jellyfishExtent < aquariumBounds.left) {
+                    this.x = aquariumBounds.left + jellyfishExtent;
+                    this.vx = Math.abs(this.vx);
+                }
+                if (this.x + jellyfishExtent > aquariumBounds.right) {
+                    this.x = aquariumBounds.right - jellyfishExtent;
+                    this.vx = -Math.abs(this.vx);
+                }
+                if (this.y - jellyfishExtent < aquariumBounds.top) this.y = aquariumBounds.top + jellyfishExtent;
+                if (this.y + jellyfishExtent > aquariumBounds.bottom) this.y = aquariumBounds.bottom - jellyfishExtent;
+            }
+
+            draw(ctx) {
+                if (this.imageLoaded) {
+                    ctx.save();
+                    ctx.translate(this.x, this.y);
+                    
+                    // Add bobbing motion
+                    const bob = Math.sin(this.waveOffset) * 5;
+                    
+                    ctx.drawImage(this.image, -this.size / 2, -this.size / 2 + bob, this.size, this.size);
+                    ctx.restore();
+                }
+            }
+        }
+
+        class Jellyfish2 {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.vx = (Math.random() - 0.5) * 1.5;
+                this.vy = (Math.random() - 0.5) * 0.8;
+                this.size = 40;
+                this.waveOffset = Math.random() * Math.PI * 2;
+                this.image = new Image();
+                this.image.src = 'assets/images/jellyfish2.png';
                 this.imageLoaded = false;
                 this.image.onload = () => {
                     this.imageLoaded = true;
@@ -718,6 +787,931 @@
             }
         }
 
+        class Angelfish {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.vx = (Math.random() - 0.5) * 2;
+                this.vy = (Math.random() - 0.5) * 1;
+                this.size = 48;
+                this.image = new Image();
+                this.image.src = 'assets/images/angelfish.png';
+                this.imageLoaded = false;
+                this.image.onload = () => {
+                    this.imageLoaded = true;
+                };
+                this.direction = this.vx > 0 ? 1 : -1;
+                this.verticalTilt = 0;
+                this.targetFood = null;
+                this.awareness = 200;
+            }
+
+            findNearestFood(foods) {
+                let nearest = null;
+                let minDist = this.awareness;
+
+                for (let food of foods) {
+                    const dist = Math.hypot(food.x - this.x, food.y - this.y);
+                    if (dist < minDist) {
+                        nearest = food;
+                        minDist = dist;
+                    }
+                }
+                return nearest;
+            }
+
+            update(mouseX, mouseY, foods) {
+                // Check distance to mouse
+                const mouseDistX = mouseX - this.x;
+                const mouseDistY = mouseY - this.y;
+                const mouseDist = Math.hypot(mouseDistX, mouseDistY);
+
+                if (mouseDist < 150) {
+                    // Flee from mouse
+                    this.vx = -mouseDistX / mouseDist * 2;
+                    this.vy = -mouseDistY / mouseDist * 1.5;
+                } else {
+                    // Look for food
+                    this.targetFood = this.findNearestFood(foods);
+
+                    if (this.targetFood) {
+                        const dx = this.targetFood.x - this.x;
+                        const dy = this.targetFood.y - this.y;
+                        const dist = Math.hypot(dx, dy);
+
+                        // Move towards food
+                        this.vx = (dx / dist) * 2;
+                        this.vy = (dy / dist) * 1.5;
+
+                        // Check if eating
+                        if (dist < 20) {
+                            this.targetFood.eaten = true;
+                            this.targetFood = null;
+                        }
+                    } else {
+                        // Gentle wandering behavior
+                        if (Math.random() < 0.02) {
+                            this.vx = (Math.random() - 0.5) * 2;
+                            this.vy = (Math.random() - 0.5) * 1;
+                        }
+                    }
+                }
+
+                // Update direction based on velocity
+                if (this.vx > 0.1) {
+                    this.direction = 1;
+                } else if (this.vx < -0.1) {
+                    this.direction = -1;
+                }
+
+                // Update vertical tilt for up/down movement
+                if (Math.abs(this.vx) > 0.1) {
+                    this.verticalTilt = Math.atan(this.vy / Math.abs(this.vx)) * 0.5;
+                } else if (Math.abs(this.vy) > 0.1) {
+                    this.verticalTilt = Math.atan(this.vy / 0.1) * 0.5;
+                }
+
+                // Update position
+                this.x += this.vx;
+                this.y += this.vy;
+
+                // Account for angelfish size
+                const angelfishExtent = this.size / 2;
+                
+                // Bounce off left and right aquarium walls
+                if (this.x - angelfishExtent < aquariumBounds.left) {
+                    this.x = aquariumBounds.left + angelfishExtent;
+                    this.vx = Math.abs(this.vx);
+                }
+                if (this.x + angelfishExtent > aquariumBounds.right) {
+                    this.x = aquariumBounds.right - angelfishExtent;
+                    this.vx = -Math.abs(this.vx);
+                }
+                if (this.y - angelfishExtent < aquariumBounds.top) this.y = aquariumBounds.top + angelfishExtent;
+                if (this.y + angelfishExtent > aquariumBounds.bottom) this.y = aquariumBounds.bottom - angelfishExtent;
+            }
+
+            draw(ctx) {
+                if (this.imageLoaded) {
+                    ctx.save();
+                    ctx.translate(this.x, this.y);
+                    
+                    // Flip based on direction
+                    if (this.direction === -1) {
+                        ctx.scale(-1, 1);
+                    }
+                    
+                    // Apply vertical tilt for up/down movement
+                    ctx.rotate(this.verticalTilt);
+                    
+                    ctx.drawImage(this.image, -this.size / 2, -this.size / 2, this.size, this.size);
+                    ctx.restore();
+                }
+            }
+        }
+
+        class Angelfish2 {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.vx = (Math.random() - 0.5) * 2;
+                this.vy = (Math.random() - 0.5) * 1;
+                this.size = 48;
+                this.image = new Image();
+                this.image.src = 'assets/images/angelfish2.png';
+                this.imageLoaded = false;
+                this.image.onload = () => { this.imageLoaded = true; };
+                this.direction = this.vx > 0 ? 1 : -1;
+                this.verticalTilt = 0;
+                this.targetFood = null;
+                this.awareness = 200;
+            }
+
+            findNearestFood(foods) {
+                let nearest = null;
+                let minDist = this.awareness;
+                for (let food of foods) {
+                    const dist = Math.hypot(food.x - this.x, food.y - this.y);
+                    if (dist < minDist) { nearest = food; minDist = dist; }
+                }
+                return nearest;
+            }
+
+            update(mouseX, mouseY, foods) {
+                const mouseDistX = mouseX - this.x;
+                const mouseDistY = mouseY - this.y;
+                const mouseDist = Math.hypot(mouseDistX, mouseDistY);
+                if (mouseDist < 150) {
+                    this.vx = -mouseDistX / mouseDist * 2;
+                    this.vy = -mouseDistY / mouseDist * 1.5;
+                } else {
+                    this.targetFood = this.findNearestFood(foods);
+                    if (this.targetFood) {
+                        const dx = this.targetFood.x - this.x;
+                        const dy = this.targetFood.y - this.y;
+                        const dist = Math.hypot(dx, dy);
+                        this.vx = (dx / dist) * 2;
+                        this.vy = (dy / dist) * 1.5;
+                        if (dist < 20) { this.targetFood.eaten = true; this.targetFood = null; }
+                    } else {
+                        if (Math.random() < 0.02) { this.vx = (Math.random() - 0.5) * 2; this.vy = (Math.random() - 0.5) * 1; }
+                    }
+                }
+                if (this.vx > 0.1) { this.direction = 1; } else if (this.vx < -0.1) { this.direction = -1; }
+                if (Math.abs(this.vx) > 0.1) { this.verticalTilt = Math.atan(this.vy / Math.abs(this.vx)) * 0.5; } else if (Math.abs(this.vy) > 0.1) { this.verticalTilt = Math.atan(this.vy / 0.1) * 0.5; }
+                this.x += this.vx;
+                this.y += this.vy;
+                const ext = this.size / 2;
+                if (this.x - ext < aquariumBounds.left) { this.x = aquariumBounds.left + ext; this.vx = Math.abs(this.vx); }
+                if (this.x + ext > aquariumBounds.right) { this.x = aquariumBounds.right - ext; this.vx = -Math.abs(this.vx); }
+                if (this.y - ext < aquariumBounds.top) this.y = aquariumBounds.top + ext;
+                if (this.y + ext > aquariumBounds.bottom) this.y = aquariumBounds.bottom - ext;
+            }
+
+            draw(ctx) {
+                if (this.imageLoaded) {
+                    ctx.save();
+                    ctx.translate(this.x, this.y);
+                    if (this.direction === -1) ctx.scale(-1, 1);
+                    ctx.rotate(this.verticalTilt);
+                    ctx.drawImage(this.image, -this.size / 2, -this.size / 2, this.size, this.size);
+                    ctx.restore();
+                }
+            }
+        }
+
+        class Bettafish2 {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.vx = (Math.random() - 0.5) * 2;
+                this.vy = (Math.random() - 0.5) * 1;
+                this.size = 55;
+                this.image = new Image();
+                this.image.src = 'assets/images/bettafish2.png';
+                this.imageLoaded = false;
+                this.image.onload = () => { this.imageLoaded = true; };
+                this.direction = this.vx > 0 ? 1 : -1;
+                this.verticalTilt = 0;
+                this.targetFood = null;
+                this.awareness = 200;
+            }
+
+            findNearestFood(foods) {
+                let nearest = null;
+                let minDist = this.awareness;
+                for (let food of foods) {
+                    const dist = Math.hypot(food.x - this.x, food.y - this.y);
+                    if (dist < minDist) { nearest = food; minDist = dist; }
+                }
+                return nearest;
+            }
+
+            update(mouseX, mouseY, foods) {
+                const mouseDistX = mouseX - this.x;
+                const mouseDistY = mouseY - this.y;
+                const mouseDist = Math.hypot(mouseDistX, mouseDistY);
+                if (mouseDist < 150) {
+                    this.vx = -mouseDistX / mouseDist * 2;
+                    this.vy = -mouseDistY / mouseDist * 1.5;
+                } else {
+                    this.targetFood = this.findNearestFood(foods);
+                    if (this.targetFood) {
+                        const dx = this.targetFood.x - this.x;
+                        const dy = this.targetFood.y - this.y;
+                        const dist = Math.hypot(dx, dy);
+                        this.vx = (dx / dist) * 2;
+                        this.vy = (dy / dist) * 1.5;
+                        if (dist < 20) { this.targetFood.eaten = true; this.targetFood = null; }
+                    } else {
+                        if (Math.random() < 0.02) { this.vx = (Math.random() - 0.5) * 2; this.vy = (Math.random() - 0.5) * 1; }
+                    }
+                }
+                if (this.vx > 0.1) { this.direction = 1; } else if (this.vx < -0.1) { this.direction = -1; }
+                if (Math.abs(this.vx) > 0.1) { this.verticalTilt = Math.atan(this.vy / Math.abs(this.vx)) * 0.5; } else if (Math.abs(this.vy) > 0.1) { this.verticalTilt = Math.atan(this.vy / 0.1) * 0.5; }
+                this.x += this.vx;
+                this.y += this.vy;
+                const ext = this.size / 2;
+                if (this.x - ext < aquariumBounds.left) { this.x = aquariumBounds.left + ext; this.vx = Math.abs(this.vx); }
+                if (this.x + ext > aquariumBounds.right) { this.x = aquariumBounds.right - ext; this.vx = -Math.abs(this.vx); }
+                if (this.y - ext < aquariumBounds.top) this.y = aquariumBounds.top + ext;
+                if (this.y + ext > aquariumBounds.bottom) this.y = aquariumBounds.bottom - ext;
+            }
+
+            draw(ctx) {
+                if (this.imageLoaded) {
+                    ctx.save();
+                    ctx.translate(this.x, this.y);
+                    if (this.direction === -1) ctx.scale(-1, 1);
+                    ctx.rotate(this.verticalTilt);
+                    ctx.drawImage(this.image, -this.size / 2, -this.size / 2, this.size, this.size);
+                    ctx.restore();
+                }
+            }
+        }
+
+        class Corydoras {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.vx = (Math.random() - 0.5) * 2;
+                this.vy = (Math.random() - 0.5) * 1;
+                this.size = 40;
+                this.image = new Image();
+                this.image.src = 'assets/images/corydoras.png';
+                this.imageLoaded = false;
+                this.image.onload = () => { this.imageLoaded = true; };
+                this.direction = this.vx > 0 ? 1 : -1;
+                this.verticalTilt = 0;
+                this.targetFood = null;
+                this.awareness = 200;
+            }
+
+            findNearestFood(foods) {
+                let nearest = null;
+                let minDist = this.awareness;
+                for (let food of foods) {
+                    const dist = Math.hypot(food.x - this.x, food.y - this.y);
+                    if (dist < minDist) { nearest = food; minDist = dist; }
+                }
+                return nearest;
+            }
+
+            update(mouseX, mouseY, foods) {
+                const mouseDistX = mouseX - this.x;
+                const mouseDistY = mouseY - this.y;
+                const mouseDist = Math.hypot(mouseDistX, mouseDistY);
+                if (mouseDist < 150) {
+                    this.vx = -mouseDistX / mouseDist * 2;
+                    this.vy = -mouseDistY / mouseDist * 1.5;
+                } else {
+                    this.targetFood = this.findNearestFood(foods);
+                    if (this.targetFood) {
+                        const dx = this.targetFood.x - this.x;
+                        const dy = this.targetFood.y - this.y;
+                        const dist = Math.hypot(dx, dy);
+                        this.vx = (dx / dist) * 2;
+                        this.vy = (dy / dist) * 1.5;
+                        if (dist < 20) { this.targetFood.eaten = true; this.targetFood = null; }
+                    } else {
+                        if (Math.random() < 0.02) { this.vx = (Math.random() - 0.5) * 2; this.vy = (Math.random() - 0.5) * 1; }
+                    }
+                }
+                if (this.vx > 0.1) { this.direction = 1; } else if (this.vx < -0.1) { this.direction = -1; }
+                if (Math.abs(this.vx) > 0.1) { this.verticalTilt = Math.atan(this.vy / Math.abs(this.vx)) * 0.5; } else if (Math.abs(this.vy) > 0.1) { this.verticalTilt = Math.atan(this.vy / 0.1) * 0.5; }
+                this.x += this.vx;
+                this.y += this.vy;
+                const ext = this.size / 2;
+                if (this.x - ext < aquariumBounds.left) { this.x = aquariumBounds.left + ext; this.vx = Math.abs(this.vx); }
+                if (this.x + ext > aquariumBounds.right) { this.x = aquariumBounds.right - ext; this.vx = -Math.abs(this.vx); }
+                if (this.y - ext < aquariumBounds.top) this.y = aquariumBounds.top + ext;
+                if (this.y + ext > aquariumBounds.bottom) this.y = aquariumBounds.bottom - ext;
+            }
+
+            draw(ctx) {
+                if (this.imageLoaded) {
+                    ctx.save();
+                    ctx.translate(this.x, this.y);
+                    if (this.direction === -1) ctx.scale(-1, 1);
+                    ctx.rotate(this.verticalTilt);
+                    ctx.drawImage(this.image, -this.size / 2, -this.size / 2, this.size, this.size);
+                    ctx.restore();
+                }
+            }
+        }
+
+        class Discus {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.vx = (Math.random() - 0.5) * 2;
+                this.vy = (Math.random() - 0.5) * 1;
+                this.size = 50;
+                this.image = new Image();
+                this.image.src = 'assets/images/discus.png';
+                this.imageLoaded = false;
+                this.image.onload = () => { this.imageLoaded = true; };
+                this.direction = this.vx > 0 ? 1 : -1;
+                this.verticalTilt = 0;
+                this.targetFood = null;
+                this.awareness = 200;
+            }
+
+            findNearestFood(foods) {
+                let nearest = null;
+                let minDist = this.awareness;
+                for (let food of foods) {
+                    const dist = Math.hypot(food.x - this.x, food.y - this.y);
+                    if (dist < minDist) { nearest = food; minDist = dist; }
+                }
+                return nearest;
+            }
+
+            update(mouseX, mouseY, foods) {
+                const mouseDistX = mouseX - this.x;
+                const mouseDistY = mouseY - this.y;
+                const mouseDist = Math.hypot(mouseDistX, mouseDistY);
+                if (mouseDist < 150) {
+                    this.vx = -mouseDistX / mouseDist * 2;
+                    this.vy = -mouseDistY / mouseDist * 1.5;
+                } else {
+                    this.targetFood = this.findNearestFood(foods);
+                    if (this.targetFood) {
+                        const dx = this.targetFood.x - this.x;
+                        const dy = this.targetFood.y - this.y;
+                        const dist = Math.hypot(dx, dy);
+                        this.vx = (dx / dist) * 2;
+                        this.vy = (dy / dist) * 1.5;
+                        if (dist < 20) { this.targetFood.eaten = true; this.targetFood = null; }
+                    } else {
+                        if (Math.random() < 0.02) { this.vx = (Math.random() - 0.5) * 2; this.vy = (Math.random() - 0.5) * 1; }
+                    }
+                }
+                if (this.vx > 0.1) { this.direction = 1; } else if (this.vx < -0.1) { this.direction = -1; }
+                if (Math.abs(this.vx) > 0.1) { this.verticalTilt = Math.atan(this.vy / Math.abs(this.vx)) * 0.5; } else if (Math.abs(this.vy) > 0.1) { this.verticalTilt = Math.atan(this.vy / 0.1) * 0.5; }
+                this.x += this.vx;
+                this.y += this.vy;
+                const ext = this.size / 2;
+                if (this.x - ext < aquariumBounds.left) { this.x = aquariumBounds.left + ext; this.vx = Math.abs(this.vx); }
+                if (this.x + ext > aquariumBounds.right) { this.x = aquariumBounds.right - ext; this.vx = -Math.abs(this.vx); }
+                if (this.y - ext < aquariumBounds.top) this.y = aquariumBounds.top + ext;
+                if (this.y + ext > aquariumBounds.bottom) this.y = aquariumBounds.bottom - ext;
+            }
+
+            draw(ctx) {
+                if (this.imageLoaded) {
+                    ctx.save();
+                    ctx.translate(this.x, this.y);
+                    if (this.direction === -1) ctx.scale(-1, 1);
+                    ctx.rotate(this.verticalTilt);
+                    ctx.drawImage(this.image, -this.size / 2, -this.size / 2, this.size, this.size);
+                    ctx.restore();
+                }
+            }
+        }
+
+        class FancyGoldfish {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.vx = (Math.random() - 0.5) * 2;
+                this.vy = (Math.random() - 0.5) * 1;
+                this.size = 45;
+                this.image = new Image();
+                this.image.src = 'assets/images/fancyGoldfish.png';
+                this.imageLoaded = false;
+                this.image.onload = () => { this.imageLoaded = true; };
+                this.direction = this.vx > 0 ? 1 : -1;
+                this.verticalTilt = 0;
+                this.targetFood = null;
+                this.awareness = 200;
+            }
+
+            findNearestFood(foods) {
+                let nearest = null;
+                let minDist = this.awareness;
+                for (let food of foods) {
+                    const dist = Math.hypot(food.x - this.x, food.y - this.y);
+                    if (dist < minDist) { nearest = food; minDist = dist; }
+                }
+                return nearest;
+            }
+
+            update(mouseX, mouseY, foods) {
+                const mouseDistX = mouseX - this.x;
+                const mouseDistY = mouseY - this.y;
+                const mouseDist = Math.hypot(mouseDistX, mouseDistY);
+                if (mouseDist < 150) {
+                    this.vx = -mouseDistX / mouseDist * 2;
+                    this.vy = -mouseDistY / mouseDist * 1.5;
+                } else {
+                    this.targetFood = this.findNearestFood(foods);
+                    if (this.targetFood) {
+                        const dx = this.targetFood.x - this.x;
+                        const dy = this.targetFood.y - this.y;
+                        const dist = Math.hypot(dx, dy);
+                        this.vx = (dx / dist) * 2;
+                        this.vy = (dy / dist) * 1.5;
+                        if (dist < 20) { this.targetFood.eaten = true; this.targetFood = null; }
+                    } else {
+                        if (Math.random() < 0.02) { this.vx = (Math.random() - 0.5) * 2; this.vy = (Math.random() - 0.5) * 1; }
+                    }
+                }
+                if (this.vx > 0.1) { this.direction = 1; } else if (this.vx < -0.1) { this.direction = -1; }
+                if (Math.abs(this.vx) > 0.1) { this.verticalTilt = Math.atan(this.vy / Math.abs(this.vx)) * 0.5; } else if (Math.abs(this.vy) > 0.1) { this.verticalTilt = Math.atan(this.vy / 0.1) * 0.5; }
+                this.x += this.vx;
+                this.y += this.vy;
+                const ext = this.size / 2;
+                if (this.x - ext < aquariumBounds.left) { this.x = aquariumBounds.left + ext; this.vx = Math.abs(this.vx); }
+                if (this.x + ext > aquariumBounds.right) { this.x = aquariumBounds.right - ext; this.vx = -Math.abs(this.vx); }
+                if (this.y - ext < aquariumBounds.top) this.y = aquariumBounds.top + ext;
+                if (this.y + ext > aquariumBounds.bottom) this.y = aquariumBounds.bottom - ext;
+            }
+
+            draw(ctx) {
+                if (this.imageLoaded) {
+                    ctx.save();
+                    ctx.translate(this.x, this.y);
+                    if (this.direction === -1) ctx.scale(-1, 1);
+                    ctx.rotate(this.verticalTilt);
+                    ctx.drawImage(this.image, -this.size / 2, -this.size / 2, this.size, this.size);
+                    ctx.restore();
+                }
+            }
+        }
+
+        class Goldfish {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.vx = (Math.random() - 0.5) * 2;
+                this.vy = (Math.random() - 0.5) * 1;
+                this.size = 48;
+                this.image = new Image();
+                this.image.src = 'assets/images/goldfish.png';
+                this.imageLoaded = false;
+                this.image.onload = () => { this.imageLoaded = true; };
+                this.direction = this.vx > 0 ? 1 : -1;
+                this.verticalTilt = 0;
+                this.targetFood = null;
+                this.awareness = 200;
+            }
+
+            findNearestFood(foods) {
+                let nearest = null;
+                let minDist = this.awareness;
+                for (let food of foods) {
+                    const dist = Math.hypot(food.x - this.x, food.y - this.y);
+                    if (dist < minDist) { nearest = food; minDist = dist; }
+                }
+                return nearest;
+            }
+
+            update(mouseX, mouseY, foods) {
+                const mouseDistX = mouseX - this.x;
+                const mouseDistY = mouseY - this.y;
+                const mouseDist = Math.hypot(mouseDistX, mouseDistY);
+                if (mouseDist < 150) {
+                    this.vx = -mouseDistX / mouseDist * 2;
+                    this.vy = -mouseDistY / mouseDist * 1.5;
+                } else {
+                    this.targetFood = this.findNearestFood(foods);
+                    if (this.targetFood) {
+                        const dx = this.targetFood.x - this.x;
+                        const dy = this.targetFood.y - this.y;
+                        const dist = Math.hypot(dx, dy);
+                        this.vx = (dx / dist) * 2;
+                        this.vy = (dy / dist) * 1.5;
+                        if (dist < 20) { this.targetFood.eaten = true; this.targetFood = null; }
+                    } else {
+                        if (Math.random() < 0.02) { this.vx = (Math.random() - 0.5) * 2; this.vy = (Math.random() - 0.5) * 1; }
+                    }
+                }
+                if (this.vx > 0.1) { this.direction = 1; } else if (this.vx < -0.1) { this.direction = -1; }
+                if (Math.abs(this.vx) > 0.1) { this.verticalTilt = Math.atan(this.vy / Math.abs(this.vx)) * 0.5; } else if (Math.abs(this.vy) > 0.1) { this.verticalTilt = Math.atan(this.vy / 0.1) * 0.5; }
+                this.x += this.vx;
+                this.y += this.vy;
+                const ext = this.size / 2;
+                if (this.x - ext < aquariumBounds.left) { this.x = aquariumBounds.left + ext; this.vx = Math.abs(this.vx); }
+                if (this.x + ext > aquariumBounds.right) { this.x = aquariumBounds.right - ext; this.vx = -Math.abs(this.vx); }
+                if (this.y - ext < aquariumBounds.top) this.y = aquariumBounds.top + ext;
+                if (this.y + ext > aquariumBounds.bottom) this.y = aquariumBounds.bottom - ext;
+            }
+
+            draw(ctx) {
+                if (this.imageLoaded) {
+                    ctx.save();
+                    ctx.translate(this.x, this.y);
+                    if (this.direction === -1) ctx.scale(-1, 1);
+                    ctx.rotate(this.verticalTilt);
+                    ctx.drawImage(this.image, -this.size / 2, -this.size / 2, this.size, this.size);
+                    ctx.restore();
+                }
+            }
+        }
+
+        class Guppyfish {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.vx = (Math.random() - 0.5) * 2;
+                this.vy = (Math.random() - 0.5) * 1;
+                this.size = 35;
+                this.image = new Image();
+                this.image.src = 'assets/images/guppyfish.png';
+                this.imageLoaded = false;
+                this.image.onload = () => { this.imageLoaded = true; };
+                this.direction = this.vx > 0 ? 1 : -1;
+                this.verticalTilt = 0;
+                this.targetFood = null;
+                this.awareness = 200;
+            }
+
+            findNearestFood(foods) {
+                let nearest = null;
+                let minDist = this.awareness;
+                for (let food of foods) {
+                    const dist = Math.hypot(food.x - this.x, food.y - this.y);
+                    if (dist < minDist) { nearest = food; minDist = dist; }
+                }
+                return nearest;
+            }
+
+            update(mouseX, mouseY, foods) {
+                const mouseDistX = mouseX - this.x;
+                const mouseDistY = mouseY - this.y;
+                const mouseDist = Math.hypot(mouseDistX, mouseDistY);
+                if (mouseDist < 150) {
+                    this.vx = -mouseDistX / mouseDist * 2;
+                    this.vy = -mouseDistY / mouseDist * 1.5;
+                } else {
+                    this.targetFood = this.findNearestFood(foods);
+                    if (this.targetFood) {
+                        const dx = this.targetFood.x - this.x;
+                        const dy = this.targetFood.y - this.y;
+                        const dist = Math.hypot(dx, dy);
+                        this.vx = (dx / dist) * 2;
+                        this.vy = (dy / dist) * 1.5;
+                        if (dist < 20) { this.targetFood.eaten = true; this.targetFood = null; }
+                    } else {
+                        if (Math.random() < 0.02) { this.vx = (Math.random() - 0.5) * 2; this.vy = (Math.random() - 0.5) * 1; }
+                    }
+                }
+                if (this.vx > 0.1) { this.direction = 1; } else if (this.vx < -0.1) { this.direction = -1; }
+                if (Math.abs(this.vx) > 0.1) { this.verticalTilt = Math.atan(this.vy / Math.abs(this.vx)) * 0.5; } else if (Math.abs(this.vy) > 0.1) { this.verticalTilt = Math.atan(this.vy / 0.1) * 0.5; }
+                this.x += this.vx;
+                this.y += this.vy;
+                const ext = this.size / 2;
+                if (this.x - ext < aquariumBounds.left) { this.x = aquariumBounds.left + ext; this.vx = Math.abs(this.vx); }
+                if (this.x + ext > aquariumBounds.right) { this.x = aquariumBounds.right - ext; this.vx = -Math.abs(this.vx); }
+                if (this.y - ext < aquariumBounds.top) this.y = aquariumBounds.top + ext;
+                if (this.y + ext > aquariumBounds.bottom) this.y = aquariumBounds.bottom - ext;
+            }
+
+            draw(ctx) {
+                if (this.imageLoaded) {
+                    ctx.save();
+                    ctx.translate(this.x, this.y);
+                    if (this.direction === -1) ctx.scale(-1, 1);
+                    ctx.rotate(this.verticalTilt);
+                    ctx.drawImage(this.image, -this.size / 2, -this.size / 2, this.size, this.size);
+                    ctx.restore();
+                }
+            }
+        }
+
+        class Koifish {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.vx = (Math.random() - 0.5) * 2;
+                this.vy = (Math.random() - 0.5) * 1;
+                this.size = 55;
+                this.image = new Image();
+                this.image.src = 'assets/images/koifish.png';
+                this.imageLoaded = false;
+                this.image.onload = () => { this.imageLoaded = true; };
+                this.direction = this.vx > 0 ? 1 : -1;
+                this.verticalTilt = 0;
+                this.targetFood = null;
+                this.awareness = 200;
+            }
+
+            findNearestFood(foods) {
+                let nearest = null;
+                let minDist = this.awareness;
+                for (let food of foods) {
+                    const dist = Math.hypot(food.x - this.x, food.y - this.y);
+                    if (dist < minDist) { nearest = food; minDist = dist; }
+                }
+                return nearest;
+            }
+
+            update(mouseX, mouseY, foods) {
+                const mouseDistX = mouseX - this.x;
+                const mouseDistY = mouseY - this.y;
+                const mouseDist = Math.hypot(mouseDistX, mouseDistY);
+                if (mouseDist < 150) {
+                    this.vx = -mouseDistX / mouseDist * 2;
+                    this.vy = -mouseDistY / mouseDist * 1.5;
+                } else {
+                    this.targetFood = this.findNearestFood(foods);
+                    if (this.targetFood) {
+                        const dx = this.targetFood.x - this.x;
+                        const dy = this.targetFood.y - this.y;
+                        const dist = Math.hypot(dx, dy);
+                        this.vx = (dx / dist) * 2;
+                        this.vy = (dy / dist) * 1.5;
+                        if (dist < 20) { this.targetFood.eaten = true; this.targetFood = null; }
+                    } else {
+                        if (Math.random() < 0.02) { this.vx = (Math.random() - 0.5) * 2; this.vy = (Math.random() - 0.5) * 1; }
+                    }
+                }
+                if (this.vx > 0.1) { this.direction = 1; } else if (this.vx < -0.1) { this.direction = -1; }
+                if (Math.abs(this.vx) > 0.1) { this.verticalTilt = Math.atan(this.vy / Math.abs(this.vx)) * 0.5; } else if (Math.abs(this.vy) > 0.1) { this.verticalTilt = Math.atan(this.vy / 0.1) * 0.5; }
+                this.x += this.vx;
+                this.y += this.vy;
+                const ext = this.size / 2;
+                if (this.x - ext < aquariumBounds.left) { this.x = aquariumBounds.left + ext; this.vx = Math.abs(this.vx); }
+                if (this.x + ext > aquariumBounds.right) { this.x = aquariumBounds.right - ext; this.vx = -Math.abs(this.vx); }
+                if (this.y - ext < aquariumBounds.top) this.y = aquariumBounds.top + ext;
+                if (this.y + ext > aquariumBounds.bottom) this.y = aquariumBounds.bottom - ext;
+            }
+
+            draw(ctx) {
+                if (this.imageLoaded) {
+                    ctx.save();
+                    ctx.translate(this.x, this.y);
+                    if (this.direction === -1) ctx.scale(-1, 1);
+                    ctx.rotate(this.verticalTilt);
+                    ctx.drawImage(this.image, -this.size / 2, -this.size / 2, this.size, this.size);
+                    ctx.restore();
+                }
+            }
+        }
+
+        class NeonTetra {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.vx = (Math.random() - 0.5) * 2;
+                this.vy = (Math.random() - 0.5) * 1;
+                this.size = 30;
+                this.image = new Image();
+                this.image.src = 'assets/images/neontetra.png';
+                this.imageLoaded = false;
+                this.image.onload = () => { this.imageLoaded = true; };
+                this.direction = this.vx > 0 ? 1 : -1;
+                this.verticalTilt = 0;
+                this.targetFood = null;
+                this.awareness = 200;
+            }
+
+            findNearestFood(foods) {
+                let nearest = null;
+                let minDist = this.awareness;
+                for (let food of foods) {
+                    const dist = Math.hypot(food.x - this.x, food.y - this.y);
+                    if (dist < minDist) { nearest = food; minDist = dist; }
+                }
+                return nearest;
+            }
+
+            update(mouseX, mouseY, foods) {
+                const mouseDistX = mouseX - this.x;
+                const mouseDistY = mouseY - this.y;
+                const mouseDist = Math.hypot(mouseDistX, mouseDistY);
+                if (mouseDist < 150) {
+                    this.vx = -mouseDistX / mouseDist * 2;
+                    this.vy = -mouseDistY / mouseDist * 1.5;
+                } else {
+                    this.targetFood = this.findNearestFood(foods);
+                    if (this.targetFood) {
+                        const dx = this.targetFood.x - this.x;
+                        const dy = this.targetFood.y - this.y;
+                        const dist = Math.hypot(dx, dy);
+                        this.vx = (dx / dist) * 2;
+                        this.vy = (dy / dist) * 1.5;
+                        if (dist < 20) { this.targetFood.eaten = true; this.targetFood = null; }
+                    } else {
+                        if (Math.random() < 0.02) { this.vx = (Math.random() - 0.5) * 2; this.vy = (Math.random() - 0.5) * 1; }
+                    }
+                }
+                if (this.vx > 0.1) { this.direction = 1; } else if (this.vx < -0.1) { this.direction = -1; }
+                if (Math.abs(this.vx) > 0.1) { this.verticalTilt = Math.atan(this.vy / Math.abs(this.vx)) * 0.5; } else if (Math.abs(this.vy) > 0.1) { this.verticalTilt = Math.atan(this.vy / 0.1) * 0.5; }
+                this.x += this.vx;
+                this.y += this.vy;
+                const ext = this.size / 2;
+                if (this.x - ext < aquariumBounds.left) { this.x = aquariumBounds.left + ext; this.vx = Math.abs(this.vx); }
+                if (this.x + ext > aquariumBounds.right) { this.x = aquariumBounds.right - ext; this.vx = -Math.abs(this.vx); }
+                if (this.y - ext < aquariumBounds.top) this.y = aquariumBounds.top + ext;
+                if (this.y + ext > aquariumBounds.bottom) this.y = aquariumBounds.bottom - ext;
+            }
+
+            draw(ctx) {
+                if (this.imageLoaded) {
+                    ctx.save();
+                    ctx.translate(this.x, this.y);
+                    if (this.direction === -1) ctx.scale(-1, 1);
+                    ctx.rotate(this.verticalTilt);
+                    ctx.drawImage(this.image, -this.size / 2, -this.size / 2, this.size, this.size);
+                    ctx.restore();
+                }
+            }
+        }
+
+        class ZebraDanio {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.vx = (Math.random() - 0.5) * 2;
+                this.vy = (Math.random() - 0.5) * 1;
+                this.size = 38;
+                this.image = new Image();
+                this.image.src = 'assets/images/zebradanio.png';
+                this.imageLoaded = false;
+                this.image.onload = () => { this.imageLoaded = true; };
+                this.direction = this.vx > 0 ? 1 : -1;
+                this.verticalTilt = 0;
+                this.targetFood = null;
+                this.awareness = 200;
+            }
+
+            findNearestFood(foods) {
+                let nearest = null;
+                let minDist = this.awareness;
+                for (let food of foods) {
+                    const dist = Math.hypot(food.x - this.x, food.y - this.y);
+                    if (dist < minDist) { nearest = food; minDist = dist; }
+                }
+                return nearest;
+            }
+
+            update(mouseX, mouseY, foods) {
+                const mouseDistX = mouseX - this.x;
+                const mouseDistY = mouseY - this.y;
+                const mouseDist = Math.hypot(mouseDistX, mouseDistY);
+                if (mouseDist < 150) {
+                    this.vx = -mouseDistX / mouseDist * 2;
+                    this.vy = -mouseDistY / mouseDist * 1.5;
+                } else {
+                    this.targetFood = this.findNearestFood(foods);
+                    if (this.targetFood) {
+                        const dx = this.targetFood.x - this.x;
+                        const dy = this.targetFood.y - this.y;
+                        const dist = Math.hypot(dx, dy);
+                        this.vx = (dx / dist) * 2;
+                        this.vy = (dy / dist) * 1.5;
+                        if (dist < 20) { this.targetFood.eaten = true; this.targetFood = null; }
+                    } else {
+                        if (Math.random() < 0.02) { this.vx = (Math.random() - 0.5) * 2; this.vy = (Math.random() - 0.5) * 1; }
+                    }
+                }
+                if (this.vx > 0.1) { this.direction = 1; } else if (this.vx < -0.1) { this.direction = -1; }
+                if (Math.abs(this.vx) > 0.1) { this.verticalTilt = Math.atan(this.vy / Math.abs(this.vx)) * 0.5; } else if (Math.abs(this.vy) > 0.1) { this.verticalTilt = Math.atan(this.vy / 0.1) * 0.5; }
+                this.x += this.vx;
+                this.y += this.vy;
+                const ext = this.size / 2;
+                if (this.x - ext < aquariumBounds.left) { this.x = aquariumBounds.left + ext; this.vx = Math.abs(this.vx); }
+                if (this.x + ext > aquariumBounds.right) { this.x = aquariumBounds.right - ext; this.vx = -Math.abs(this.vx); }
+                if (this.y - ext < aquariumBounds.top) this.y = aquariumBounds.top + ext;
+                if (this.y + ext > aquariumBounds.bottom) this.y = aquariumBounds.bottom - ext;
+            }
+
+            draw(ctx) {
+                if (this.imageLoaded) {
+                    ctx.save();
+                    ctx.translate(this.x, this.y);
+                    if (this.direction === -1) ctx.scale(-1, 1);
+                    ctx.rotate(this.verticalTilt);
+                    ctx.drawImage(this.image, -this.size / 2, -this.size / 2, this.size, this.size);
+                    ctx.restore();
+                }
+            }
+        }
+
+        class Shrimp {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.vx = (Math.random() - 0.5) * 1.5;
+                this.vy = (Math.random() - 0.5) * 0.8;
+                this.size = 10;
+                this.image = new Image();
+                this.image.src = 'assets/images/shrimp.png';
+                this.imageLoaded = false;
+                this.image.onload = () => { this.imageLoaded = true; };
+                this.direction = this.vx > 0 ? 1 : -1;
+                this.verticalTilt = 0;
+            }
+
+            update(mouseX, mouseY) {
+                const mouseDistX = mouseX - this.x;
+                const mouseDistY = mouseY - this.y;
+                const mouseDist = Math.hypot(mouseDistX, mouseDistY);
+                if (mouseDist < 150) {
+                    this.vx = -mouseDistX / mouseDist * 1.2;
+                    this.vy = -mouseDistY / mouseDist * 1.2;
+                } else {
+                    if (Math.random() < 0.03) {
+                        this.vx = (Math.random() - 0.5) * 1.5;
+                        this.vy = (Math.random() - 0.5) * 0.8;
+                    }
+                }
+                if (this.vx > 0.1) { this.direction = 1; } else if (this.vx < -0.1) { this.direction = -1; }
+                if (Math.abs(this.vx) > 0.1) { this.verticalTilt = Math.atan(this.vy / Math.abs(this.vx)) * 0.5; } else if (Math.abs(this.vy) > 0.1) { this.verticalTilt = Math.atan(this.vy / 0.1) * 0.5; }
+                this.x += this.vx;
+                this.y += this.vy;
+                const ext = this.size / 2;
+                if (this.x - ext < aquariumBounds.left) { this.x = aquariumBounds.left + ext; this.vx = Math.abs(this.vx); }
+                if (this.x + ext > aquariumBounds.right) { this.x = aquariumBounds.right - ext; this.vx = -Math.abs(this.vx); }
+                if (this.y - ext < aquariumBounds.top) this.y = aquariumBounds.top + ext;
+                if (this.y + ext > aquariumBounds.bottom) this.y = aquariumBounds.bottom - ext;
+            }
+
+            draw(ctx) {
+                if (this.imageLoaded) {
+                    ctx.save();
+                    ctx.translate(this.x, this.y);
+                    if (this.direction === -1) ctx.scale(-1, 1);
+                    ctx.rotate(this.verticalTilt);
+                    ctx.drawImage(this.image, -this.size / 2, -this.size / 2, this.size, this.size);
+                    ctx.restore();
+                }
+            }
+        }
+
+        class Pufferfish {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.vx = (Math.random() - 0.5) * 1.5;
+                this.vy = (Math.random() - 0.5) * 0.8;
+                this.size = 45;
+                this.image = new Image();
+                this.image.src = 'assets/images/pufferfish.png';
+                this.imageLoaded = false;
+                this.image.onload = () => { this.imageLoaded = true; };
+                this.direction = this.vx > 0 ? 1 : -1;
+                this.verticalTilt = 0;
+            }
+
+            update(mouseX, mouseY) {
+                const mouseDistX = mouseX - this.x;
+                const mouseDistY = mouseY - this.y;
+                const mouseDist = Math.hypot(mouseDistX, mouseDistY);
+                if (mouseDist < 150) {
+                    this.vx = -mouseDistX / mouseDist * 1.2;
+                    this.vy = -mouseDistY / mouseDist * 1.2;
+                } else {
+                    if (Math.random() < 0.03) {
+                        this.vx = (Math.random() - 0.5) * 1.5;
+                        this.vy = (Math.random() - 0.5) * 0.8;
+                    }
+                }
+                if (this.vx > 0.1) { this.direction = 1; } else if (this.vx < -0.1) { this.direction = -1; }
+                if (Math.abs(this.vx) > 0.1) { this.verticalTilt = Math.atan(this.vy / Math.abs(this.vx)) * 0.5; } else if (Math.abs(this.vy) > 0.1) { this.verticalTilt = Math.atan(this.vy / 0.1) * 0.5; }
+                this.x += this.vx;
+                this.y += this.vy;
+                const ext = this.size / 2;
+                if (this.x - ext < aquariumBounds.left) { this.x = aquariumBounds.left + ext; this.vx = Math.abs(this.vx); }
+                if (this.x + ext > aquariumBounds.right) { this.x = aquariumBounds.right - ext; this.vx = -Math.abs(this.vx); }
+                if (this.y - ext < aquariumBounds.top) this.y = aquariumBounds.top + ext;
+                if (this.y + ext > aquariumBounds.bottom) this.y = aquariumBounds.bottom - ext;
+            }
+
+            draw(ctx) {
+                if (this.imageLoaded) {
+                    ctx.save();
+                    ctx.translate(this.x, this.y);
+                    if (this.direction === -1) ctx.scale(-1, 1);
+                    ctx.rotate(this.verticalTilt);
+                    ctx.drawImage(this.image, -this.size / 2, -this.size / 2, this.size, this.size);
+                    ctx.restore();
+                }
+            }
+        }
+
         // ============================================================================
         // GAME STATE
         // ============================================================================
@@ -730,6 +1724,19 @@
         let crabs = [];
         let clownfish = [];
         let bettafish = [];
+        let angelfish = [];
+        let angelfish2 = [];
+        let bettafish2 = [];
+        let corydoras = [];
+        let discus = [];
+        let fancyGoldfish = [];
+        let goldfish = [];
+        let guppyfish = [];
+        let koifish = [];
+        let neontetra = [];
+        let zebradanio = [];
+        let shrimp = [];
+        let pufferfish = [];
         let mouseX = canvas.width / 2;
         let mouseY = canvas.height / 2;
         let foodSpawned = 0;
@@ -744,12 +1751,32 @@
             crabs = [];
             clownfish = [];
             bettafish = [];
+            angelfish = [];
+            angelfish2 = [];
+            bettafish2 = [];
+            corydoras = [];
+            discus = [];
+            fancyGoldfish = [];
+            goldfish = [];
+            guppyfish = [];
+            koifish = [];
+            neontetra = [];
+            zebradanio = [];
+            shrimp = [];
+            pufferfish = [];
 
-            // Create jellyfish
+            // Create jellyfish1
             for (let i = 0; i < 3; i++) {
                 const x = Math.random() * (aquariumBounds.right - aquariumBounds.left) + aquariumBounds.left;
                 const y = Math.random() * (aquariumBounds.bottom - aquariumBounds.top) + aquariumBounds.top;
-                jellyfish.push(new Jellyfish(x, y));
+                jellyfish.push(new Jellyfish1(x, y));
+            }
+
+            // Create jellyfish2
+            for (let i = 0; i < 2; i++) {
+                const x = Math.random() * (aquariumBounds.right - aquariumBounds.left) + aquariumBounds.left;
+                const y = Math.random() * (aquariumBounds.bottom - aquariumBounds.top) + aquariumBounds.top;
+                jellyfish.push(new Jellyfish2(x, y));
             }
 
             // Create crabs on the ground
@@ -766,11 +1793,48 @@
             }
 
             // Create bettafish
-            for (let i = 0; i < 1; i++) {
-                const x = Math.random() * (aquariumBounds.right - aquariumBounds.left) + aquariumBounds.left;
-                const y = Math.random() * (aquariumBounds.bottom * 0.65 - aquariumBounds.top) + aquariumBounds.top;
-                bettafish.push(new Bettafish(x, y));
+            bettafish.push(new Bettafish(Math.random() * (aquariumBounds.right - aquariumBounds.left) + aquariumBounds.left, Math.random() * (aquariumBounds.bottom * 0.65 - aquariumBounds.top) + aquariumBounds.top));
+
+            // Create angelfish
+            angelfish.push(new Angelfish(Math.random() * (aquariumBounds.right - aquariumBounds.left) + aquariumBounds.left, Math.random() * (aquariumBounds.bottom * 0.6 - aquariumBounds.top) + aquariumBounds.top));
+
+            // Create angelfish2
+            angelfish2.push(new Angelfish2(Math.random() * (aquariumBounds.right - aquariumBounds.left) + aquariumBounds.left, Math.random() * (aquariumBounds.bottom * 0.6 - aquariumBounds.top) + aquariumBounds.top));
+
+            // Create bettafish2
+            bettafish2.push(new Bettafish2(Math.random() * (aquariumBounds.right - aquariumBounds.left) + aquariumBounds.left, Math.random() * (aquariumBounds.bottom * 0.65 - aquariumBounds.top) + aquariumBounds.top));
+
+            // Create corydoras
+            corydoras.push(new Corydoras(Math.random() * (aquariumBounds.right - aquariumBounds.left) + aquariumBounds.left, Math.random() * (aquariumBounds.bottom * 0.75 - aquariumBounds.top) + aquariumBounds.top));
+
+            // Create discus
+            discus.push(new Discus(Math.random() * (aquariumBounds.right - aquariumBounds.left) + aquariumBounds.left, Math.random() * (aquariumBounds.bottom * 0.65 - aquariumBounds.top) + aquariumBounds.top));
+
+            // Create fancy goldfish
+            fancyGoldfish.push(new FancyGoldfish(Math.random() * (aquariumBounds.right - aquariumBounds.left) + aquariumBounds.left, Math.random() * (aquariumBounds.bottom * 0.7 - aquariumBounds.top) + aquariumBounds.top));
+
+            // Create goldfish
+            goldfish.push(new Goldfish(Math.random() * (aquariumBounds.right - aquariumBounds.left) + aquariumBounds.left, Math.random() * (aquariumBounds.bottom * 0.7 - aquariumBounds.top) + aquariumBounds.top));
+
+            // Create guppyfish
+            guppyfish.push(new Guppyfish(Math.random() * (aquariumBounds.right - aquariumBounds.left) + aquariumBounds.left, Math.random() * (aquariumBounds.bottom * 0.5 - aquariumBounds.top) + aquariumBounds.top));
+
+            // Create koifish
+            koifish.push(new Koifish(Math.random() * (aquariumBounds.right - aquariumBounds.left) + aquariumBounds.left, Math.random() * (aquariumBounds.bottom * 0.7 - aquariumBounds.top) + aquariumBounds.top));
+
+            // Create neon tetra
+            neontetra.push(new NeonTetra(Math.random() * (aquariumBounds.right - aquariumBounds.left) + aquariumBounds.left, Math.random() * (aquariumBounds.bottom * 0.5 - aquariumBounds.top) + aquariumBounds.top));
+
+            // Create zebra danio
+            zebradanio.push(new ZebraDanio(Math.random() * (aquariumBounds.right - aquariumBounds.left) + aquariumBounds.left, Math.random() * (aquariumBounds.bottom * 0.6 - aquariumBounds.top) + aquariumBounds.top));
+
+            // Create shrimp
+            for (let i = 0; i < 20; i++) {
+                shrimp.push(new Shrimp(Math.random() * (aquariumBounds.right - aquariumBounds.left) + aquariumBounds.left, Math.random() * (aquariumBounds.bottom - aquariumBounds.top) + aquariumBounds.top));
             }
+
+            // Create pufferfish
+            pufferfish.push(new Pufferfish(Math.random() * (aquariumBounds.right - aquariumBounds.left) + aquariumBounds.left, Math.random() * (aquariumBounds.bottom - aquariumBounds.top) + aquariumBounds.top));
         }
 
         // ============================================================================
@@ -851,6 +1915,71 @@
             for (let bf of bettafish) {
                 bf.update(mouseX, mouseY, foods);
             }
+
+            // Update angelfish
+            for (let af of angelfish) {
+                af.update(mouseX, mouseY, foods);
+            }
+
+            // Update angelfish2
+            for (let af2 of angelfish2) {
+                af2.update(mouseX, mouseY, foods);
+            }
+
+            // Update bettafish2
+            for (let bf2 of bettafish2) {
+                bf2.update(mouseX, mouseY, foods);
+            }
+
+            // Update corydoras
+            for (let cd of corydoras) {
+                cd.update(mouseX, mouseY, foods);
+            }
+
+            // Update discus
+            for (let ds of discus) {
+                ds.update(mouseX, mouseY, foods);
+            }
+
+            // Update fancy goldfish
+            for (let fg of fancyGoldfish) {
+                fg.update(mouseX, mouseY, foods);
+            }
+
+            // Update goldfish
+            for (let gf of goldfish) {
+                gf.update(mouseX, mouseY, foods);
+            }
+
+            // Update guppyfish
+            for (let gy of guppyfish) {
+                gy.update(mouseX, mouseY, foods);
+            }
+
+            // Update koifish
+            for (let kf of koifish) {
+                kf.update(mouseX, mouseY, foods);
+            }
+
+            // Update neon tetra
+            for (let nt of neontetra) {
+                nt.update(mouseX, mouseY, foods);
+            }
+
+            // Update zebra danio
+            for (let zd of zebradanio) {
+                zd.update(mouseX, mouseY, foods);
+            }
+
+            // Update shrimp
+            for (let sr of shrimp) {
+                sr.update(mouseX, mouseY);
+            }
+
+            // Update pufferfish
+            for (let pf of pufferfish) {
+                pf.update(mouseX, mouseY);
+            }
         }
 
         function draw() {
@@ -894,6 +2023,71 @@
             // Draw bettafish
             for (let bf of bettafish) {
                 bf.draw(ctx);
+            }
+
+            // Draw angelfish
+            for (let af of angelfish) {
+                af.draw(ctx);
+            }
+
+            // Draw angelfish2
+            for (let af2 of angelfish2) {
+                af2.draw(ctx);
+            }
+
+            // Draw bettafish2
+            for (let bf2 of bettafish2) {
+                bf2.draw(ctx);
+            }
+
+            // Draw corydoras
+            for (let cd of corydoras) {
+                cd.draw(ctx);
+            }
+
+            // Draw discus
+            for (let ds of discus) {
+                ds.draw(ctx);
+            }
+
+            // Draw fancy goldfish
+            for (let fg of fancyGoldfish) {
+                fg.draw(ctx);
+            }
+
+            // Draw goldfish
+            for (let gf of goldfish) {
+                gf.draw(ctx);
+            }
+
+            // Draw guppyfish
+            for (let gy of guppyfish) {
+                gy.draw(ctx);
+            }
+
+            // Draw koifish
+            for (let kf of koifish) {
+                kf.draw(ctx);
+            }
+
+            // Draw neon tetra
+            for (let nt of neontetra) {
+                nt.draw(ctx);
+            }
+
+            // Draw zebra danio
+            for (let zd of zebradanio) {
+                zd.draw(ctx);
+            }
+
+            // Draw shrimp
+            for (let sr of shrimp) {
+                sr.draw(ctx);
+            }
+
+            // Draw pufferfish
+            for (let pf of pufferfish) {
+                pf.draw(ctx);
             }
         }
 
