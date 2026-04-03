@@ -157,8 +157,8 @@
 
         function updateAquariumBounds() {
             aquariumBounds = {
-                left: canvas.width * 0.12,
-                right: canvas.width * 0.88,
+                left: canvas.width * 0.06,
+                right: canvas.width * 0.945,
                 top: canvas.height * 0.22,
                 bottom: canvas.height * 0.82
             };
@@ -174,180 +174,25 @@
         resizeCanvas();
         window.addEventListener('resize', resizeCanvas);
 
-        // Load background image
-        const backgroundImage = new Image();
-        backgroundImage.src = 'assets/images/aquariumBackground.jpeg';
+        // Load background video
+        const backgroundVideo = document.createElement('video');
+        backgroundVideo.src = 'assets/images/aquariumBackground.mp4';
+        backgroundVideo.loop = true;
+        backgroundVideo.muted = true;
+        backgroundVideo.autoplay = true;
         let backgroundLoaded = false;
-        backgroundImage.onload = () => {
+        backgroundVideo.oncanplay = () => {
             backgroundLoaded = true;
+            backgroundVideo.play();
         };
 
         // ============================================================================
         // FISH TYPES & PROPERTIES
         // ============================================================================
 
-        const FISH_TYPES = [
-            // Tropical fish - vibrant colors
-            { name: 'Clownfish', primary: '#FF6B35', secondary: '#FFFFFF', accent: '#000000', size: 25, speed: 1.5 },
-            { name: 'Angelfish', primary: '#4A90E2', secondary: '#FFFFFF', accent: '#FFD700', size: 30, speed: 1.2 },
-            { name: 'Parrotfish', primary: '#FF1493', secondary: '#FFD700', accent: '#00CED1', size: 28, speed: 1.3 },
-            { name: 'Bluefish', primary: '#00BFFF', secondary: '#4169E1', accent: '#87CEEB', size: 24, speed: 1.6 },
-            { name: 'Goldfish', primary: '#FFD700', secondary: '#FFA500', accent: '#FF8C00', size: 22, speed: 1.4 },
-            { name: 'Discus', primary: '#FF69B4', secondary: '#FF1493', accent: '#FFFFFF', size: 32, speed: 1.1 },
-            { name: 'Tang', primary: '#00FF7F', secondary: '#32CD32', accent: '#FFD700', size: 26, speed: 1.5 },
-            { name: 'Wrasse', primary: '#9932CC', secondary: '#DDA0DD', accent: '#00BFFF', size: 23, speed: 1.7 },
-        ];
-
         // ============================================================================
         // GAME OBJECTS
         // ============================================================================
-
-        class Fish {
-            constructor(x, y) {
-                this.x = x;
-                this.y = y;
-                this.type = FISH_TYPES[Math.floor(Math.random() * FISH_TYPES.length)];
-                this.vx = (Math.random() - 0.5) * 2 * this.type.speed;
-                this.vy = (Math.random() - 0.5) * 0.5 * this.type.speed;
-                this.angle = Math.atan2(this.vy, this.vx);
-                this.targetX = x;
-                this.targetY = y;
-                this.hunger = 100;
-                this.state = 'swimming'; // swimming, seeking, fleeing, eating
-                this.targetFood = null;
-                this.awareness = 200;
-                this.eatingTimer = 0;
-            }
-
-            findNearestFood(foods) {
-                let nearest = null;
-                let minDist = this.awareness;
-
-                for (let food of foods) {
-                    const dist = Math.hypot(food.x - this.x, food.y - this.y);
-                    if (dist < minDist) {
-                        nearest = food;
-                        minDist = dist;
-                    }
-                }
-                return nearest;
-            }
-
-            update(mouseX, mouseY, foods) {
-                // Hunger increases over time
-                this.hunger = Math.max(0, this.hunger - 0.1);
-
-                // Check distance to mouse
-                const mouseDistX = mouseX - this.x;
-                const mouseDistY = mouseY - this.y;
-                const mouseDist = Math.hypot(mouseDistX, mouseDistY);
-
-                if (mouseDist < 150) {
-                    // Flee from mouse
-                    this.state = 'fleeing';
-                    this.vx = -mouseDistX / mouseDist * this.type.speed * 2;
-                    this.vy = -mouseDistY / mouseDist * this.type.speed * 2;
-                } else if (this.state === 'fleeing') {
-                    this.state = 'swimming';
-                } else {
-                    // Look for food
-                    this.targetFood = this.findNearestFood(foods);
-
-                    if (this.targetFood) {
-                        this.state = 'seeking';
-                        const dx = this.targetFood.x - this.x;
-                        const dy = this.targetFood.y - this.y;
-                        const dist = Math.hypot(dx, dy);
-
-                        // Move towards food
-                        this.vx = (dx / dist) * this.type.speed;
-                        this.vy = (dy / dist) * this.type.speed * 0.5;
-
-                        // Check if eating
-                        if (dist < 20) {
-                            this.state = 'eating';
-                            this.hunger = Math.min(100, this.hunger + this.targetFood.nutrition);
-                            this.targetFood.eaten = true;
-                            this.targetFood = null;
-                        }
-                    } else if (this.state !== 'swimming') {
-                        this.state = 'swimming';
-                    }
-
-                    // Random swimming behavior
-                    if (this.state === 'swimming' && Math.random() < 0.02) {
-                        this.vx = (Math.random() - 0.5) * 2 * this.type.speed;
-                        this.vy = (Math.random() - 0.5) * 0.5 * this.type.speed;
-                    }
-                }
-
-                // Update position
-                this.x += this.vx;
-                this.y += this.vy;
-
-                // Account for fish size and tail extension (tail extends ~1.4x the body size)
-                const fishExtent = this.type.size * 1.5;
-                
-                // Bounce off left and right aquarium walls
-                if (this.x - fishExtent < aquariumBounds.left) {
-                    this.x = aquariumBounds.left + fishExtent;
-                    this.vx = Math.abs(this.vx); // Reverse direction
-                }
-                if (this.x + fishExtent > aquariumBounds.right) {
-                    this.x = aquariumBounds.right - fishExtent;
-                    this.vx = -Math.abs(this.vx); // Reverse direction
-                }
-                if (this.y - this.type.size * 0.6 < aquariumBounds.top) this.y = aquariumBounds.top + this.type.size * 0.6;
-                if (this.y + this.type.size * 0.6 > aquariumBounds.bottom) this.y = aquariumBounds.bottom - this.type.size * 0.6;
-
-                // Update angle for drawing
-                if (Math.abs(this.vx) > 0.1 || Math.abs(this.vy) > 0.1) {
-                    this.angle = Math.atan2(this.vy, this.vx);
-                }
-            }
-
-            draw(ctx) {
-                ctx.save();
-                ctx.translate(this.x, this.y);
-                ctx.rotate(this.angle);
-
-                const size = this.type.size;
-                const hungerColor = this.hunger > 70 ? this.type.primary : 
-                                   this.hunger > 40 ? '#FFD700' : '#FF6347';
-
-                // Fish body
-                ctx.fillStyle = hungerColor;
-                ctx.beginPath();
-                ctx.ellipse(0, 0, size, size * 0.6, 0, 0, Math.PI * 2);
-                ctx.fill();
-
-                // Fish fin
-                ctx.fillStyle = this.type.secondary;
-                ctx.beginPath();
-                ctx.moveTo(-size * 0.5, 0);
-                ctx.lineTo(-size * 0.2, -size * 0.5);
-                ctx.lineTo(-size * 0.2, size * 0.5);
-                ctx.closePath();
-                ctx.fill();
-
-                // Tail
-                ctx.fillStyle = this.type.accent;
-                ctx.beginPath();
-                ctx.moveTo(-size, 0);
-                ctx.lineTo(-size - size * 0.4, -size * 0.5);
-                ctx.lineTo(-size - size * 0.4, size * 0.5);
-                ctx.closePath();
-                ctx.fill();
-
-                // Eye
-                ctx.fillStyle = '#000000';
-                ctx.beginPath();
-                ctx.arc(size * 0.5, -size * 0.2, size * 0.15, 0, Math.PI * 2);
-                ctx.fill();
-
-                ctx.restore();
-            }
-        }
 
         class Food {
             constructor(x, y) {
@@ -369,9 +214,9 @@
                 this.y += this.vy;
                 this.x += this.vx;
 
-                // Keep food within aquarium bounds
-                if (this.x < aquariumBounds.left) this.x = aquariumBounds.left;
-                if (this.x > aquariumBounds.right) this.x = aquariumBounds.right;
+                // Keep food within aquarium bounds with margin
+                if (this.x < aquariumBounds.left + 5) this.x = aquariumBounds.left + 5;
+                if (this.x > aquariumBounds.right - 5) this.x = aquariumBounds.right - 5;
 
                 // Stop at bottom of aquarium
                 if (this.y > aquariumBounds.bottom - 10) {
@@ -551,41 +396,380 @@
             }
         }
 
+        class Crab {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.vx = (Math.random() - 0.5) * 1;
+                this.vy = 0;
+                this.size = 65;
+                this.groundY = aquariumBounds.bottom - 25;
+                this.image = new Image();
+                this.image.src = 'assets/images/crab.png';
+                this.imageLoaded = false;
+                this.image.onload = () => {
+                    this.imageLoaded = true;
+                };
+                this.direction = this.vx > 0 ? 1 : -1;
+            }
+
+            update(mouseX, mouseY) {
+                // Keep crab on the ground
+                this.y = this.groundY;
+
+                // Check distance to mouse
+                const mouseDistX = mouseX - this.x;
+                const mouseDistY = mouseY - this.y;
+                const mouseDist = Math.hypot(mouseDistX, mouseDistY);
+
+                if (mouseDist < 150) {
+                    // Flee from mouse (move along ground)
+                    this.vx = -mouseDistX / mouseDist * 1.5;
+                } else {
+                    // Gentle side-to-side wandering behavior
+                    if (Math.random() < 0.02) {
+                        this.vx = (Math.random() - 0.5) * 1;
+                    }
+                }
+
+                // Update direction based on velocity
+                if (this.vx > 0.1) {
+                    this.direction = 1;
+                } else if (this.vx < -0.1) {
+                    this.direction = -1;
+                }
+
+                // Update position
+                this.x += this.vx;
+
+                // Bounce off left and right aquarium walls
+                const crabExtent = this.size / 2;
+                if (this.x - crabExtent < aquariumBounds.left) {
+                    this.x = aquariumBounds.left + crabExtent;
+                    this.vx = Math.abs(this.vx);
+                    this.direction = 1;
+                }
+                if (this.x + crabExtent > aquariumBounds.right) {
+                    this.x = aquariumBounds.right - crabExtent;
+                    this.vx = -Math.abs(this.vx);
+                    this.direction = -1;
+                }
+            }
+
+            draw(ctx) {
+                if (this.imageLoaded) {
+                    ctx.save();
+                    ctx.translate(this.x, this.y);
+                    
+                    // Flip crab based on direction
+                    if (this.direction === -1) {
+                        ctx.scale(-1, 1);
+                    }
+                    
+                    ctx.drawImage(this.image, -this.size / 2, -this.size / 2, this.size, this.size);
+                    ctx.restore();
+                }
+            }
+        }
+
+        class Clownfish {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.vx = (Math.random() - 0.5) * 2;
+                this.vy = (Math.random() - 0.5) * 1;
+                this.size = 50;
+                this.image = new Image();
+                this.image.src = 'assets/images/clownfish.png';
+                this.imageLoaded = false;
+                this.image.onload = () => {
+                    this.imageLoaded = true;
+                };
+                this.direction = this.vx > 0 ? 1 : -1;
+                this.verticalTilt = 0;
+                this.targetFood = null;
+                this.awareness = 200;
+            }
+
+            findNearestFood(foods) {
+                let nearest = null;
+                let minDist = this.awareness;
+
+                for (let food of foods) {
+                    const dist = Math.hypot(food.x - this.x, food.y - this.y);
+                    if (dist < minDist) {
+                        nearest = food;
+                        minDist = dist;
+                    }
+                }
+                return nearest;
+            }
+
+            update(mouseX, mouseY, foods) {
+                // Check distance to mouse
+                const mouseDistX = mouseX - this.x;
+                const mouseDistY = mouseY - this.y;
+                const mouseDist = Math.hypot(mouseDistX, mouseDistY);
+
+                if (mouseDist < 150) {
+                    // Flee from mouse
+                    this.vx = -mouseDistX / mouseDist * 2;
+                    this.vy = -mouseDistY / mouseDist * 1.5;
+                } else {
+                    // Look for food
+                    this.targetFood = this.findNearestFood(foods);
+
+                    if (this.targetFood) {
+                        const dx = this.targetFood.x - this.x;
+                        const dy = this.targetFood.y - this.y;
+                        const dist = Math.hypot(dx, dy);
+
+                        // Move towards food
+                        this.vx = (dx / dist) * 2;
+                        this.vy = (dy / dist) * 1.5;
+
+                        // Check if eating
+                        if (dist < 20) {
+                            this.targetFood.eaten = true;
+                            this.targetFood = null;
+                        }
+                    } else {
+                        // Gentle wandering behavior
+                        if (Math.random() < 0.02) {
+                            this.vx = (Math.random() - 0.5) * 2;
+                            this.vy = (Math.random() - 0.5) * 1;
+                        }
+                    }
+                }
+
+                // Update direction based on velocity
+                if (this.vx > 0.1) {
+                    this.direction = 1;
+                } else if (this.vx < -0.1) {
+                    this.direction = -1;
+                }
+
+                // Update vertical tilt for up/down movement
+                if (Math.abs(this.vx) > 0.1) {
+                    this.verticalTilt = Math.atan(this.vy / Math.abs(this.vx)) * 0.5;
+                } else if (Math.abs(this.vy) > 0.1) {
+                    this.verticalTilt = Math.atan(this.vy / 0.1) * 0.5;
+                }
+
+                // Update position
+                this.x += this.vx;
+                this.y += this.vy;
+
+                // Account for clownfish size
+                const clownfishExtent = this.size / 2;
+                
+                // Bounce off left and right aquarium walls
+                if (this.x - clownfishExtent < aquariumBounds.left) {
+                    this.x = aquariumBounds.left + clownfishExtent;
+                    this.vx = Math.abs(this.vx);
+                }
+                if (this.x + clownfishExtent > aquariumBounds.right) {
+                    this.x = aquariumBounds.right - clownfishExtent;
+                    this.vx = -Math.abs(this.vx);
+                }
+                if (this.y - clownfishExtent < aquariumBounds.top) this.y = aquariumBounds.top + clownfishExtent;
+                if (this.y + clownfishExtent > aquariumBounds.bottom) this.y = aquariumBounds.bottom - clownfishExtent;
+            }
+
+            draw(ctx) {
+                if (this.imageLoaded) {
+                    ctx.save();
+                    ctx.translate(this.x, this.y);
+                    
+                    // Flip based on direction
+                    if (this.direction === -1) {
+                        ctx.scale(-1, 1);
+                    }
+                    
+                    // Apply vertical tilt for up/down movement
+                    ctx.rotate(this.verticalTilt);
+                    
+                    ctx.drawImage(this.image, -this.size / 2, -this.size / 2, this.size, this.size);
+                    ctx.restore();
+                }
+            }
+        }
+
+        class Bettafish {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.vx = (Math.random() - 0.5) * 2;
+                this.vy = (Math.random() - 0.5) * 1;
+                this.size = 55;
+                this.image = new Image();
+                this.image.src = 'assets/images/bettafish.png';
+                this.imageLoaded = false;
+                this.image.onload = () => {
+                    this.imageLoaded = true;
+                };
+                this.direction = this.vx > 0 ? 1 : -1;
+                this.verticalTilt = 0;
+                this.targetFood = null;
+                this.awareness = 200;
+            }
+
+            findNearestFood(foods) {
+                let nearest = null;
+                let minDist = this.awareness;
+
+                for (let food of foods) {
+                    const dist = Math.hypot(food.x - this.x, food.y - this.y);
+                    if (dist < minDist) {
+                        nearest = food;
+                        minDist = dist;
+                    }
+                }
+                return nearest;
+            }
+
+            update(mouseX, mouseY, foods) {
+                // Check distance to mouse
+                const mouseDistX = mouseX - this.x;
+                const mouseDistY = mouseY - this.y;
+                const mouseDist = Math.hypot(mouseDistX, mouseDistY);
+
+                if (mouseDist < 150) {
+                    // Flee from mouse
+                    this.vx = -mouseDistX / mouseDist * 2;
+                    this.vy = -mouseDistY / mouseDist * 1.5;
+                } else {
+                    // Look for food
+                    this.targetFood = this.findNearestFood(foods);
+
+                    if (this.targetFood) {
+                        const dx = this.targetFood.x - this.x;
+                        const dy = this.targetFood.y - this.y;
+                        const dist = Math.hypot(dx, dy);
+
+                        // Move towards food
+                        this.vx = (dx / dist) * 2;
+                        this.vy = (dy / dist) * 1.5;
+
+                        // Check if eating
+                        if (dist < 20) {
+                            this.targetFood.eaten = true;
+                            this.targetFood = null;
+                        }
+                    } else {
+                        // Gentle wandering behavior
+                        if (Math.random() < 0.02) {
+                            this.vx = (Math.random() - 0.5) * 2;
+                            this.vy = (Math.random() - 0.5) * 1;
+                        }
+                    }
+                }
+
+                // Update direction based on velocity
+                if (this.vx > 0.1) {
+                    this.direction = 1;
+                } else if (this.vx < -0.1) {
+                    this.direction = -1;
+                }
+
+                // Update vertical tilt for up/down movement
+                if (Math.abs(this.vx) > 0.1) {
+                    this.verticalTilt = Math.atan(this.vy / Math.abs(this.vx)) * 0.5;
+                } else if (Math.abs(this.vy) > 0.1) {
+                    this.verticalTilt = Math.atan(this.vy / 0.1) * 0.5;
+                }
+
+                // Update position
+                this.x += this.vx;
+                this.y += this.vy;
+
+                // Account for bettafish size
+                const bettafishExtent = this.size / 2;
+                
+                // Bounce off left and right aquarium walls
+                if (this.x - bettafishExtent < aquariumBounds.left) {
+                    this.x = aquariumBounds.left + bettafishExtent;
+                    this.vx = Math.abs(this.vx);
+                }
+                if (this.x + bettafishExtent > aquariumBounds.right) {
+                    this.x = aquariumBounds.right - bettafishExtent;
+                    this.vx = -Math.abs(this.vx);
+                }
+                if (this.y - bettafishExtent < aquariumBounds.top) this.y = aquariumBounds.top + bettafishExtent;
+                if (this.y + bettafishExtent > aquariumBounds.bottom) this.y = aquariumBounds.bottom - bettafishExtent;
+            }
+
+            draw(ctx) {
+                if (this.imageLoaded) {
+                    ctx.save();
+                    ctx.translate(this.x, this.y);
+                    
+                    // Flip based on direction
+                    if (this.direction === -1) {
+                        ctx.scale(-1, 1);
+                    }
+                    
+                    // Apply vertical tilt for up/down movement
+                    ctx.rotate(this.verticalTilt);
+                    
+                    ctx.drawImage(this.image, -this.size / 2, -this.size / 2, this.size, this.size);
+                    ctx.restore();
+                }
+            }
+        }
+
         // ============================================================================
         // GAME STATE
         // ============================================================================
 
-        let fishes = [];
         let foods = [];
         let bubbles = [];
         let plants = [];
         let shells = [];
         let jellyfish = [];
+        let crabs = [];
+        let clownfish = [];
+        let bettafish = [];
         let mouseX = canvas.width / 2;
         let mouseY = canvas.height / 2;
         let foodSpawned = 0;
 
         // Initialize scene
         function init() {
-            fishes = [];
             foods = [];
             bubbles = [];
             plants = [];
             shells = [];
             jellyfish = [];
-
-            // Create fish - keep them in the upper water area of aquarium
-            for (let i = 0; i < 8; i++) {
-                const x = Math.random() * (aquariumBounds.right - aquariumBounds.left) + aquariumBounds.left;
-                const y = Math.random() * (aquariumBounds.bottom * 0.6 - aquariumBounds.top) + aquariumBounds.top;
-                fishes.push(new Fish(x, y));
-            }
+            crabs = [];
+            clownfish = [];
+            bettafish = [];
 
             // Create jellyfish
             for (let i = 0; i < 3; i++) {
                 const x = Math.random() * (aquariumBounds.right - aquariumBounds.left) + aquariumBounds.left;
                 const y = Math.random() * (aquariumBounds.bottom - aquariumBounds.top) + aquariumBounds.top;
                 jellyfish.push(new Jellyfish(x, y));
+            }
+
+            // Create crabs on the ground
+            for (let i = 0; i < 1; i++) {
+                const x = Math.random() * (aquariumBounds.right - aquariumBounds.left) + aquariumBounds.left;
+                crabs.push(new Crab(x, aquariumBounds.bottom - 25));
+            }
+
+            // Create clownfish
+            for (let i = 0; i < 2; i++) {
+                const x = Math.random() * (aquariumBounds.right - aquariumBounds.left) + aquariumBounds.left;
+                const y = Math.random() * (aquariumBounds.bottom * 0.7 - aquariumBounds.top) + aquariumBounds.top;
+                clownfish.push(new Clownfish(x, y));
+            }
+
+            // Create bettafish
+            for (let i = 0; i < 1; i++) {
+                const x = Math.random() * (aquariumBounds.right - aquariumBounds.left) + aquariumBounds.left;
+                const y = Math.random() * (aquariumBounds.bottom * 0.65 - aquariumBounds.top) + aquariumBounds.top;
+                bettafish.push(new Bettafish(x, y));
             }
         }
 
@@ -626,11 +810,6 @@
         // ============================================================================
 
         function update() {
-            // Update fish
-            for (let fish of fishes) {
-                fish.update(mouseX, mouseY, foods);
-            }
-
             // Update food
             for (let i = foods.length - 1; i >= 0; i--) {
                 foods[i].update();
@@ -657,14 +836,29 @@
             for (let j of jellyfish) {
                 j.update(mouseX, mouseY);
             }
+
+            // Update crabs
+            for (let c of crabs) {
+                c.update(mouseX, mouseY);
+            }
+
+            // Update clownfish
+            for (let cf of clownfish) {
+                cf.update(mouseX, mouseY, foods);
+            }
+
+            // Update bettafish
+            for (let bf of bettafish) {
+                bf.update(mouseX, mouseY, foods);
+            }
         }
 
         function draw() {
-            // Draw background image
+            // Draw background video
             if (backgroundLoaded) {
-                ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+                ctx.drawImage(backgroundVideo, 0, 0, canvas.width, canvas.height);
             } else {
-                // Fallback gradient if image not loaded
+                // Fallback gradient if video not loaded
                 const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
                 gradient.addColorStop(0, 'rgba(26, 77, 109, 0.6)');
                 gradient.addColorStop(1, 'rgba(13, 42, 58, 0.8)');
@@ -687,9 +881,19 @@
                 j.draw(ctx);
             }
 
-            // Draw fish
-            for (let fish of fishes) {
-                fish.draw(ctx);
+            // Draw crabs
+            for (let c of crabs) {
+                c.draw(ctx);
+            }
+
+            // Draw clownfish
+            for (let cf of clownfish) {
+                cf.draw(ctx);
+            }
+
+            // Draw bettafish
+            for (let bf of bettafish) {
+                bf.draw(ctx);
             }
         }
 
