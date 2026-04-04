@@ -419,6 +419,13 @@
     line-height: 1; letter-spacing: 0.02em;
     margin-bottom: 60px;
   }
+  #typing-text {
+    display: inline-block;
+    min-width: 1ch;
+    height: 1.2em;
+    overflow: hidden;
+    vertical-align: text-bottom;
+  }
 
   /* About */
   .about { background: var(--surface); }
@@ -723,7 +730,7 @@
 <!-- ABOUT -->
 <section class="about" id="about">
   <div class="section-label reveal">Who I Am</div>
-  <div class="section-title reveal reveal-delay-1">Computer Science<br>Student.</div>
+  <div class="section-title reveal reveal-delay-1"><span id="typing-text">Computer Science Student.</span></div>
   <div class="about-grid">
     <div class="about-text reveal reveal-delay-1">
       <p>I'm <strong>Huzaifa Ahmad Awan</strong>, a passionate CS student at Universität des Saarlandes specializing in AI, System Programming, and Compiler Construction.</p>
@@ -929,6 +936,54 @@ interactiveElements.forEach(el => {
     ring.classList.remove('active');
   });
 });
+
+// Typing effect for roles
+const roles = [
+  'Software Engineer',
+  'Web Developer',
+  'Compiler Enthusiast',
+  'Full-Stack Developer',
+  'Code Architect',
+  'Tech Innovator',
+  'AI Enthusiast',
+  'Problem Solver',
+  'Computer Science Student'
+];
+let currentRoleIndex = 0;
+let isDeleting = false;
+let text = '';
+const typingElement = document.getElementById('typing-text');
+const typingSpeed = 100;
+const deletingSpeed = 50;
+const pauseTime = 2000;
+
+function typeEffect() {
+  const currentRole = roles[currentRoleIndex];
+  
+  if (!isDeleting && text.length < currentRole.length) {
+    text = currentRole.substring(0, text.length + 1);
+    typingElement.textContent = text;
+    setTimeout(typeEffect, typingSpeed);
+  } else if (isDeleting && text.length > 0) {
+    text = currentRole.substring(0, text.length - 1);
+    typingElement.textContent = text;
+    setTimeout(typeEffect, deletingSpeed);
+  } else if (!isDeleting && text.length === currentRole.length) {
+    // Pause before deleting
+    setTimeout(() => {
+      isDeleting = true;
+      typeEffect();
+    }, pauseTime);
+  } else if (isDeleting && text.length === 0) {
+    // Move to next role
+    isDeleting = false;
+    currentRoleIndex = (currentRoleIndex + 1) % roles.length;
+    setTimeout(typeEffect, 500);
+  }
+}
+
+// Start typing effect when page loads
+setTimeout(() => typeEffect(), 500);
 
 // Scroll reveal
 const obs = new IntersectionObserver(entries=>{
