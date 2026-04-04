@@ -86,18 +86,38 @@
     text-decoration: none;
   }
   .nav-logo span { color: var(--accent); }
-  .nav-links { display: flex; gap: 36px; list-style: none; }
+  .nav-secondary {
+    display: flex; gap: 24px; list-style: none; margin-left: 40px;
+  }
+  .nav-secondary a {
+    font-size: 12px; font-weight: 500; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--muted); text-decoration: none;
+    transition: color 0.2s; cursor: none;
+  }
+  .nav-secondary a:hover { color: var(--text); }
+  .nav-home {
+    font-size: 12px; font-weight: 500; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--muted); text-decoration: none;
+    transition: color 0.2s; cursor: none;
+  }
+  .nav-home:hover { color: var(--text); }
+  .external-indicator {
+    font-size: 10px; margin-left: 6px; display: inline-block;
+    transition: all 0.2s;
+  }
+  .nav-secondary a:hover .external-indicator { color: var(--accent); }
+  .nav-links { display: flex; gap: 36px; list-style: none; flex: 1; justify-content: center; margin: 0; }
   .nav-links a {
     font-size: 13px; font-weight: 500; letter-spacing: 0.08em;
     text-transform: uppercase; color: var(--muted); text-decoration: none;
-    transition: color 0.2s;
+    transition: color 0.2s; cursor: none;
   }
   .nav-links a:hover { color: var(--text); }
   .nav-cta {
     font-family: var(--mono); font-size: 12px;
     padding: 9px 20px; border: 1px solid var(--accent);
     color: var(--accent); text-decoration: none;
-    transition: background 0.2s, color 0.2s;
+    transition: background 0.2s, color 0.2s; cursor: none;
   }
   .nav-cta:hover { background: var(--accent); color: #000; }
 
@@ -108,7 +128,7 @@
     color: var(--muted);
     font-size: 18px;
     padding: 8px 10px;
-    cursor: pointer;
+    cursor: none;
     border-radius: 4px;
     display: flex;
     align-items: center;
@@ -344,14 +364,14 @@
     padding: 14px 32px; background: var(--accent); color: #000;
     text-decoration: none; transition: transform 0.2s, box-shadow 0.2s;
     display: inline-flex; align-items: center; gap: 10px;
-    border: none; cursor: pointer;
+    border: none; cursor: none;
   }
   .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(232,255,71,0.3); }
   .btn-ghost {
     font-family: var(--mono); font-size: 13px;
     padding: 14px 32px; border: 1px solid var(--border);
     color: var(--muted); text-decoration: none;
-    transition: border-color 0.2s, color 0.2s;
+    transition: border-color 0.2s, color 0.2s; cursor: none;
   }
   .btn-ghost:hover { border-color: var(--text); color: var(--text); }
 
@@ -452,7 +472,7 @@
     align-items: center; gap: 32px;
     padding: 32px 0;
     border-bottom: 1px solid var(--border);
-    cursor: pointer; text-decoration: none; color: var(--text);
+    cursor: none; text-decoration: none; color: var(--text);
     position: relative; overflow: hidden;
     transition: padding-left 0.3s;
   }
@@ -525,7 +545,7 @@
     padding: 12px 28px; border: 1px solid var(--border);
     color: var(--muted); text-decoration: none;
     display: flex; align-items: center; gap: 8px;
-    transition: all 0.2s;
+    transition: all 0.2s; cursor: none;
   }
   .contact-link:hover { border-color: var(--accent2); color: var(--accent2); }
   .contact-link.primary { border-color: var(--accent); color: var(--accent); }
@@ -592,7 +612,14 @@
 
 <!-- NAV -->
 <nav>
-  <a class="nav-logo" href="#">H<span>.</span>Awan</a>
+  <div style="display: flex; align-items: center;">
+    <a class="nav-logo" href="#">H<span>.</span>Awan</a>
+    <ul class="nav-secondary">
+      <li><a class="nav-home" href="#hero">Home</a></li>
+      <li><a href="https://linkedin.com" target="_blank">LinkedIn<span class="external-indicator">↗</span></a></li>
+      <li><a href="./assets/documents/resume.pdf" target="_blank">Resume<span class="external-indicator">↗</span></a></li>
+    </ul>
+  </div>
   <ul class="nav-links">
     <li><a href="#about">About</a></li>
     <li><a href="#projects">Projects</a></li>
