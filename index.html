@@ -1,206 +1,700 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Huzaifa Ahmad Awan - Portfolio</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Huzaifa Ahmad Awan — Computer Science Student</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0c0c0e;
+    --surface: #111115;
+    --surface2: #18181f;
+    --border: rgba(255,255,255,0.07);
+    --accent: #e8ff47;
+    --accent2: #47c8ff;
+    --text: #f0f0f5;
+    --muted: #7070a0;
+    --display: 'Bebas Neue', sans-serif;
+    --body: 'DM Sans', sans-serif;
+    --mono: 'DM Mono', monospace;
+  }
+
+  :root.light-mode {
+    --bg: #f8f9fa;
+    --surface: #eff1f5;
+    --surface2: #e8ecf1;
+    --border: rgba(0,0,0,0.1);
+    --accent: #c9d620;
+    --accent2: #0ea5e9;
+    --text: #1a1a1e;
+    --muted: #5a5a7a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--body);
+    font-size: 16px;
+    line-height: 1.6;
+    overflow-x: hidden;
+    cursor: none;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  /* Custom cursor */
+  .cursor {
+    position: fixed; width: 10px; height: 10px;
+    background: var(--accent); border-radius: 50%;
+    pointer-events: none; z-index: 9999;
+    transform: translate(-50%,-50%);
+    transition: transform 0.1s, width 0.2s, height 0.2s, background 0.2s;
+    mix-blend-mode: difference;
+  }
+  .cursor-ring {
+    position: fixed; width: 36px; height: 36px;
+    border: 1.5px solid rgba(232,255,71,0.5); border-radius: 50%;
+    pointer-events: none; z-index: 9998;
+    transform: translate(-50%,-50%);
+    transition: transform 0.18s ease-out, width 0.25s, height 0.25s, border-color 0.2s;
+  }
+  body:has(a:hover) .cursor { width: 16px; height: 16px; }
+  body:has(a:hover) .cursor-ring { width: 50px; height: 50px; border-color: var(--accent); }
+
+  /* Nav */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 48px;
+    backdrop-filter: blur(12px);
+    background: rgba(12,12,14,0.7);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    font-family: var(--display);
+    font-size: 24px;
+    letter-spacing: 0.05em;
+    color: var(--text);
+    text-decoration: none;
+  }
+  .nav-logo span { color: var(--accent); }
+  .nav-links { display: flex; gap: 36px; list-style: none; }
+  .nav-links a {
+    font-size: 13px; font-weight: 500; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--muted); text-decoration: none;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--text); }
+  .nav-cta {
+    font-family: var(--mono); font-size: 12px;
+    padding: 9px 20px; border: 1px solid var(--accent);
+    color: var(--accent); text-decoration: none;
+    transition: background 0.2s, color 0.2s;
+  }
+  .nav-cta:hover { background: var(--accent); color: #000; }
+
+  /* Theme toggle button */
+  .theme-toggle {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 18px;
+    padding: 8px 10px;
+    cursor: pointer;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    font-family: var(--mono);
+  }
+  .theme-toggle:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* Hero */
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-rows: 1fr auto;
+    padding: 0 48px;
+    padding-top: 100px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-bg-text {
+    position: absolute; bottom: -60px; left: -10px;
+    font-family: var(--display);
+    font-size: clamp(120px, 20vw, 260px);
+    line-height: 1;
+    color: rgba(255,255,255,0.025);
+    pointer-events: none; user-select: none;
+    white-space: nowrap;
+  }
+
+  .hero-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    max-width: 900px;
+    padding: 60px 0 40px;
+    animation: fadeUp 0.8s ease both;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: var(--mono); font-size: 12px; letter-spacing: 0.1em;
+    color: var(--accent); margin-bottom: 28px;
+    animation: fadeUp 0.8s 0.1s ease both;
+  }
+  .badge-dot {
+    width: 8px; height: 8px; background: #10b981; border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.8)} }
+
+  .hero-title {
+    font-family: var(--display);
+    font-size: clamp(64px, 10vw, 130px);
+    line-height: 0.95;
+    letter-spacing: -0.01em;
+    margin-bottom: 32px;
+    animation: fadeUp 0.8s 0.2s ease both;
+  }
+  .hero-title .line { display: block; }
+  .hero-title .accent { color: var(--accent); }
+  .hero-title .stroke {
+    -webkit-text-stroke: 2px rgba(255,255,255,0.3);
+    color: transparent;
+  }
+
+  .hero-sub {
+    font-size: 18px; font-weight: 300; color: var(--muted);
+    max-width: 500px; margin-bottom: 48px;
+    animation: fadeUp 0.8s 0.3s ease both;
+    line-height: 1.7;
+  }
+  .hero-sub strong { color: var(--text); font-weight: 500; }
+
+  .hero-actions {
+    display: flex; gap: 16px; align-items: center;
+    animation: fadeUp 0.8s 0.4s ease both;
+  }
+  .btn-primary {
+    font-family: var(--mono); font-size: 13px; font-weight: 500;
+    padding: 14px 32px; background: var(--accent); color: #000;
+    text-decoration: none; transition: transform 0.2s, box-shadow 0.2s;
+    display: inline-flex; align-items: center; gap: 10px;
+    border: none; cursor: pointer;
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(232,255,71,0.3); }
+  .btn-ghost {
+    font-family: var(--mono); font-size: 13px;
+    padding: 14px 32px; border: 1px solid var(--border);
+    color: var(--muted); text-decoration: none;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .btn-ghost:hover { border-color: var(--text); color: var(--text); }
+
+  .hero-bottom {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 28px 0;
+    border-top: 1px solid var(--border);
+    animation: fadeUp 0.8s 0.5s ease both;
+  }
+  .hero-stats { display: flex; gap: 48px; }
+  .hero-stat-n { font-family: var(--display); font-size: 40px; color: var(--text); }
+  .hero-stat-l { font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+  .hero-scroll {
+    display: flex; align-items: center; gap: 10px;
+    font-family: var(--mono); font-size: 11px; color: var(--muted);
+    letter-spacing: 0.1em; text-transform: uppercase;
+  }
+  .scroll-line {
+    width: 40px; height: 1px; background: var(--muted);
+    position: relative; overflow: hidden;
+  }
+  .scroll-line::after {
+    content: ''; position: absolute; top: 0; left: -100%;
+    width: 100%; height: 100%; background: var(--accent);
+    animation: scrollLine 2s infinite;
+  }
+  @keyframes scrollLine { 0%{left:-100%} 100%{left:100%} }
+
+  /* Sections */
+  section { padding: 120px 48px; }
+  .section-label {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.15em;
+    text-transform: uppercase; color: var(--accent);
+    display: flex; align-items: center; gap: 14px; margin-bottom: 24px;
+  }
+  .section-label::before { content:''; flex: 0 0 30px; height: 1px; background: var(--accent); }
+  .section-title {
+    font-family: var(--display);
+    font-size: clamp(48px, 6vw, 84px);
+    line-height: 1; letter-spacing: 0.02em;
+    margin-bottom: 60px;
+  }
+
+  /* About */
+  .about { background: var(--surface); }
+  .about-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 80px;
+    align-items: start;
+  }
+  .about-text p { color: var(--muted); line-height: 1.9; margin-bottom: 20px; font-size: 17px; }
+  .about-text p strong { color: var(--text); }
+  .about-pillars { display: flex; flex-direction: column; gap: 1px; }
+  .pillar {
+    padding: 28px 32px;
+    background: var(--surface2);
+    border-left: 3px solid transparent;
+    transition: border-color 0.2s, background 0.2s;
+    cursor: default;
+  }
+  .pillar:hover { border-left-color: var(--accent); background: rgba(232,255,71,0.04); }
+  .pillar-title { font-family: var(--display); font-size: 22px; margin-bottom: 6px; }
+  .pillar-text { font-size: 14px; color: var(--muted); }
+
+  /* Services/Skills */
+  .services-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1px; background: var(--border); }
+  .service {
+    background: var(--bg); padding: 40px 36px;
+    position: relative; overflow: hidden;
+    transition: background 0.3s;
+  }
+  .service::before {
+    content: ''; position: absolute; top: 0; left: 0;
+    width: 100%; height: 3px; background: var(--accent);
+    transform: scaleX(0); transform-origin: left;
+    transition: transform 0.3s;
+  }
+  .service:hover { background: var(--surface); }
+  .service:hover::before { transform: scaleX(1); }
+  .service-num {
+    font-family: var(--mono); font-size: 12px; color: var(--accent);
+    letter-spacing: 0.1em; margin-bottom: 24px;
+  }
+  .service-title { font-family: var(--display); font-size: 30px; margin-bottom: 12px; }
+  .service-text { font-size: 14px; color: var(--muted); line-height: 1.8; }
+  .service-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+  .tag {
+    font-family: var(--mono); font-size: 11px; padding: 4px 10px;
+    border: 1px solid var(--border); color: var(--muted);
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .service:hover .tag { border-color: rgba(232,255,71,0.3); color: var(--text); }
+
+  /* Projects */
+  .projects { background: var(--surface); }
+  .projects-list { display: flex; flex-direction: column; gap: 1px; }
+  .project {
+    display: grid; grid-template-columns: 60px 1fr auto;
+    align-items: center; gap: 32px;
+    padding: 32px 0;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer; text-decoration: none; color: var(--text);
+    position: relative; overflow: hidden;
+    transition: padding-left 0.3s;
+  }
+  .project::after {
+    content: ''; position: absolute; inset: 0;
+    background: rgba(232,255,71,0.03);
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .project:hover { padding-left: 16px; }
+  .project:hover::after { opacity: 1; }
+  .project-num { font-family: var(--mono); font-size: 13px; color: var(--muted); }
+  .project-info {}
+  .project-title { font-family: var(--display); font-size: 32px; line-height: 1; margin-bottom: 6px; transition: color 0.2s; }
+  .project:hover .project-title { color: var(--accent); }
+  .project-desc { font-size: 13px; color: var(--muted); }
+  .project-stack { display: flex; gap: 8px; flex-wrap: wrap; }
+  .project-tag {
+    font-family: var(--mono); font-size: 11px; padding: 4px 10px;
+    background: var(--surface2); color: var(--muted);
+  }
+  .project-arrow {
+    font-size: 20px; color: var(--muted);
+    transition: transform 0.2s, color 0.2s;
+  }
+  .project:hover .project-arrow { transform: translate(4px,-4px); color: var(--accent); }
+
+  /* Tech stack */
+  .stack-wrap { overflow: hidden; position: relative; padding: 0; }
+  .stack-track {
+    display: flex; gap: 0; width: max-content;
+    animation: marquee 22s linear infinite;
+  }
+  .stack-track:hover { animation-play-state: paused; }
+  @keyframes marquee { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+  .stack-item {
+    padding: 20px 36px; border-right: 1px solid var(--border);
+    font-family: var(--mono); font-size: 13px; white-space: nowrap;
+    color: var(--muted); transition: color 0.2s, background 0.2s;
+    cursor: default;
+  }
+  .stack-item:hover { color: var(--accent); background: rgba(232,255,71,0.04); }
+  .stack-item span { color: var(--accent); margin-right: 8px; }
+
+  /* Contact */
+  .contact {
+    text-align: center;
+    background: linear-gradient(to bottom, var(--bg), #0a0e14);
+    position: relative; overflow: hidden;
+  }
+  .contact-bg {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 50% 120%, rgba(71,200,255,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .contact-title {
+    font-family: var(--display);
+    font-size: clamp(72px, 12vw, 160px);
+    line-height: 0.9; margin-bottom: 40px;
+    position: relative;
+  }
+  .contact-title .ghost {
+    display: block;
+    -webkit-text-stroke: 1px rgba(255,255,255,0.1);
+    color: transparent;
+  }
+  .contact-sub { font-size: 17px; color: var(--muted); max-width: 440px; margin: 0 auto 48px; }
+  .contact-links { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; }
+  .contact-link {
+    font-family: var(--mono); font-size: 13px;
+    padding: 12px 28px; border: 1px solid var(--border);
+    color: var(--muted); text-decoration: none;
+    display: flex; align-items: center; gap: 8px;
+    transition: all 0.2s;
+  }
+  .contact-link:hover { border-color: var(--accent2); color: var(--accent2); }
+  .contact-link.primary { border-color: var(--accent); color: var(--accent); }
+  .contact-link.primary:hover { background: var(--accent); color: #000; }
+
+  /* Footer */
+  footer {
+    padding: 28px 48px;
+    border-top: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    font-family: var(--mono); font-size: 12px; color: var(--muted);
+  }
+
+  /* Reveal animation */
+  .reveal {
+    opacity: 0; transform: translateY(40px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+
+  @media (max-width: 768px) {
+    nav { padding: 20px 24px; }
+    .nav-links { gap: 20px; }
+    .hero { padding: 0 24px; padding-top: 80px; }
+    section { padding: 80px 24px; }
+    .about-grid { grid-template-columns: 1fr; gap: 40px; }
+    .services-grid { grid-template-columns: 1fr; }
+    .hero-bottom { flex-direction: column; gap: 20px; }
+    .hero-stats { gap: 30px; }
+  }
+</style>
 </head>
 <body>
-    <!-- Welcome Screen -->
-    <div class="welcome-screen" id="welcomeScreen">
-        <!-- Full Screen Background Image -->
-        <div class="welcome-background" style="background-image: url('./Pictures/Pic14.jpeg');"></div>
-        
-        <!-- Dark Overlay for Better Text Visibility -->
-        <div class="welcome-overlay"></div>
-        
-        <!-- Aquarium Icon Link -->
-        <a href="aquarium.html" class="aquarium-icon" title="Visit My Aquarium!">
-            <img src="assets/images/aquarium/fishIcon.png" alt="Fish Icon" class="fish-head">
-            <div class="aquarium-label">Visit My Aquarium</div>
-        </a>
-        
-        <!-- Interactive Banner -->
-        <div class="welcome-banner" id="welcomeBanner">
-            <div class="banner-content">
-                <p class="banner-intro">Hi there, I'm</p>
-                <h1 class="banner-name" id="bannerName">Huzaifa Ahmad Awan</h1>
-                <p class="banner-subtitle">Click to explore</p>
-            </div>
-        </div>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#">H<span>.</span>Awan</a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <div style="display: flex; gap: 12px; align-items: center;">
+    <button class="theme-toggle" id="themeToggle" title="Toggle dark/light mode">🌙</button>
+    <a class="nav-cta" href="#contact">Get In Touch →</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div class="hero-bg-text">AWAN</div>
+  <div class="hero-content">
+    <div class="hero-badge"><div class="badge-dot"></div><span style="color: #10b981;">Open to internships & collaborations</span></div>
+    <h1 class="hero-title">
+      <span class="line">AI Enthusiast</span>
+      <span class="line stroke">building</span>
+      <span class="line accent">intelligent solutions.</span>
+    </h1>
+    <p class="hero-sub">
+      Computer Science student at Universität des Saarlandes, specializing in <strong>AI, System Programming, and Compiler Construction</strong>.
+      Driven by curiosity to solve complex problems through innovative technology.
+    </p>
+    <div class="hero-actions">
+      <a class="btn-primary" href="#projects">View My Work <span>↗</span></a>
+      <a class="btn-ghost" href="#about">Learn More</a>
     </div>
-
-    <!-- Introduction Screen -->
-    <div class="intro-screen" id="introScreen" style="display: none;">
-        <div class="intro-container">
-            <button class="back-btn" id="backBtn" title="Back to welcome">
-                <i class="fas fa-arrow-left"></i>
-            </button>
-            <div class="intro-content">
-                <h1>About Me</h1>
-                <p id="introText"></p>
-                <button class="continue-btn" id="continueBtn">
-                    <span>Explore My Portfolio</span>
-                    <i class="fas fa-arrow-right"></i>
-                </button>
-            </div>
-        </div>
+  </div>
+  <div class="hero-bottom">
+    <div class="hero-stats">
+      <div>
+        <div class="hero-stat-n">4+</div>
+        <div class="hero-stat-l">Major Projects</div>
+      </div>
+      <div>
+        <div class="hero-stat-n">2</div>
+        <div class="hero-stat-l">Years at University</div>
+      </div>
+      <div>
+        <div class="hero-stat-n">12</div>
+        <div class="hero-stat-l">Technical Skills</div>
+      </div>
     </div>
-
-    <!-- Main Portfolio (Hidden Initially) -->
-    <div class="portfolio-main" id="portfolioMain" style="display: none;">
-    
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="container">
-            <div class="nav-wrapper">
-                <div class="logo">
-                    <span class="logo-text">HAA</span>
-                </div>
-                <ul class="nav-menu" id="navMenu">
-                    <li><a href="#home">Home</a></li>
-                    <li><a href="#about">About</a></li>
-                    <li><a href="#projects">Projects</a></li>
-                    <li><a href="#cv">CV</a></li>
-                    <li><a href="#contact">Contact</a></li>
-                </ul>
-                <div class="hamburger" id="hamburger">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Hero Section -->
-    <section id="home" class="hero">
-        <div class="stars"></div>
-        <div class="container">
-            <div class="hero-content">
-                <h1 class="hero-title">Welcome Back</h1>
-                <p class="hero-subtitle">Explore my work, projects, and journey</p>
-                <div class="hero-buttons">
-                    <a href="#projects" class="btn btn-primary">View My Work</a>
-                    <a href="#contact" class="btn btn-secondary">Let's Connect</a>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- About Section -->
-    <section id="about" class="about">
-        <div class="container">
-            <h2 class="section-title">About Me</h2>
-            <div class="about-content">
-                <div class="about-text">
-                    <p id="aboutText"></p>
-                    <div class="skills-section">
-                        <h3>Technical Skills</h3>
-                        <div class="skills-grid" id="skillsGrid"></div>
-                    </div>
-                    <div class="skills-section">
-                        <h3>Languages</h3>
-                        <div class="skills-grid" id="languagesGrid">
-                            <div class="skill-tag">Deutsch (Native)</div>
-                            <div class="skill-tag">English (Fluent)</div>
-                            <div class="skill-tag">Urdu (Proficient)</div>
-                            <div class="skill-tag">Hindi (Proficient)</div>
-                            <div class="skill-tag">Punjabi (Proficient)</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Projects Section -->
-    <section id="projects" class="projects">
-        <div class="container">
-            <h2 class="section-title">My Projects</h2>
-            <div class="filter-buttons">
-                <button class="filter-btn active" data-filter="all">All</button>
-                <button class="filter-btn" data-filter="ai">AI/ML</button>
-                <button class="filter-btn" data-filter="other">System & Compiler</button>
-            </div>
-            <div class="projects-grid" id="projectsGrid"></div>
-        </div>
-    </section>
-
-    <!-- CV Section -->
-    <section id="cv" class="cv">
-        <div class="container">
-            <h2 class="section-title">My Journey</h2>
-            <div class="cv-content">
-                <div class="cv-download">
-                    <a href="#" id="cvDownload" class="btn btn-primary" download>
-                        <i class="fas fa-download"></i> Download CV
-                    </a>
-                </div>
-                <div class="experience-section">
-                    <h3>Experience</h3>
-                    <div class="timeline" id="experienceTimeline"></div>
-                </div>
-                <div class="education-section">
-                    <h3>Education</h3>
-                    <div class="timeline" id="educationTimeline"></div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Contact Section -->
-    <section id="contact" class="contact">
-        <div class="container">
-            <h2 class="section-title">Get In Touch</h2>
-            <div class="contact-content">
-                <form class="contact-form" id="contactForm">
-                    <div class="form-group">
-                        <input type="text" placeholder="Your Name" required>
-                    </div>
-                    <div class="form-group">
-                        <input type="email" placeholder="Your Email" required>
-                    </div>
-                    <div class="form-group">
-                        <input type="text" placeholder="Subject" required>
-                    </div>
-                    <div class="form-group">
-                        <textarea placeholder="Message" rows="5" required></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Send Message</button>
-                </form>
-                <div class="contact-info">
-                    <h3>Contact Information</h3>
-                    <div class="contact-links" id="contactLinks"></div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <p>&copy; <span id="year"></span> Huzaifa Ahmad Awan. All rights reserved.</p>
-            <div class="social-links" id="socialLinks"></div>
-        </div>
-    </footer>
-
-    <!-- Modal for Project Details -->
-    <div class="modal" id="projectModal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <div class="modal-body" id="modalBody"></div>
-        </div>
+    <div class="hero-scroll">
+      <div class="scroll-line"></div>Scroll to explore
     </div>
+  </div>
+</section>
 
-    </div> <!-- End portfolio-main -->
+<!-- TECH MARQUEE -->
+<div class="stack-wrap">
+  <div class="stack-track">
+    <div class="stack-item"><span>01</span>Python</div>
+    <div class="stack-item"><span>02</span>C++</div>
+    <div class="stack-item"><span>03</span>Java</div>
+    <div class="stack-item"><span>04</span>C</div>
+    <div class="stack-item"><span>05</span>Machine Learning</div>
+    <div class="stack-item"><span>06</span>Artificial Intelligence</div>
+    <div class="stack-item"><span>07</span>System Programming</div>
+    <div class="stack-item"><span>08</span>Compiler Construction</div>
+    <div class="stack-item"><span>09</span>RISC-V Assembly</div>
+    <div class="stack-item"><span>10</span>Django</div>
+    <div class="stack-item"><span>11</span>SQL</div>
+    <div class="stack-item"><span>12</span>Git</div>
+    <div class="stack-item"><span>01</span>Python</div>
+    <div class="stack-item"><span>02</span>C++</div>
+    <div class="stack-item"><span>03</span>Java</div>
+    <div class="stack-item"><span>04</span>C</div>
+    <div class="stack-item"><span>05</span>Machine Learning</div>
+    <div class="stack-item"><span>06</span>Artificial Intelligence</div>
+    <div class="stack-item"><span>07</span>System Programming</div>
+    <div class="stack-item"><span>08</span>Compiler Construction</div>
+    <div class="stack-item"><span>09</span>RISC-V Assembly</div>
+    <div class="stack-item"><span>10</span>Django</div>
+    <div class="stack-item"><span>11</span>SQL</div>
+    <div class="stack-item"><span>12</span>Git</div>
+  </div>
+</div>
 
-    <script src="data.js"></script>
-    <script src="script.js"></script>
+<!-- ABOUT -->
+<section class="about" id="about">
+  <div class="section-label reveal">Who I Am</div>
+  <div class="section-title reveal reveal-delay-1">Computer Science<br>Student.</div>
+  <div class="about-grid">
+    <div class="about-text reveal reveal-delay-1">
+      <p>I'm <strong>Huzaifa Ahmad Awan</strong>, a passionate CS student at Universität des Saarlandes specializing in AI, System Programming, and Compiler Construction.</p>
+      <p>I don't just learn theory — I <strong>build and implement</strong> solutions. From low-level RISC-V system programming to advanced AI heuristics, I thrive on solving <strong>complex technical problems</strong>.</p>
+      <p>Driven by curiosity, I explore the frontier of what's technically possible. I excel in competitive environments and <strong>deliver high-quality solutions under pressure</strong>.</p>
+      <p>Currently based in <strong>Saarbrücken, Germany</strong>. Looking for internships and collaborations on challenging AI and systems projects.</p>
+    </div>
+    <div class="about-pillars reveal reveal-delay-2">
+      <div class="pillar">
+        <div class="pillar-title">Artificial Intelligence</div>
+        <div class="pillar-text">Deep understanding of AI algorithms, heuristics, and planning systems. Pattern databases, machine learning, and optimization.</div>
+      </div>
+      <div class="pillar">
+        <div class="pillar-title">System Programming</div>
+        <div class="pillar-text">Low-level systems expertise: RISC-V assembly, interrupt handling, process scheduling, and memory management.</div>
+      </div>
+      <div class="pillar">
+        <div class="pillar-title">Compiler Construction</div>
+        <div class="pillar-text">Full compiler pipeline: Lexing, parsing, semantic analysis, and code generation. Deep understanding of language design.</div>
+      </div>
+      <div class="pillar">
+        <div class="pillar-title">Problem Solving</div>
+        <div class="pillar-text">Strong foundation in algorithms, data structures, and mathematics. Delivering clean, efficient, and scalable code.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section class="projects" id="projects">
+  <div class="section-label reveal">Portfolio</div>
+  <div class="section-title reveal reveal-delay-1">Projects.</div>
+  <div class="projects-list">
+    <a class="project reveal" href="#">
+      <div class="project-num">01</div>
+      <div class="project-info">
+        <div class="project-title">C Compiler Implementation</div>
+        <div class="project-desc">Comprehensive compiler for a subset of C with complete pipeline from lexing to code generation.</div>
+        <div class="project-stack" style="margin-top:10px;">
+          <span class="project-tag">C++</span><span class="project-tag">Compilers</span><span class="project-tag">Algorithms</span>
+        </div>
+      </div>
+      <div class="project-arrow">↗</div>
+    </a>
+    <a class="project reveal reveal-delay-1" href="#">
+      <div class="project-num">02</div>
+      <div class="project-info">
+        <div class="project-title">AI Planning with Heuristics</div>
+        <div class="project-desc">Advanced heuristic algorithms (PDB, Cliques) for classical planning tasks with optimal distance estimation.</div>
+        <div class="project-stack" style="margin-top:10px;">
+          <span class="project-tag">Python</span><span class="project-tag">AI</span><span class="project-tag">Algorithms</span>
+        </div>
+      </div>
+      <div class="project-arrow">↗</div>
+    </a>
+    <a class="project reveal reveal-delay-2" href="#">
+      <div class="project-num">03</div>
+      <div class="project-info">
+        <div class="project-title">RISC-V System Programming</div>
+        <div class="project-desc">Low-level systems with interrupts, exceptions, and CPU scheduling (Round-Robin, STCF) for up to 8 processes.</div>
+        <div class="project-stack" style="margin-top:10px;">
+          <span class="project-tag">RISC-V</span><span class="project-tag">Assembly</span><span class="project-tag">Systems</span>
+        </div>
+      </div>
+      <div class="project-arrow">↗</div>
+    </a>
+    <a class="project reveal reveal-delay-3" href="#">
+      <div class="project-num">04</div>
+      <div class="project-info">
+        <div class="project-title">Fame Profiles Social Network</div>
+        <div class="project-desc">Big Data integration with Django: API development, simulated profiles, and behavioral analysis at scale.</div>
+        <div class="project-stack" style="margin-top:10px;">
+          <span class="project-tag">Django</span><span class="project-tag">Python</span><span class="project-tag">Big Data</span>
+        </div>
+      </div>
+      <div class="project-arrow">↗</div>
+    </a>
+  </div>
+</section>
+
+<!-- SKILLS SECTION -->
+<section style="padding:120px 48px; background: var(--bg);" id="skills">
+  <div class="section-label reveal">Expertise</div>
+  <div class="section-title reveal reveal-delay-1">Technical Skills.</div>
+  <div class="services-grid reveal reveal-delay-2">
+    <div class="service">
+      <div class="service-num">01 —</div>
+      <div class="service-title">Programming</div>
+      <div class="service-text">Multi-language expertise with strong foundation in C, C++, Java, and Python. Proficient in building everything from compilers to web applications.</div>
+      <div class="service-tags">
+        <span class="tag">C</span><span class="tag">C++</span><span class="tag">Java</span><span class="tag">Python</span>
+      </div>
+    </div>
+    <div class="service">
+      <div class="service-num">02 —</div>
+      <div class="service-title">AI & Algorithms</div>
+      <div class="service-text">Deep expertise in machine learning, AI planning, heuristics, and advanced algorithms. Data structures and optimization.</div>
+      <div class="service-tags">
+        <span class="tag">Machine Learning</span><span class="tag">AI Planning</span><span class="tag">Algorithms</span>
+      </div>
+    </div>
+    <div class="service">
+      <div class="service-num">03 —</div>
+      <div class="service-title">System Programming</div>
+      <div class="service-text">Low-level systems knowledge: RISC-V assembly, interrupt handling, memory management, process scheduling, and architecture.</div>
+      <div class="service-tags">
+        <span class="tag">RISC-V</span><span class="tag">Assembly</span><span class="tag">Systems</span><span class="tag">Architecture</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact" id="contact">
+  <div class="contact-bg"></div>
+  <div class="section-label reveal" style="justify-content:center;">Connect With Me</div>
+  <div class="contact-title reveal reveal-delay-1">
+    Let's build<br>
+    <span class="ghost">something great.</span>
+  </div>
+  <p class="contact-sub reveal reveal-delay-2">Interested in collaborations, internships, or discussing AI & systems projects? I'd love to hear from you.</p>
+  <div class="contact-links reveal reveal-delay-3">
+    <a class="contact-link primary" href="mailto:awan2104.huzaifaahmad@gmail.com">✉ Email</a>
+    <a class="contact-link" href="https://linkedin.com" target="_blank">in LinkedIn</a>
+    <a class="contact-link" href="https://github.com/HuzAwan21" target="_blank">⌥ GitHub</a>
+    <a class="contact-link" href="tel:+49 1522 9947701" target="_blank">☎ +49 1522 9947701</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span>© 2025 Huzaifa Ahmad Awan</span>
+  <span>Computer Science Student — Saarbrücken, Germany</span>
+  <span style="color: var(--accent);">Open for opportunities ✦</span>
+</footer>
+
+<script>
+// Cursor
+const cursor = document.getElementById('cursor');
+const ring = document.getElementById('cursorRing');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cursor.style.left=mx+'px';cursor.style.top=my+'px';});
+function animRing(){rx+=(mx-rx)*0.12;ry+=(my-ry)*0.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(animRing);}
+animRing();
+
+// Scroll reveal
+const obs = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('visible'); });
+},{threshold:0.12});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+// Nav transparency
+window.addEventListener('scroll',()=>{
+  const nav=document.querySelector('nav');
+  const isDark = !document.documentElement.classList.contains('light-mode');
+  nav.style.background=window.scrollY>60?(isDark?'rgba(12,12,14,0.95)':'rgba(248,249,250,0.95)'):(isDark?'rgba(12,12,14,0.7)':'rgba(248,249,250,0.7)');
+});
+
+// Theme toggle
+const themeToggle = document.getElementById('themeToggle');
+const htmlElement = document.documentElement;
+
+// Initialize theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'dark';
+if (savedTheme === 'light') {
+  htmlElement.classList.add('light-mode');
+  themeToggle.textContent = '☀️';
+} else {
+  htmlElement.classList.remove('light-mode');
+  themeToggle.textContent = '🌙';
+}
+
+// Handle theme toggle
+themeToggle.addEventListener('click', () => {
+  htmlElement.classList.toggle('light-mode');
+  const isLight = htmlElement.classList.contains('light-mode');
+  localStorage.setItem('theme', isLight ? 'light' : 'dark');
+  themeToggle.textContent = isLight ? '☀️' : '🌙';
+  
+  // Update nav background immediately
+  const nav = document.querySelector('nav');
+  if (window.scrollY > 60) {
+    nav.style.background = isLight ? 'rgba(248,249,250,0.95)' : 'rgba(12,12,14,0.95)';
+  } else {
+    nav.style.background = isLight ? 'rgba(248,249,250,0.7)' : 'rgba(12,12,14,0.7)';
+  }
+});
+</script>
 </body>
 </html>
