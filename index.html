@@ -27,7 +27,7 @@
     --surface: #eff1f5;
     --surface2: #e8ecf1;
     --border: rgba(0,0,0,0.1);
-    --accent: #c9d620;
+    --accent: #20c997;
     --accent2: #0ea5e9;
     --text: #1a1a1e;
     --muted: #5a5a7a;
@@ -331,9 +331,17 @@
     color: var(--accent); margin-bottom: 28px;
     animation: fadeUp 0.8s 0.1s ease both;
   }
+  :root.light-mode .hero-badge span {
+    color: #ffd700 !important;
+    text-shadow: 0 0 8px rgba(255, 215, 0, 0.4), 0 0 16px rgba(255, 215, 0, 0.2);
+  }
   .badge-dot {
     width: 8px; height: 8px; background: #10b981; border-radius: 50%;
     animation: pulse 2s infinite;
+  }
+  :root.light-mode .badge-dot {
+    background: #ffd700;
+    box-shadow: 0 0 8px rgba(255, 215, 0, 0.4), 0 0 12px rgba(255, 215, 0, 0.2);
   }
   @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.8)} }
 
@@ -663,6 +671,10 @@
     position: absolute;
     inset: 0;
     background: rgba(255,255,255,0.14);
+  }
+
+  :root.light-mode .edu-line-track {
+    background: rgba(0,0,0,0.15);
   }
 
   /* The fill that draws downward as you scroll */
@@ -1102,6 +1114,17 @@
       </div>
       <div class="project-arrow">↗</div>
     </a>
+    <a class="project reveal reveal-delay-2" href="javascript:void(0)" onclick="openRPSGame()">
+      <div class="project-num">05</div>
+      <div class="project-info">
+        <div class="project-title">Rock Paper Scissors Game</div>
+        <div class="project-desc">Interactive web-based game with real-time scoring and smooth animations. Built with vanilla JavaScript.</div>
+        <div class="project-stack" style="margin-top:10px;">
+          <span class="project-tag">HTML</span><span class="project-tag">CSS</span><span class="project-tag">JavaScript</span>
+        </div>
+      </div>
+      <div class="project-arrow">↗</div>
+    </a>
   </div>
 </section>
 
@@ -1363,6 +1386,11 @@ themeToggle.addEventListener('click', () => {
   window.addEventListener('resize', updateLine, { passive: true });
   updateLine();
 })();
+
+// Rock Paper Scissors Game launcher
+function openRPSGame() {
+  window.open('rps-game.html', 'RPSGame', 'width=700,height=900,resizable=yes,scrollbars=yes');
+}
 </script>
 </body>
 </html>
