@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PageRank Visualizer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0a0e14 0%, #1a1f2e 100%);
+            color: #f0f0f5;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #e8ff47 0%, #47c8ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .subtitle {
+            color: #999;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+        
+        .controls {
+            background: rgba(30, 35, 45, 0.8);
+            border: 1px solid rgba(232, 255, 71, 0.1);
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+        
+        .control-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 500;
+            color: #ccc;
+        }
+        
+        input, textarea, button {
+            font-family: inherit;
+            color: inherit;
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 12px;
+            background: rgba(12, 12, 14, 0.5);
+            border: 2px solid rgba(232, 255, 71, 0.2);
+            border-radius: 6px;
+            color: #f0f0f5;
+            min-height: 150px;
+            resize: vertical;
+            transition: all 0.3s ease;
+        }
+        
+        textarea:hover {
+            border-color: #e8ff47;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(232, 255, 71, 0.1);
+            -webkit-appearance: none;
+            appearance: none;
+            cursor: pointer;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #e8ff47;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(232, 255, 71, 0.5);
+        }
+        
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #e8ff47;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 0 10px rgba(232, 255, 71, 0.5);
+        }
+        
+        .sliders-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #e8ff47 0%, #47c8ff 100%);
+            color: #000;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(232, 255, 71, 0.3);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .results {
+            background: rgba(30, 35, 45, 0.8);
+            border: 1px solid rgba(232, 255, 71, 0.1);
+            padding: 30px;
+            border-radius: 12px;
+            margin-top: 30px;
+        }
+        
+        .results h3 {
+            color: #e8ff47;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+        
+        .ranking-list {
+            display: grid;
+            gap: 12px;
+        }
+        
+        .ranking-item {
+            background: rgba(12, 12, 14, 0.5);
+            border: 1px solid rgba(232, 255, 71, 0.1);
+            padding: 15px;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .ranking-item:hover {
+            border-color: #e8ff47;
+            background: rgba(12, 12, 14, 0.8);
+        }
+        
+        .ranking-position {
+            font-weight: bold;
+            color: #e8ff47;
+            font-size: 1.2em;
+            min-width: 50px;
+        }
+        
+        .ranking-name {
+            flex: 1;
+            margin: 0 20px;
+            font-family: var(--mono, monospace);
+        }
+        
+        .ranking-score {
+            color: #47c8ff;
+            font-weight: 600;
+            min-width: 100px;
+            text-align: right;
+        }
+        
+        .bar {
+            background: linear-gradient(90deg, #e8ff47 0%, #47c8ff 100%);
+            height: 6px;
+            border-radius: 3px;
+            margin-top: 8px;
+        }
+        
+        .info {
+            background: rgba(71, 200, 255, 0.05);
+            border-left: 3px solid #47c8ff;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            color: #bbb;
+            font-size: 0.95em;
+        }
+        
+        .example-btn {
+            background: rgba(232, 255, 71, 0.1);
+            color: #e8ff47;
+            border: 1px solid #e8ff47;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+        
+        .example-btn:hover {
+            background: rgba(232, 255, 71, 0.2);
+            box-shadow: 0 0 12px rgba(232, 255, 71, 0.4);
+        }
+        
+        @media (max-width: 768px) {
+            .sliders-group {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>PageRank</h1>
+        <p class="subtitle">Graph-based ranking algorithm using random surfer model</p>
+        
+        <div class="info">
+            <strong>How it works:</strong> PageRank ranks nodes in a directed graph based on the probability that a random surfer following links would visit each node. Create a graph by entering edges (node1 node2), then adjust iterations and damping factor to compute rankings.
+        </div>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label for="graphInput">Graph Edges (format: "nodeA nodeB" per line):</label>
+                <textarea id="graphInput" placeholder="Example:&#10;A B&#10;A C&#10;B C&#10;C A"></textarea>
+                <button class="example-btn" onclick="loadExample()">Load Example Graph</button>
+            </div>
+            
+            <div class="sliders-group">
+                <div class="control-group">
+                    <label for="iterationsSlider">Iterations: <span id="iterDisplay">10</span></label>
+                    <input type="range" id="iterationsSlider" min="1" max="100" value="10">
+                </div>
+                
+                <div class="control-group">
+                    <label for="dampingSlider">Damping Factor: <span id="dampDisplay">0.85</span></label>
+                    <input type="range" id="dampingSlider" min="0.1" max="1" step="0.05" value="0.85">
+                </div>
+            </div>
+            
+            <button onclick="computePageRank()">Compute PageRank</button>
+        </div>
+        
+        <div id="resultsContainer" style="display:none;">
+            <div class="results">
+                <h3>PageRank Results</h3>
+                <div class="ranking-list" id="rankingList"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const graphInput = document.getElementById('graphInput');
+        const iterationsSlider = document.getElementById('iterationsSlider');
+        const iterDisplay = document.getElementById('iterDisplay');
+        const dampingSlider = document.getElementById('dampingSlider');
+        const dampDisplay = document.getElementById('dampDisplay');
+        const resultsContainer = document.getElementById('resultsContainer');
+        const rankingList = document.getElementById('rankingList');
+
+        iterationsSlider.addEventListener('input', (e) => {
+            iterDisplay.textContent = e.target.value;
+        });
+
+        dampingSlider.addEventListener('input', (e) => {
+            dampDisplay.textContent = parseFloat(e.target.value).toFixed(2);
+        });
+
+        function loadExample() {
+            graphInput.value = `A B
+A C
+B C
+C A
+D A
+E D
+E B`;
+        }
+
+        function computePageRank() {
+            const edges = parseGraph(graphInput.value);
+            
+            if (!edges || edges.length === 0) {
+                alert('Please enter valid graph edges');
+                return;
+            }
+
+            const iterations = parseInt(iterationsSlider.value);
+            const damping = parseFloat(dampingSlider.value);
+
+            const pageRanks = pageRankAlgorithm(edges, iterations, damping);
+            displayResults(pageRanks);
+        }
+
+        function parseGraph(input) {
+            const edges = [];
+            const lines = input.trim().split('\n');
+
+            for (const line of lines) {
+                const parts = line.trim().split(/\s+/);
+                if (parts.length >= 2) {
+                    edges.push({ from: parts[0], to: parts[1] });
+                }
+            }
+
+            return edges;
+        }
+
+        function pageRankAlgorithm(edges, iterations, damping) {
+            // Extract unique nodes
+            const nodes = new Set();
+            const graph = {};
+
+            for (const edge of edges) {
+                nodes.add(edge.from);
+                nodes.add(edge.to);
+                if (!graph[edge.from]) graph[edge.from] = [];
+                graph[edge.from].push(edge.to);
+            }
+
+            const nodeArray = Array.from(nodes).sort();
+            const n = nodeArray.length;
+            const initialRank = 1 / n;
+
+            // Initialize PageRank
+            let ranks = {};
+            nodeArray.forEach(node => {
+                ranks[node] = initialRank;
+            });
+
+            // Iterate
+            for (let iter = 0; iter < iterations; iter++) {
+                let newRanks = {};
+                
+                nodeArray.forEach(node => {
+                    newRanks[node] = (1 - damping) / n;
+                });
+
+                // For each node with outgoing links
+                for (const node of nodeArray) {
+                    if (graph[node] && graph[node].length > 0) {
+                        const rankToDistribute = ranks[node] / graph[node].length;
+                        graph[node].forEach(target => {
+                            newRanks[target] += damping * rankToDistribute;
+                        });
+                    } else {
+                        // Nodes with no outgoing links distribute rank equally to all
+                        const rankToDistribute = damping * ranks[node] / n;
+                        nodeArray.forEach(target => {
+                            newRanks[target] += rankToDistribute;
+                        });
+                    }
+                }
+
+                ranks = newRanks;
+            }
+
+            return ranks;
+        }
+
+        function displayResults(pageRanks) {
+            // Sort by rank
+            const sorted = Object.entries(pageRanks)
+                .sort((a, b) => b[1] - a[1])
+                .map((entry, index) => ({
+                    position: index + 1,
+                    name: entry[0],
+                    score: entry[1]
+                }));
+
+            const maxScore = sorted[0].score;
+
+            rankingList.innerHTML = sorted.map(item => `
+                <div class="ranking-item">
+                    <div class="ranking-position">#${item.position}</div>
+                    <div class="ranking-name">${item.name}</div>
+                    <div class="ranking-score">${item.score.toFixed(4)}</div>
+                    <div class="bar" style="width: ${(item.score / maxScore) * 200}px;"></div>
+                </div>
+            `).join('');
+
+            resultsContainer.style.display = 'block';
+        }
+    </script>
+</body>
+</html>

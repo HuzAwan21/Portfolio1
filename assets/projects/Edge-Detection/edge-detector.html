@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edge Detection Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0a0e14 0%, #1a1f2e 100%);
+            color: #f0f0f5;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #e8ff47 0%, #47c8ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .subtitle {
+            color: #999;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+        
+        .controls {
+            background: rgba(30, 35, 45, 0.8);
+            border: 1px solid rgba(232, 255, 71, 0.1);
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+        
+        .control-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 500;
+            color: #ccc;
+        }
+        
+        input[type="file"],
+        input[type="range"],
+        button {
+            font-family: inherit;
+            color: inherit;
+        }
+        
+        input[type="file"] {
+            padding: 10px;
+            background: rgba(12, 12, 14, 0.5);
+            border: 2px solid rgba(232, 255, 71, 0.2);
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+        
+        input[type="file"]:hover {
+            border-color: #e8ff47;
+        }
+        
+        .slider-group {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        input[type="range"] {
+            flex: 1;
+            min-width: 200px;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(232, 255, 71, 0.1);
+            -webkit-appearance: none;
+            appearance: none;
+            cursor: pointer;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #e8ff47;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(232, 255, 71, 0.5);
+        }
+        
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #e8ff47;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 0 10px rgba(232, 255, 71, 0.5);
+        }
+        
+        .threshold-value {
+            color: #e8ff47;
+            font-weight: bold;
+            min-width: 60px;
+            text-align: right;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #e8ff47 0%, #47c8ff 100%);
+            color: #000;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(232, 255, 71, 0.3);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .canvas-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .canvas-wrapper {
+            background: rgba(30, 35, 45, 0.8);
+            border: 1px solid rgba(232, 255, 71, 0.1);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        
+        .canvas-wrapper h3 {
+            margin-bottom: 15px;
+            color: #e8ff47;
+            font-size: 1.1em;
+        }
+        
+        canvas {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            background: #000;
+        }
+        
+        .download-btn {
+            margin-top: 15px;
+            background: rgba(232, 255, 71, 0.1);
+            color: #e8ff47;
+            border: 1px solid #e8ff47;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .download-btn:hover {
+            background: rgba(232, 255, 71, 0.2);
+            box-shadow: 0 0 12px rgba(232, 255, 71, 0.4);
+        }
+        
+        .info {
+            background: rgba(71, 200, 255, 0.05);
+            border-left: 3px solid #47c8ff;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            color: #bbb;
+            font-size: 0.95em;
+        }
+        
+        @media (max-width: 768px) {
+            .canvas-container {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            .slider-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .threshold-value {
+                text-align: left;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Edge Detection</h1>
+        <p class="subtitle">Powered by Canny edge detection algorithm</p>
+        
+        <div class="info">
+            <strong>How it works:</strong> Upload an image and watch as the algorithm detects edges using Gaussian blur, gradient computation and threshold filtering. Adjust the threshold to fine-tune edge sensitivity.
+        </div>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label for="imageInput">Upload Image (JPG, PNG):</label>
+                <input type="file" id="imageInput" accept="image/jpeg,image/png" />
+            </div>
+            
+            <div class="control-group">
+                <label>Threshold: <span class="threshold-value" id="thresholdDisplay">30</span></label>
+                <div class="slider-group">
+                    <input type="range" id="thresholdSlider" min="0" max="255" value="30">
+                </div>
+            </div>
+        </div>
+        
+        <div class="canvas-container">
+            <div class="canvas-wrapper">
+                <h3>Original Image</h3>
+                <canvas id="originalCanvas"></canvas>
+            </div>
+            <div class="canvas-wrapper">
+                <h3>Edge Detected</h3>
+                <canvas id="edgeCanvas"></canvas>
+                <a class="download-btn" id="downloadBtn" style="display:none;">⬇ Download</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const imageInput = document.getElementById('imageInput');
+        const originalCanvas = document.getElementById('originalCanvas');
+        const edgeCanvas = document.getElementById('edgeCanvas');
+        const thresholdSlider = document.getElementById('thresholdSlider');
+        const thresholdDisplay = document.getElementById('thresholdDisplay');
+        const downloadBtn = document.getElementById('downloadBtn');
+
+        let originalImage = null;
+
+        thresholdSlider.addEventListener('input', (e) => {
+            thresholdDisplay.textContent = e.target.value;
+            if (originalImage) processImage();
+        });
+
+        imageInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const img = new Image();
+                img.onload = () => {
+                    // Draw to original canvas
+                    const ctx = originalCanvas.getContext('2d');
+                    originalCanvas.width = img.width;
+                    originalCanvas.height = img.height;
+                    ctx.drawImage(img, 0, 0);
+                    
+                    originalImage = ctx.getImageData(0, 0, img.width, img.height);
+                    processImage();
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+
+        function processImage() {
+            if (!originalImage) return;
+
+            const threshold = parseInt(thresholdSlider.value);
+            const ctx = edgeCanvas.getContext('2d');
+
+            // Set canvas size
+            edgeCanvas.width = originalImage.width;
+            edgeCanvas.height = originalImage.height;
+
+            // Create grayscale image
+            const grayscale = toGrayscale(originalImage);
+
+            // Apply Gaussian blur
+            const blurred = gaussianBlur(grayscale, originalImage.width, originalImage.height);
+
+            // Compute gradients (Sobel operator)
+            const { gx, gy } = sobelOperator(blurred, originalImage.width, originalImage.height);
+
+            // Compute magnitude
+            const magnitude = computeMagnitude(gx, gy);
+
+            // Apply threshold with better normalization
+            const edges = applyThreshold(magnitude, threshold, originalImage.width, originalImage.height);
+
+            // Draw result
+            const imageData = ctx.createImageData(originalImage.width, originalImage.height);
+            for (let i = 0; i < edges.length; i++) {
+                imageData.data[i * 4] = edges[i];
+                imageData.data[i * 4 + 1] = edges[i];
+                imageData.data[i * 4 + 2] = edges[i];
+                imageData.data[i * 4 + 3] = 255;
+            }
+            ctx.putImageData(imageData, 0, 0);
+
+            // Enable download
+            downloadBtn.style.display = 'inline-block';
+            downloadBtn.onclick = () => {
+                const link = document.createElement('a');
+                link.href = edgeCanvas.toDataURL();
+                link.download = 'edge-detected.png';
+                link.click();
+            };
+        }
+
+        function toGrayscale(imageData) {
+            const data = imageData.data;
+            const gray = new Float32Array(imageData.width * imageData.height);
+
+            for (let i = 0; i < data.length; i += 4) {
+                const r = data[i];
+                const g = data[i + 1];
+                const b = data[i + 2];
+                gray[i / 4] = 0.299 * r + 0.587 * g + 0.114 * b;
+            }
+            return gray;
+        }
+
+        function gaussianBlur(data, width, height) {
+            const kernel = [
+                [1, 4, 6, 4, 1],
+                [4, 16, 24, 16, 4],
+                [6, 24, 36, 24, 6],
+                [4, 16, 24, 16, 4],
+                [1, 4, 6, 4, 1]
+            ];
+            const sum = 256;
+            return convolve(data, width, height, kernel, sum);
+        }
+
+        function sobelOperator(data, width, height) {
+            const gx_kernel = [[-1, 0, 1], [-2, 0, 2], [-1, 0, 1]];
+            const gy_kernel = [[-1, -2, -1], [0, 0, 0], [1, 2, 1]];
+
+            const gx = convolve(data, width, height, gx_kernel, 1);
+            const gy = convolve(data, width, height, gy_kernel, 1);
+
+            return { gx, gy };
+        }
+
+        function convolve(data, width, height, kernel, divisor) {
+            const result = new Float32Array(width * height);
+            const kh = kernel.length;
+            const kw = kernel[0].length;
+            const padY = Math.floor(kh / 2);
+            const padX = Math.floor(kw / 2);
+
+            for (let y = 0; y < height; y++) {
+                for (let x = 0; x < width; x++) {
+                    let sum = 0;
+                    for (let ky = 0; ky < kh; ky++) {
+                        for (let kx = 0; kx < kw; kx++) {
+                            let px = x + kx - padX;
+                            let py = y + ky - padY;
+                            
+                            // Clamp edges
+                            px = Math.max(0, Math.min(width - 1, px));
+                            py = Math.max(0, Math.min(height - 1, py));
+                            
+                            sum += data[py * width + px] * kernel[ky][kx];
+                        }
+                    }
+                    result[y * width + x] = sum / divisor;
+                }
+            }
+            return result;
+        }
+
+        function computeMagnitude(gx, gy) {
+            const magnitude = new Float32Array(gx.length);
+            for (let i = 0; i < gx.length; i++) {
+                magnitude[i] = Math.sqrt(gx[i] * gx[i] + gy[i] * gy[i]);
+            }
+            return magnitude;
+        }
+
+        function applyThreshold(magnitude, threshold, width, height) {
+            const result = new Uint8ClampedArray(magnitude.length);
+            
+            // Find max magnitude value
+            let max = 0;
+            for (let i = 0; i < magnitude.length; i++) {
+                if (magnitude[i] > max) max = magnitude[i];
+            }
+            
+            if (max === 0) max = 1; // Prevent division by zero
+            
+            // Normalize to 0-255 and apply threshold
+            const normalizedThreshold = (threshold / 255) * max;
+            
+            for (let i = 0; i < magnitude.length; i++) {
+                result[i] = magnitude[i] > normalizedThreshold ? 255 : 0;
+            }
+            return result;
+        }
+    </script>
+</body>
+</html>

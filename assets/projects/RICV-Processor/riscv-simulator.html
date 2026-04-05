@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RISC-V Processor Simulator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0a0e14 0%, #1a1f2e 100%);
+            color: #f0f0f5;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            font-size: 2.5em;
+            background: linear-gradient(135deg, #e8ff47 0%, #47c8ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #999;
+            font-size: 0.95em;
+        }
+        
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .panel {
+            background: rgba(30, 35, 45, 0.8);
+            border: 2px solid rgba(232, 255, 71, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+        }
+        
+        .panel-title {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #e8ff47;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(232, 255, 71, 0.2);
+        }
+        
+        .input-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            font-size: 0.9em;
+            color: #bbb;
+            margin-bottom: 5px;
+        }
+        
+        input[type="text"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 8px;
+            background: rgba(12, 12, 14, 0.5);
+            border: 1px solid rgba(232, 255, 71, 0.2);
+            border-radius: 6px;
+            color: #f0f0f5;
+            font-size: 0.9em;
+        }
+        
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #e8ff47;
+            box-shadow: 0 0 10px rgba(232, 255, 71, 0.2);
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 8px;
+            background: rgba(12, 12, 14, 0.5);
+            border: 1px solid rgba(232, 255, 71, 0.2);
+            border-radius: 6px;
+            color: #f0f0f5;
+            font-size: 0.85em;
+            font-family: 'Courier New', monospace;
+            height: 100px;
+            resize: vertical;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #e8ff47;
+            box-shadow: 0 0 10px rgba(232, 255, 71, 0.2);
+        }
+        
+        button {
+            background: linear-gradient(135deg, #e8ff47 0%, #47c8ff 100%);
+            color: #000;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.9em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-right: 8px;
+            margin-top: 8px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(232, 255, 71, 0.3);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .register-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        
+        .register-item {
+            background: rgba(232, 255, 71, 0.05);
+            border: 1px solid rgba(232, 255, 71, 0.15);
+            border-radius: 6px;
+            padding: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+        }
+        
+        .reg-name {
+            color: #e8ff47;
+            font-weight: 600;
+        }
+        
+        .reg-value {
+            color: #47c8ff;
+            margin-top: 3px;
+        }
+        
+        .instruction-info {
+            background: rgba(71, 200, 255, 0.1);
+            border-left: 3px solid #47c8ff;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+        
+        .instruction-info-item {
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .info-label {
+            color: #bbb;
+        }
+        
+        .info-value {
+            color: #e8ff47;
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+        }
+        
+        .error {
+            background: rgba(255, 71, 71, 0.1);
+            border-left: 3px solid #ff4747;
+            padding: 10px;
+            border-radius: 6px;
+            color: #ff9999;
+            font-size: 0.9em;
+        }
+        
+        .success {
+            background: rgba(71, 255, 150, 0.1);
+            border-left: 3px solid #47ff96;
+            padding: 10px;
+            border-radius: 6px;
+            color: #99ffcc;
+            font-size: 0.9em;
+        }
+        
+        .binary-display {
+            background: rgba(12, 12, 14, 0.5);
+            border: 1px solid rgba(232, 255, 71, 0.1);
+            border-radius: 6px;
+            padding: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            color: #47c8ff;
+            word-break: break-all;
+            margin-top: 8px;
+        }
+        
+        .example-button {
+            background: rgba(71, 200, 255, 0.1);
+            color: #47c8ff;
+            border: 1px solid #47c8ff;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85em;
+            margin-top: 8px;
+        }
+        
+        .example-button:hover {
+            background: rgba(71, 200, 255, 0.2);
+        }
+        
+        .full-width {
+            grid-column: 1 / -1;
+        }
+        
+        @media (max-width: 1200px) {
+            .main-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>RISC-V Simulator</h1>
+            <p class="subtitle">Educational RISC-V RV32I instruction simulator</p>
+        </div>
+        
+        <div class="main-grid">
+            <div class="panel">
+                <div class="panel-title">Instruction Input</div>
+                <div class="input-group">
+                    <label>Hexadecimal Instruction</label>
+                    <input type="text" id="hexInput" placeholder="e.g., 0x00208093" value="0x00208093">
+                    <p style="font-size: 0.85em; color: #888; margin-top: 5px;">32-bit instruction in hex format</p>
+                </div>
+                <button onclick="decodeInstruction()">Decode</button>
+                <button class="example-button" onclick="loadExample()">Load Example</button>
+                <div id="message" style="margin-top: 12px;"></div>
+            </div>
+            
+            <div class="panel">
+                <div class="panel-title">Hex to Binary</div>
+                <div class="binary-display" id="binaryDisplay">-</div>
+                <p style="font-size: 0.85em; color: #888; margin-top: 10px;">32-bit binary representation</p>
+            </div>
+            
+            <div class="panel">
+                <div class="panel-title">Decoder Results</div>
+                <div class="instruction-info" id="decoderInfo">
+                    <p style="color: #999;">Enter an instruction to decode</p>
+                </div>
+            </div>
+            
+            <div class="panel full-width">
+                <div class="panel-title">Instruction Fields</div>
+                <div class="instruction-info" id="fieldsInfo">
+                    <div class="instruction-info-item">
+                        <span class="info-label">Opcode:</span>
+                        <span class="info-value" id="opcode">-</span>
+                    </div>
+                    <div class="instruction-info-item">
+                        <span class="info-label">RD (Destination):</span>
+                        <span class="info-value" id="rd">-</span>
+                    </div>
+                    <div class="instruction-info-item">
+                        <span class="info-label">RS1 (Source 1):</span>
+                        <span class="info-value" id="rs1">-</span>
+                    </div>
+                    <div class="instruction-info-item">
+                        <span class="info-label">RS2 (Source 2):</span>
+                        <span class="info-value" id="rs2">-</span>
+                    </div>
+                    <div class="instruction-info-item">
+                        <span class="info-label">Funct3:</span>
+                        <span class="info-value" id="funct3">-</span>
+                    </div>
+                    <div class="instruction-info-item">
+                        <span class="info-label">Funct7:</span>
+                        <span class="info-value" id="funct7">-</span>
+                    </div>
+                    <div class="instruction-info-item">
+                        <span class="info-label">Immediate:</span>
+                        <span class="info-value" id="immediate">-</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="panel full-width">
+                <div class="panel-title">Registers</div>
+                <div class="register-grid" id="registerGrid">
+                    <!-- Registers will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class RiscVSimulator {
+            constructor() {
+                this.registers = {
+                    'x0': 0, 'x1': 0, 'x2': 0, 'x3': 0, 'x4': 0, 'x5': 0, 'x6': 0, 'x7': 0,
+                    'x8': 0, 'x9': 0, 'x10': 0, 'x11': 0, 'x12': 0, 'x13': 0, 'x14': 0, 'x15': 0,
+                    'x16': 0, 'x17': 0, 'x18': 0, 'x19': 0, 'x20': 0, 'x21': 0, 'x22': 0, 'x23': 0,
+                    'x24': 0, 'x25': 0, 'x26': 0, 'x27': 0, 'x28': 0, 'x29': 0, 'x30': 0, 'x31': 0
+                };
+                
+                this.abiNames = {
+                    'x0': 'zero', 'x1': 'ra', 'x2': 'sp', 'x3': 'gp', 'x4': 'tp',
+                    'x5': 't0', 'x6': 't1', 'x7': 't2', 'x8': 's0', 'x9': 's1',
+                    'x10': 'a0', 'x11': 'a1', 'x12': 'a2', 'x13': 'a3', 'x14': 'a4',
+                    'x15': 'a5', 'x16': 'a6', 'x17': 'a7', 'x18': 's2', 'x19': 's3',
+                    'x20': 's4', 'x21': 's5', 'x22': 's6', 'x23': 's7', 'x24': 's8',
+                    'x25': 's9', 'x26': 's10', 'x27': 's11', 'x28': 't3', 'x29': 't4',
+                    'x30': 't5', 'x31': 't6'
+                };
+                
+                this.opcodes = {
+                    0b0110111: 'LUI', 0b0010111: 'AUIPC', 0b1101111: 'JAL',
+                    0b1100111: 'JALR', 0b1100011: 'BRANCH', 0b0000011: 'LOAD',
+                    0b0100011: 'STORE', 0b0010011: 'OP-IMM', 0b0110011: 'OP',
+                    0b0001111: 'FENCE', 0b1110011: 'ECALL/EBREAK'
+                };
+            }
+            
+            decodeInstruction(hexString) {
+                try {
+                    const instr = parseInt(hexString, 16);
+                    if (isNaN(instr) || instr < 0 || instr > 0xFFFFFFFF) {
+                        throw new Error('Invalid hex value');
+                    }
+                    
+                    const binary = instr.toString(2).padStart(32, '0');
+                    
+                    // Extract fields
+                    const opcode = instr & 0x7F;
+                    const rd = (instr >> 7) & 0x1F;
+                    const funct3 = (instr >> 12) & 0x07;
+                    const rs1 = (instr >> 15) & 0x1F;
+                    const rs2 = (instr >> 20) & 0x1F;
+                    const funct7 = (instr >> 25) & 0x7F;
+                    
+                    // Sign-extend immediate (I-type)
+                    const immI = ((instr >> 20) & 0xFFF);
+                    const immISigned = (immI & 0x800) ? (immI - 0x1000) : immI;
+                    
+                    const opcodeStr = this.opcodes[opcode] || `UNKNOWN (0x${opcode.toString(16).padStart(2, '0')})`;
+                    
+                    return {
+                        hex: hexString,
+                        binary: binary,
+                        opcode: `0b${opcode.toString(2).padStart(7, '0')} (0x${opcode.toString(16).padStart(2, '0')})`,
+                        opcodeType: opcodeStr,
+                        rd: `x${rd} (${this.abiNames[`x${rd}`]})`,
+                        rs1: `x${rs1} (${this.abiNames[`x${rs1}`]})`,
+                        rs2: `x${rs2} (${this.abiNames[`x${rs2}`]})`,
+                        funct3: `0b${funct3.toString(2).padStart(3, '0')}`,
+                        funct7: `0b${funct7.toString(2).padStart(7, '0')}`,
+                        immediate: `${immISigned} (0x${(immI & 0xFFF).toString(16).padStart(3, '0')})`
+                    };
+                } catch (e) {
+                    throw new Error(`Decode error: ${e.message}`);
+                }
+            }
+            
+            getRegistersList() {
+                return Object.keys(this.registers).map(reg => ({
+                    name: reg,
+                    abiName: this.abiNames[reg],
+                    value: this.registers[reg]
+                }));
+            }
+        }
+        
+        const simulator = new RiscVSimulator();
+        
+        function decodeInstruction() {
+            const hexInput = document.getElementById('hexInput').value.trim();
+            const message = document.getElementById('message');
+            
+            if (!hexInput) {
+                message.innerHTML = '<div class="error">Please enter a hexadecimal instruction</div>';
+                return;
+            }
+            
+            try {
+                const result = simulator.decodeInstruction(hexInput);
+                displayResults(result);
+                message.innerHTML = '<div class="success">Instruction decoded successfully</div>';
+            } catch (e) {
+                message.innerHTML = `<div class="error">${e.message}</div>`;
+            }
+        }
+        
+        function displayResults(result) {
+            // Update binary display
+            document.getElementById('binaryDisplay').textContent = result.binary;
+            
+            // Update instruction info
+            document.getElementById('decoderInfo').innerHTML = `
+                <div class="instruction-info-item">
+                    <span class="info-label">Instruction Type:</span>
+                    <span class="info-value">${result.opcodeType}</span>
+                </div>
+                <div class="instruction-info-item">
+                    <span class="info-label">Hex: ${result.hex}</span>
+                </div>
+            `;
+            
+            // Update fields
+            document.getElementById('opcode').textContent = result.opcode;
+            document.getElementById('rd').textContent = result.rd;
+            document.getElementById('rs1').textContent = result.rs1;
+            document.getElementById('rs2').textContent = result.rs2;
+            document.getElementById('funct3').textContent = result.funct3;
+            document.getElementById('funct7').textContent = result.funct7;
+            document.getElementById('immediate').textContent = result.immediate;
+            
+            updateRegistersDisplay();
+        }
+        
+        function updateRegistersDisplay() {
+            const regs = simulator.getRegistersList();
+            const grid = document.getElementById('registerGrid');
+            
+            grid.innerHTML = regs.map(reg => `
+                <div class="register-item">
+                    <div class="reg-name">${reg.name} (${reg.abiName})</div>
+                    <div class="reg-value">0x${reg.value.toString(16).padStart(8, '0')}</div>
+                </div>
+            `).join('');
+        }
+        
+        function loadExample() {
+            document.getElementById('hexInput').value = '0x00208093';
+            decodeInstruction();
+        }
+        
+        // Initialize
+        updateRegistersDisplay();
+    </script>
+</body>
+</html>
