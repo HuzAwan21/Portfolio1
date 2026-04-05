@@ -1175,6 +1175,16 @@
         </div>
       </div>
     </a>
+    <a class="project reveal reveal-delay-5" href="javascript:void(0)" onclick="openMiniOS()">
+      <div class="project-num">11</div>
+      <div class="project-info">
+        <div class="project-title">Mini-OS</div>
+        <div class="project-desc">Mini Operating System implementation in RISC-V assembly for system architecture and design. Features process scheduling with round-robin and time-slice preemption, comprehensive exception handling with mcause-based dispatch, system call support (print_char, print_string, exit) and efficient context switching with register save/restore. Implemented process state management and memory layout for multi-process execution. Enhanced skills in low-level OS design, assembly programming, interrupt handling and process management on RISC-V architecture.</div>
+        <div class="project-stack" style="margin-top:10px;">
+          <span class="project-tag">RISC-V Assembly</span><span class="project-tag">OS Design</span><span class="project-tag">Systems</span>
+        </div>
+      </div>
+    </a>
   </div>
 </section>
 
@@ -1473,6 +1483,11 @@ function openRoutePlanner() {
 // RISC-V Simulator launcher
 function openRiscVSimulator() {
   window.open('assets/projects/RICV-Processor/riscv-simulator.html', 'RiscVSimulator', 'width=1400,height=1200,resizable=yes,scrollbars=yes');
+}
+
+// Mini-OS Simulator launcher
+function openMiniOS() {
+  window.open('assets/projects/Mini-OS/mini-os-simulator.html', 'MiniOS', 'width=1400,height=1200,resizable=yes,scrollbars=yes');
 }
 </script>
 </body>
