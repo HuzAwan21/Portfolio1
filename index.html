@@ -650,7 +650,7 @@
   /* The vertical guide line */
   .edu-line-wrap {
     position: absolute;
-    left: 19px;
+    left: 29px;
     top: 20px;
     bottom: 20px;
     width: 1px;
@@ -677,7 +677,7 @@
   /* Individual education entry */
   .edu-entry {
     display: grid;
-    grid-template-columns: 38px 1fr;
+    grid-template-columns: 60px 1fr;
     gap: 0 28px;
     padding: 0 0 56px;
     position: relative;
@@ -693,20 +693,34 @@
     padding-top: 18px;
   }
   .edu-dot {
-    width: 13px;
-    height: 13px;
+    width: 48px;
+    height: 48px;
     border-radius: 50%;
     border: 2px solid var(--accent);
     background: var(--accent);
     position: relative;
     z-index: 2;
     flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
     transition: border-color 0.4s ease, background 0.4s ease, transform 0.4s ease;
+  }
+  .edu-dot-logo {
+    width: 36px;
+    height: 36px;
+    object-fit: contain;
+    opacity: 0.9;
+    filter: brightness(1.1);
   }
   .edu-entry.active .edu-dot {
     border-color: var(--accent);
     background: var(--accent);
-    transform: scale(1.25);
+    transform: scale(1.15);
+  }
+  .edu-entry.active .edu-dot-logo {
+    opacity: 1;
   }
 
   /* Entry body */
@@ -975,7 +989,9 @@
     <!-- Entry 1: Bachelor -->
     <div class="edu-entry" data-index="0">
       <div class="edu-dot-wrap">
-        <div class="edu-dot"></div>
+        <div class="edu-dot">
+          <img src="assets/images/portfolio/uds.png" alt="UDS Logo" class="edu-dot-logo">
+        </div>
       </div>
       <div class="edu-body">
         <div class="edu-period">Oct. 2023 - Present</div>
@@ -997,7 +1013,9 @@
     <!-- Entry 2: Abitur -->
     <div class="edu-entry" data-index="1">
       <div class="edu-dot-wrap">
-        <div class="edu-dot"></div>
+        <div class="edu-dot">
+          <img src="assets/images/portfolio/aeg.png" alt="AEG Logo" class="edu-dot-logo">
+        </div>
       </div>
       <div class="edu-body">
         <div class="edu-period">Aug. 2017 - Jun. 2023</div>
