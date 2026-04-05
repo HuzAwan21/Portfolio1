@@ -1129,9 +1129,19 @@
       <div class="project-num">06</div>
       <div class="project-info">
         <div class="project-title">Edge Detection Tool</div>
-        <div class="project-desc">Interactive image processing application using Canny edge detection algorithm. Upload images and adjust threshold to detect and highlight edges in real-time using Gaussian blur, gradient computation, and threshold filtering.</div>
+        <div class="project-desc">Implementation of edge detection algorithm in C to identify boundaries in images. The program reads an image, applies Gaussian blurring, calculates discrete derivatives with Sobel kernels, computes gradient magnitudes and outputs edges as a black-and-white image. Strengthened skills in image processing, convolution operations and algorithmic implementation.</div>
         <div class="project-stack" style="margin-top:10px;">
-          <span class="project-tag">JavaScript</span><span class="project-tag">Canvas API</span><span class="project-tag">Image Processing</span>
+          <span class="project-tag">C</span><span class="project-tag">Image Processing</span><span class="project-tag">Algorithms</span>
+        </div>
+      </div>
+    </a>
+    <a class="project reveal reveal-delay-1" href="javascript:void(0)" onclick="openPageRank()">
+      <div class="project-num">07</div>
+      <div class="project-info">
+        <div class="project-title">PageRank Algorithm</div>
+        <div class="project-desc">Implementation of the PageRank algorithm to evaluate the importance of vertices in directed graphs, representing websites and hyperlinks. The program simulates a random surfer model and uses Markov chain computations to assign scores, reflecting the likelihood of a user visiting each website. Strengthened skills in graph theory, probabilistic modeling and numerical algorithms in C.</div>
+        <div class="project-stack" style="margin-top:10px;">
+          <span class="project-tag">C</span><span class="project-tag">Graph Theory</span><span class="project-tag">Algorithms</span>
         </div>
       </div>
     </a>
@@ -1413,6 +1423,11 @@ function openRPSGame() {
 // Edge Detection Tool launcher
 function openEdgeDetector() {
   window.open('assets/projects/Edge-Detection/edge-detector.html', 'EdgeDetector', 'width=1200,height=1400,resizable=yes,scrollbars=yes');
+}
+
+// PageRank Visualizer launcher
+function openPageRank() {
+  window.open('assets/projects/Page-Rank/pagerank-visualizer.html', 'PageRank', 'width=1000,height=1200,resizable=yes,scrollbars=yes');
 }
 </script>
 </body>
