@@ -17,3 +17,7 @@ INFORMATION: Unsupported notification method: $/setTrace
 2026.04.05 04:42:45 INFO  no build target found for C:\Users\awan2\Desktop\Portfolio1\assets\projects\RICV-Processor\src\main\scala\RISC-V\implementation\RV32I\Decoder.scala. Using presentation compiler with project's scala-library version: 3.3.7
 2026.04.05 04:45:32 INFO  no build target found for C:\Users\awan2\Desktop\Portfolio1\assets\projects\RICV-Processor\src\main\scala\RISC-V\implementation\Core.scala. Using presentation compiler with project's scala-library version: 3.3.7
 2026.04.05 04:45:38 INFO  no build target found for C:\Users\awan2\Desktop\Portfolio1\assets\projects\RICV-Processor\src\main\scala\RISC-V\implementation\RV32I\Decoder.scala. Using presentation compiler with project's scala-library version: 3.3.7
+2026.04.05 05:38:11 INFO  Shutting down server
+2026.04.05 05:38:11 INFO  Memory monitor stopped
+2026.04.05 05:38:11 INFO  shutting down Metals
+2026.04.05 05:38:11 INFO  Exiting server
