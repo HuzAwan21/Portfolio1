@@ -2,3 +2,12 @@
 2026.04.05 04:23:11 WARN  no build tool detected in workspace 'C:\Users\awan2\Desktop\Portfolio1'. The most common cause for this problem is that the editor was opened in the wrong working directory, for example if you use sbt then the workspace directory should contain build.sbt. 
 2026.04.05 04:23:11 WARN  Build server is not auto-connectable.
 2026.04.05 04:23:11 WARN  no build target for: C:\Users\awan2\Desktop\Portfolio1\assets\projects\2048\src\ttfe\TTFE.java
+2026.04.05 04:25:51 INFO  no build target found for C:\Users\awan2\Desktop\Portfolio1\assets\projects\2048\src\ttfe\TTFE.java. Using fallback presentation compiler.
+Apr. 05, 2026 4:30:11 AM org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
+INFORMATION: Unsupported notification method: $/setTrace
+Apr. 05, 2026 4:30:14 AM org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
+INFORMATION: Unsupported notification method: $/setTrace
+2026.04.05 04:31:46 WARN  no build target for: C:\Users\awan2\Desktop\Portfolio1\assets\projects\Route-Planner\src\routing\DijkstraRoutingAlgorithm.java
+2026.04.05 04:31:57 WARN  no build target for: C:\Users\awan2\Desktop\Portfolio1\assets\projects\Route-Planner\src\routing\Node.java
+2026.04.05 04:34:46 INFO  no build target found for C:\Users\awan2\Desktop\Portfolio1\assets\projects\Route-Planner\src\routing\DijkstraRoutingAlgorithm.java. Using fallback presentation compiler.
+2026.04.05 04:34:57 INFO  no build target found for C:\Users\awan2\Desktop\Portfolio1\assets\projects\Route-Planner\src\routing\Node.java. Using fallback presentation compiler.
