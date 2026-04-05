@@ -488,7 +488,7 @@
   .projects { background: var(--surface); }
   .projects-list { display: flex; flex-direction: column; gap: 1px; }
   .project {
-    display: grid; grid-template-columns: 60px 1fr auto;
+    display: grid; grid-template-columns: 60px 1fr;
     align-items: center; gap: 32px;
     padding: 32px 0;
     border-bottom: 1px solid var(--border);
@@ -512,12 +512,17 @@
   .project-tag {
     font-family: var(--mono); font-size: 11px; padding: 4px 10px;
     background: var(--surface2); color: var(--muted);
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.1);
+    cursor: pointer;
+    transition: all 0.3s ease;
   }
-  .project-arrow {
-    font-size: 20px; color: var(--muted);
-    transition: transform 0.2s, color 0.2s;
+  .project-tag:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(232,255,71,0.05);
+    box-shadow: 0 0 12px rgba(232, 255, 71, 0.4), inset 0 0 8px rgba(232, 255, 71, 0.1);
   }
-  .project:hover .project-arrow { transform: translate(4px,-4px); color: var(--accent); }
 
   /* Tech stack */
   .stack-wrap { overflow: hidden; position: relative; padding: 0; }
@@ -1079,7 +1084,6 @@
           <span class="project-tag">C++</span><span class="project-tag">Compilers</span><span class="project-tag">Algorithms</span>
         </div>
       </div>
-      <div class="project-arrow">↗</div>
     </a>
     <a class="project reveal reveal-delay-1" href="#">
       <div class="project-num">02</div>
@@ -1090,7 +1094,6 @@
           <span class="project-tag">Python</span><span class="project-tag">AI</span><span class="project-tag">Algorithms</span>
         </div>
       </div>
-      <div class="project-arrow">↗</div>
     </a>
     <a class="project reveal reveal-delay-2" href="#">
       <div class="project-num">03</div>
@@ -1101,7 +1104,6 @@
           <span class="project-tag">RISC-V</span><span class="project-tag">Assembly</span><span class="project-tag">Systems</span>
         </div>
       </div>
-      <div class="project-arrow">↗</div>
     </a>
     <a class="project reveal reveal-delay-3" href="#">
       <div class="project-num">04</div>
@@ -1112,18 +1114,16 @@
           <span class="project-tag">Django</span><span class="project-tag">Python</span><span class="project-tag">Big Data</span>
         </div>
       </div>
-      <div class="project-arrow">↗</div>
     </a>
     <a class="project reveal reveal-delay-2" href="javascript:void(0)" onclick="openRPSGame()">
       <div class="project-num">05</div>
       <div class="project-info">
         <div class="project-title">Rock Paper Scissors Game</div>
-        <div class="project-desc">Interactive web-based game with real-time scoring and smooth animations. Built with vanilla JavaScript.</div>
+        <div class="project-desc">MIPS assembly implementation featuring computer vs computer gameplay with pseudorandom number generation, uniform move sampling and programmatic winner determination. Enhanced understanding of low-level programming and algorithmic problem-solving.</div>
         <div class="project-stack" style="margin-top:10px;">
-          <span class="project-tag">HTML</span><span class="project-tag">CSS</span><span class="project-tag">JavaScript</span>
+          <span class="project-tag">MIPS</span><span class="project-tag">Assembly</span><span class="project-tag">Algorithms</span>
         </div>
       </div>
-      <div class="project-arrow">↗</div>
     </a>
   </div>
 </section>
@@ -1305,7 +1305,13 @@ setTimeout(() => typeEffect(), 500);
 
 // Scroll reveal
 const obs = new IntersectionObserver(entries=>{
-  entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('visible'); });
+  entries.forEach(e=>{ 
+    if(e.isIntersecting) {
+      e.target.classList.add('visible');
+    } else {
+      e.target.classList.remove('visible');
+    }
+  });
 },{threshold:0.12});
 document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
 
@@ -1372,6 +1378,8 @@ themeToggle.addEventListener('click', () => {
     entries_obs.forEach(obs => {
       if (obs.isIntersecting) {
         obs.target.classList.add('active');
+      } else {
+        obs.target.classList.remove('active');
       }
     });
   }, { threshold: 0.25, rootMargin: '0px 0px -60px 0px' });
@@ -1389,7 +1397,7 @@ themeToggle.addEventListener('click', () => {
 
 // Rock Paper Scissors Game launcher
 function openRPSGame() {
-  window.open('rps-game.html', 'RPSGame', 'width=700,height=900,resizable=yes,scrollbars=yes');
+  window.open('assets/projects/Rock-Paper-Scissors/rps-game.html', 'RPSGame', 'width=700,height=900,resizable=yes,scrollbars=yes');
 }
 </script>
 </body>
