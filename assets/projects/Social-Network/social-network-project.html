@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Network / BDE Project</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a0e14 0%, #1a1f2e 100%);
+            color: #f0f0f5;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        h1 {
+            font-size: 3.5em;
+            background: linear-gradient(135deg, #e8ff47 0%, #47c8ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            color: #9595b8;
+            margin-bottom: 10px;
+        }
+
+        .course-info {
+            color: #7070a0;
+            font-size: 0.9em;
+        }
+
+        /* Panels */
+        .panel {
+            background: rgba(20, 25, 40, 0.6);
+            border: 1px solid rgba(71, 200, 255, 0.2);
+            border-radius: 8px;
+            padding: 30px;
+            margin-bottom: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .panel:hover {
+            border-color: rgba(71, 200, 255, 0.4);
+            background: rgba(20, 25, 40, 0.8);
+        }
+
+        .panel-title {
+            font-size: 1.8em;
+            color: #47c8ff;
+            margin-bottom: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Stats Grid */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .stat {
+            background: rgba(40, 45, 70, 0.6);
+            border: 1px solid rgba(71, 200, 255, 0.3);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat:hover {
+            border-color: rgba(71, 200, 255, 0.5);
+            background: rgba(40, 45, 70, 0.8);
+        }
+
+        .stat-value {
+            font-size: 2.2em;
+            color: #e8ff47;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            color: #9595b8;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        /* Feature Grid */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .feature {
+            background: rgba(20, 25, 40, 0.5);
+            border: 1px solid rgba(232, 255, 71, 0.15);
+            border-radius: 8px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .feature:hover {
+            background: rgba(20, 25, 40, 0.8);
+            border-color: rgba(232, 255, 71, 0.4);
+        }
+
+        .feature-title {
+            font-size: 1.1em;
+            color: #e8ff47;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .feature-desc {
+            color: #9595b8;
+            font-size: 0.9em;
+            line-height: 1.6;
+        }
+
+        /* Code blocks */
+        .code-block {
+            background: rgba(15, 20, 35, 0.9);
+            border: 1px solid rgba(71, 200, 255, 0.15);
+            border-radius: 6px;
+            padding: 15px;
+            margin: 15px 0;
+            overflow-x: auto;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 12px;
+            line-height: 1.5;
+            color: #47c8ff;
+        }
+
+        /* Database schema */
+        .schema-box {
+            background: rgba(15, 20, 35, 0.6);
+            border: 1px solid rgba(71, 200, 255, 0.15);
+            border-radius: 6px;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.85em;
+        }
+
+        .model-name {
+            color: #e8ff47;
+            font-weight: 600;
+            margin-top: 12px;
+            margin-bottom: 6px;
+        }
+
+        .field {
+            color: #9595b8;
+            margin-left: 10px;
+        }
+
+        /* Tags */
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 15px 0;
+        }
+
+        .tag {
+            background: rgba(232, 255, 71, 0.1);
+            color: #e8ff47;
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 0.8em;
+            border: 1px solid rgba(232, 255, 71, 0.2);
+        }
+
+        /* Buttons */
+        .button {
+            display: inline-block;
+            background: linear-gradient(135deg, #e8ff47 0%, #47c8ff 100%);
+            color: #0a0e14;
+            padding: 12px 28px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            margin: 10px 10px 0 0;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(232, 255, 71, 0.3);
+        }
+
+        .divider {
+            height: 1px;
+            background: linear-gradient(to right, transparent, rgba(232, 255, 71, 0.2), transparent);
+            margin: 40px 0;
+        }
+
+        .section-title {
+            font-size: 1.6em;
+            color: #e8ff47;
+            margin: 30px 0 20px 0;
+            font-weight: 600;
+        }
+
+        .instruction-block {
+            background: rgba(232, 255, 71, 0.05);
+            border-left: 3px solid #e8ff47;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+
+        .instruction-title {
+            color: #e8ff47;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        ol, ul {
+            margin-left: 20px;
+            color: #9595b8;
+        }
+
+        li {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+
+        code {
+            background: rgba(71, 200, 255, 0.1);
+            color: #47c8ff;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+        }
+
+        .endpoint {
+            background: rgba(15, 20, 35, 0.6);
+            border-left: 3px solid #47c8ff;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.85em;
+        }
+
+        .endpoint-method {
+            color: #e8ff47;
+            font-weight: 600;
+        }
+
+        .endpoint-path {
+            color: #47c8ff;
+        }
+
+        .cta-section {
+            text-align: center;
+            margin-top: 40px;
+            padding: 30px;
+            background: linear-gradient(135deg, rgba(232, 255, 71, 0.05) 0%, rgba(71, 200, 255, 0.05) 100%);
+            border-radius: 12px;
+            border: 1px solid rgba(71, 200, 255, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Social Network Platform</h1>
+            <p class="subtitle">Django-based community and content sharing system</p>
+            <p class="course-info">Big Data Engineering Project | Saarland University | WS 2025/26</p>
+        </div>
+
+        <!-- Overview Statistics -->
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-value">50+</div>
+                <div class="stat-label">Models & Views</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">Django 5.2</div>
+                <div class="stat-label">Framework</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">SQLite3</div>
+                <div class="stat-label">Database</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">REST API</div>
+                <div class="stat-label">Backend</div>
+            </div>
+        </div>
+
+        <!-- Project Overview -->
+        <div class="panel">
+            <div class="panel-title">📱 Project Overview</div>
+            <p style="color: #9595b8; line-height: 1.8; margin-bottom: 20px;">
+                The Social Network Platform is a comprehensive Django web application featuring user profiles, content creation, community engagement, and expertise-based content classification. The system supports user relationships (follow/block), content organization with expertise tagging, truth ratings for community-driven fact-checking, and administrative moderation tools.
+            </p>
+            
+            <h3 style="color: #47c8ff; margin-top: 20px; margin-bottom: 12px;">Core Features:</h3>
+            <ul style="color: #9595b8; margin-left: 20px;">
+                <li><strong>User Profiles</strong> - Account management with follow relationships and community memberships</li>
+                <li><strong>Timeline</strong> - Real-time feed with posts, citations, and replies</li>
+                <li><strong>Expertise Areas</strong> - Automatic content classification based on user expertise</li>
+                <li><strong>Community Features</strong> - User communities with moderation and member management</li>
+                <li><strong>Truth Rating System</strong> - Community-driven fact-checking and content validation</li>
+                <li><strong>Admin Dashboard</strong> - Moderation tools and content management interface</li>
+            </ul>
+        </div>
+
+        <!-- Technology Stack -->
+        <div class="panel">
+            <div class="panel-title">⚙️ Technology Stack</div>
+            <div class="features">
+                <div class="feature">
+                    <div class="feature-title">Backend</div>
+                    <div class="feature-desc">
+                        <strong>Django 5.2</strong> - Full-featured Python web framework<br>
+                        <strong>Django REST</strong> - API development framework<br>
+                        <strong>SQLite3</strong> - Relational database
+                    </div>
+                </div>
+                <div class="feature">
+                    <div class="feature-title">Frontend</div>
+                    <div class="feature-desc">
+                        <strong>Bootstrap 5</strong> - Responsive UI framework<br>
+                        <strong>FontAwesome</strong> - Icon library<br>
+                        <strong>Django Templates</strong> - Server-side rendering
+                    </div>
+                </div>
+                <div class="feature">
+                    <div class="feature-title">Architecture</div>
+                    <div class="feature-desc">
+                        <strong>MVC Pattern</strong> - Models, Views, Templates<br>
+                        <strong>ORM</strong> - Django ORM for database interactions<br>
+                        <strong>REST APIs</strong> - Structured API endpoints
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Database Schema -->
+        <div class="panel">
+            <div class="panel-title">🗄️ Database Models</div>
+            <p style="color: #9595b8; margin-bottom: 15px;">Core Django models representing the application's data structure:</p>
+            
+            <div class="schema-box">
+                <div class="model-name">SocialNetworkUser</div>
+                <div class="field">• user_id: Integer (Primary Key)</div>
+                <div class="field">• username: String</div>
+                <div class="field">• follows: Many-to-Many (Self-referential)</div>
+                <div class="field">• communities: Many-to-Many</div>
+                <div class="field">• created_at: DateTime</div>
+
+                <div class="model-name">Post</div>
+                <div class="field">• post_id: Integer (Primary Key)</div>
+                <div class="field">• author: ForeignKey (SocialNetworkUser)</div>
+                <div class="field">• content: Text</div>
+                <div class="field">• expertise_area: String (Classification)</div>
+                <div class="field">• created_at: DateTime</div>
+                <div class="field">• citations: Text (References)</div>
+
+                <div class="model-name">Community</div>
+                <div class="field">• community_id: Integer (Primary Key)</div>
+                <div class="field">• name: String</div>
+                <div class="field">• description: Text</div>
+                <div class="field">• members: Many-to-Many (SocialNetworkUser)</div>
+                <div class="field">• moderators: Many-to-Many (SocialNetworkUser)</div>
+
+                <div class="model-name">TruthRating</div>
+                <div class="field">• rating_id: Integer (Primary Key)</div>
+                <div class="field">• post: ForeignKey (Post)</div>
+                <div class="field">• rater: ForeignKey (SocialNetworkUser)</div>
+                <div class="field">• rating: Integer (1-5 scale)</div>
+                <div class="field">• created_at: DateTime</div>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- How to Run -->
+        <div class="panel">
+            <div class="panel-title">🚀 How to Run Locally</div>
+            
+            <div class="instruction-block">
+                <div class="instruction-title">Prerequisites</div>
+                <ul>
+                    <li>Python 3.10+</li>
+                    <li>pipenv (Python virtual environment manager)</li>
+                    <li>Git</li>
+                </ul>
+            </div>
+
+            <div class="instruction-block">
+                <div class="instruction-title">1. Clone & Setup</div>
+                <div class="code-block">
+git clone &lt;repository-url&gt;<br>
+cd assets/projects/bdeProject<br>
+pipenv install
+                </div>
+            </div>
+
+            <div class="instruction-block">
+                <div class="instruction-title">2. Activate Virtual Environment</div>
+                <div class="code-block">
+pipenv shell
+                </div>
+            </div>
+
+            <div class="instruction-block">
+                <div class="instruction-title">3. Initialize Database (if needed)</div>
+                <div class="code-block">
+python manage.py migrate<br>
+python manage.py create_fake_data
+                </div>
+            </div>
+
+            <div class="instruction-block">
+                <div class="instruction-title">4. Run Development Server</div>
+                <div class="code-block">
+python manage.py runserver
+                </div>
+                <p style="color: #9595b8; margin-top: 8px;">Server will start at <code>http://127.0.0.1:8000/</code></p>
+            </div>
+
+            <div class="instruction-block">
+                <div class="instruction-title">5. Access the Application</div>
+                <ul>
+                    <li><strong>Homepage:</strong> <code>http://127.0.0.1:8000/</code> - Login interface</li>
+                    <li><strong>Timeline:</strong> <code>http://127.0.0.1:8000/sn/html/timeline</code> - Main feed</li>
+                    <li><strong>Communities:</strong> <code>http://127.0.0.1:8000/sn/html/communities</code></li>
+                    <li><strong>Admin:</strong> <code>http://127.0.0.1:8000/admin/</code> - Admin panel</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- API Endpoints -->
+        <div class="panel">
+            <div class="panel-title">🔌 REST API Endpoints</div>
+            <p style="color: #9595b8; margin-bottom: 15px;">The application provides comprehensive REST APIs for frontend and external integrations:</p>
+            
+            <div class="endpoint">
+                <span class="endpoint-method">GET</span>
+                <span class="endpoint-path">/api/users/</span> - List all users
+            </div>
+            <div class="endpoint">
+                <span class="endpoint-method">POST</span>
+                <span class="endpoint-path">/api/users/</span> - Create new user
+            </div>
+            <div class="endpoint">
+                <span class="endpoint-method">GET</span>
+                <span class="endpoint-path">/api/posts/</span> - List all posts
+            </div>
+            <div class="endpoint">
+                <span class="endpoint-method">POST</span>
+                <span class="endpoint-path">/api/posts/</span> - Create new post
+            </div>
+            <div class="endpoint">
+                <span class="endpoint-method">GET</span>
+                <span class="endpoint-path">/api/communities/</span> - List communities
+            </div>
+            <div class="endpoint">
+                <span class="endpoint-method">POST</span>
+                <span class="endpoint-path">/api/truth-ratings/</span> - Submit truth rating
+            </div>
+        </div>
+
+        <!-- Project Structure -->
+        <div class="panel">
+            <div class="panel-title">📁 Project Structure</div>
+            <div class="code-block">
+bdeProject/<br>
+├── manage.py                  # Django management script<br>
+├── Pipfile                    # Python dependencies<br>
+├── db.sqlite3                 # SQLite database<br>
+├── database_dump.json         # Data fixtures<br>
+│<br>
+├── famesocialnetwork/         # Main project configuration<br>
+│   ├── settings.py            # Django settings<br>
+│   ├── urls.py                # URL routing<br>
+│   ├── views/                 # HTML views<br>
+│   └── fakedata.py            # Test data generation<br>
+│<br>
+├── socialnetwork/             # Main app<br>
+│   ├── models.py              # Database models<br>
+│   ├── views/                 # REST API views<br>
+│   ├── templates/             # Django templates<br>
+│   │   ├── timeline.html      # Feed page<br>
+│   │   ├── communities.html   # Communities page<br>
+│   │   ├── followers.html     # Follower relations<br>
+│   │   └── ...                # Other pages<br>
+│   ├── serializers.py         # API serializers<br>
+│   └── urls.py                # App URL routing<br>
+│<br>
+├── fame/                      # Communities app<br>
+│   ├── models.py              # Fame-related models<br>
+│   └── views/                 # Fame views<br>
+│<br>
+└── assets/                    # Static files<br>
+    ├── bootstrap.min.css      # Bootstrap framework<br>
+    ├── fa/                    # FontAwesome icons<br>
+    └── main.css               # Custom styles
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Key Features Deep Dive -->
+        <h2 class="section-title">✨ Key Features</h2>
+
+        <div class="features">
+            <div class="feature">
+                <div class="feature-title">User Management</div>
+                <div class="feature-desc">
+                    Complete user authentication, profile creation, and account management with follow/block relationships between users.
+                </div>
+            </div>
+            <div class="feature">
+                <div class="feature-title">Content Creation</div>
+                <div class="feature-desc">
+                    Create posts with automatic expertise classification, citations, and replies. Support for rich text content and multimedia.
+                </div>
+            </div>
+            <div class="feature">
+                <div class="feature-title">Community System</div>
+                <div class="feature-desc">
+                    Create communities around topics, manage members, assign moderators, and organize group discussions.
+                </div>
+            </div>
+            <div class="feature">
+                <div class="feature-title">Expertise Tracking</div>
+                <div class="feature-desc">
+                    Automatic classification of posts into expertise areas. Users can build verified expertise profiles.
+                </div>
+            </div>
+            <div class="feature">
+                <div class="feature-title">Truth Rating</div>
+                <div class="feature-desc">
+                    Community-driven fact-checking system where users rate content accuracy on a 1-5 scale.
+                </div>
+            </div>
+            <div class="feature">
+                <div class="feature-title">Admin Moderation</div>
+                <div class="feature-desc">
+                    Django admin interface for content moderation, user management, and community oversight.
+                </div>
+            </div>
+        </div>
+
+        <!-- Learning Outcomes -->
+        <div class="panel">
+            <div class="panel-title">📚 Learning Outcomes</div>
+            <div class="features">
+                <div class="feature">
+                    <div class="feature-title">Web Framework Mastery</div>
+                    <div class="feature-desc">Deep understanding of Django's component system, templating, ORM, and middleware architecture.</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-title">Database Design</div>
+                    <div class="feature-desc">Complex relational modeling with many-to-many relationships, constraints, and query optimization.</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-title">API Design</div>
+                    <div class="feature-desc">RESTful API development using Django REST Framework with proper serialization and authentication.</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-title">Full-Stack Development</div>
+                    <div class="feature-desc">Integration of backend logic with frontend templates, handling form processing and real-time data.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CTA Section -->
+        <div class="cta-section">
+            <h2 style="color: #e8ff47; margin-bottom: 15px;">Ready to Explore?</h2>
+            <p style="color: #9595b8; margin-bottom: 20px;">Follow the setup instructions above to run the Social Network platform locally and experience the full feature set.</p>
+            <button class="button" onclick="window.close()">Close Project</button>
+        </div>
+    </div>
+</body>
+</html>
