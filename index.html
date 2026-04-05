@@ -591,6 +591,201 @@
     .hero-bottom { flex-direction: column; gap: 20px; }
     .hero-stats { gap: 30px; }
   }
+
+  /* =========================================
+     EDUCATION TIMELINE
+     ========================================= */
+  #education {
+    width: 100%;
+    padding: 1px 48px 120px;
+    background: var(--surface);
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+  }
+
+  .edu-header {
+    width: 100%;
+    max-width: 920px;
+    margin-bottom: 40px;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+  }
+  .edu-header-eyebrow {
+    font-family: var(--display);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .edu-header-title {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(36px, 5vw, 56px);
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+    color: var(--text);
+    line-height: 1;
+  }
+  .edu-header-count {
+    font-family: var(--display);
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* The timeline track container */
+  .edu-track {
+    position: relative;
+    width: 100%;
+    max-width: 920px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  /* The vertical guide line */
+  .edu-line-wrap {
+    position: absolute;
+    left: 19px;
+    top: 20px;
+    bottom: 20px;
+    width: 1px;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  /* The track (full height, faint) */
+  .edu-line-track {
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0.14);
+  }
+
+  /* The fill that draws downward as you scroll */
+  .edu-line-fill {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 0%;
+    background: var(--accent);
+    transition: height 0.06s linear;
+  }
+
+  /* Individual education entry */
+  .edu-entry {
+    display: grid;
+    grid-template-columns: 38px 1fr;
+    gap: 0 28px;
+    padding: 0 0 56px;
+    position: relative;
+  }
+  .edu-entry:last-child { padding-bottom: 0; }
+
+  /* Dot on the line */
+  .edu-dot-wrap {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 18px;
+  }
+  .edu-dot {
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    border: 2px solid var(--accent);
+    background: var(--accent);
+    position: relative;
+    z-index: 2;
+    flex-shrink: 0;
+    transition: border-color 0.4s ease, background 0.4s ease, transform 0.4s ease;
+  }
+  .edu-entry.active .edu-dot {
+    border-color: var(--accent);
+    background: var(--accent);
+    transform: scale(1.25);
+  }
+
+  /* Entry body */
+  .edu-body {
+    padding-top: 10px;
+    opacity: 0;
+    transform: translateX(-14px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  .edu-entry.active .edu-body {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .edu-period {
+    font-family: var(--display);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  .edu-program {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(20px, 2.5vw, 26px);
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+    color: var(--text);
+    line-height: 1.05;
+    margin-bottom: 4px;
+  }
+
+  .edu-institution {
+    font-family: var(--display);
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+
+  .edu-desc {
+    font-size: 14px;
+    line-height: 1.75;
+    color: var(--muted);
+    max-width: 520px;
+    margin-bottom: 16px;
+  }
+
+  .edu-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+  }
+  .edu-tag {
+    font-family: var(--display);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.14);
+    color: var(--muted);
+    transition: all 0.2s;
+  }
+  .edu-entry.active .edu-tag {
+    border-color: rgba(240,240,245,0.2);
+    color: var(--text);
+  }
+
+  @media (max-width: 700px) {
+    #education { padding: 60px 20px 80px; }
+    .edu-header { flex-direction: column; gap: 8px; }
+  }
+
 </style>
 </head>
 <body>
@@ -759,6 +954,68 @@
   </div>
 </section>
 
+<!-- EDUCATION TIMELINE -->
+<section id="education">
+  <div class="edu-header">
+    <div>
+      <div class="edu-header-eyebrow">Learning Path</div>
+      <div class="edu-header-title">Education</div>
+    </div>
+    <div class="edu-header-count">02 entries</div>
+  </div>
+
+  <div class="edu-track" id="edu-track">
+
+    <!-- The vertical guide line -->
+    <div class="edu-line-wrap">
+      <div class="edu-line-track"></div>
+      <div class="edu-line-fill" id="edu-line-fill"></div>
+    </div>
+
+    <!-- Entry 1: Bachelor -->
+    <div class="edu-entry" data-index="0">
+      <div class="edu-dot-wrap">
+        <div class="edu-dot"></div>
+      </div>
+      <div class="edu-body">
+        <div class="edu-period">Oct. 2023 - Present</div>
+        <div class="edu-program">B.Sc. Computer Science</div>
+        <div class="edu-institution">University of Saarland</div>
+        <div class="edu-desc">
+          Focus on Theoretical Computer Science, Software Engineering and Compiler Construction. Relevant coursework: Algorithms & Data Structures, Software Engineering, Compiler Construction, System Architecture, Algorithms and Complexity, Just beyond P.
+        </div>
+        <div class="edu-tags">
+          <span class="edu-tag">Software Engineering</span>
+          <span class="edu-tag">AI</span>
+          <span class="edu-tag">Compilers</span>
+          <span class="edu-tag">Algorithms</span>
+          <span class="edu-tag">Complexity</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Entry 2: Abitur -->
+    <div class="edu-entry" data-index="1">
+      <div class="edu-dot-wrap">
+        <div class="edu-dot"></div>
+      </div>
+      <div class="edu-body">
+        <div class="edu-period">Aug. 2017 - Jun. 2023</div>
+        <div class="edu-program">Abitur</div>
+        <div class="edu-institution">Albert-Einstein-Gymnasium, Germany</div>
+        <div class="edu-desc">
+          Advanced courses in Mathematics and Physics. Strong STEM foundation with excellent grades in core technical subjects. Foundation for advanced computer science studies.
+        </div>
+        <div class="edu-tags">
+          <span class="edu-tag">Mathematics</span>
+          <span class="edu-tag">Physics</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
 <!-- PROJECTS -->
 <section class="projects" id="projects">
   <div class="section-label reveal">Portfolio</div>
@@ -840,6 +1097,7 @@
         <span class="tag">RISC-V</span><span class="tag">Assembly</span><span class="tag">Systems</span><span class="tag">Architecture</span>
       </div>
     </div>
+  </div>
   </div>
 </section>
 
@@ -1027,6 +1285,47 @@ themeToggle.addEventListener('click', () => {
     nav.style.background = isLight ? 'rgba(248,249,250,0.7)' : 'rgba(12,12,14,0.7)';
   }
 });
+
+// Education Timeline
+(function initEducationTimeline() {
+  const track    = document.getElementById('edu-track');
+  const lineFill = document.getElementById('edu-line-fill');
+  const entries  = Array.from(document.querySelectorAll('.edu-entry'));
+  if (!track || !lineFill || !entries.length) return;
+
+  // ── 1. Scroll-driven line draw ────────────────────
+  function updateLine() {
+    const trackRect = track.getBoundingClientRect();
+    const vh        = window.innerHeight;
+
+    // Progress: 0 when top of track hits bottom of viewport,
+    //           1 when bottom of track hits top of viewport
+    const total    = trackRect.height + vh * 0.5;
+    const traveled = vh - trackRect.top;
+    const progress = Math.max(0, Math.min(1, traveled / total));
+
+    lineFill.style.height = (progress * 100).toFixed(2) + '%';
+  }
+
+  // ── 2. IntersectionObserver — activate each entry ─
+  const io = new IntersectionObserver((entries_obs) => {
+    entries_obs.forEach(obs => {
+      if (obs.isIntersecting) {
+        obs.target.classList.add('active');
+      }
+    });
+  }, { threshold: 0.25, rootMargin: '0px 0px -60px 0px' });
+
+  entries.forEach((el, i) => {
+    el.querySelector('.edu-body').style.transitionDelay = (i * 0.05) + 's';
+    io.observe(el);
+  });
+
+  // ── 3. Bind scroll & resize ───────────────────────
+  window.addEventListener('scroll', updateLine, { passive: true });
+  window.addEventListener('resize', updateLine, { passive: true });
+  updateLine();
+})();
 </script>
 </body>
 </html>
