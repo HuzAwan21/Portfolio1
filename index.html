@@ -1081,17 +1081,17 @@
         <div class="project-title">C Compiler Implementation</div>
         <div class="project-desc">Comprehensive compiler for a subset of C with complete pipeline from lexing to code generation.</div>
         <div class="project-stack" style="margin-top:10px;">
-          <span class="project-tag">C++</span><span class="project-tag">Compilers</span><span class="project-tag">Algorithms</span>
+          <span class="project-tag">C++</span><span class="project-tag">Compilers</span><span class="project-tag">LLVM</span>
         </div>
       </div>
     </a>
-    <a class="project reveal reveal-delay-1" href="#">
+    <a class="project reveal reveal-delay-1" href="javascript:void(0)" onclick="openAIPlanning()">
       <div class="project-num">02</div>
       <div class="project-info">
         <div class="project-title">AI Planning with Heuristics</div>
         <div class="project-desc">Advanced heuristic algorithms (PDB, Cliques) for classical planning tasks with optimal distance estimation.</div>
         <div class="project-stack" style="margin-top:10px;">
-          <span class="project-tag">Python</span><span class="project-tag">AI</span><span class="project-tag">Algorithms</span>
+          <span class="project-tag">C++</span><span class="project-tag">AI</span><span class="project-tag">Algorithms</span>
         </div>
       </div>
     </a>
@@ -1467,7 +1467,12 @@ themeToggle.addEventListener('click', () => {
 
 // C Compiler launcher
 function openCCompiler() {
-  window.open('assets/projects/C-Compiler/c-compiler.html', 'CCompiler', 'width=1000,height=1200,resizable=yes,scrollbars=yes');
+  window.open('assets/projects/C-Compiler/compiler-demo.html', 'CCompiler', 'width=1600,height=1400,resizable=yes,scrollbars=yes');
+}
+
+// AI Planning launcher
+function openAIPlanning() {
+  window.open('assets/projects/Pattern-Database-Heuristics/pdb-demo.html', 'AIPlanning', 'width=1400,height=1200,resizable=yes,scrollbars=yes');
 }
 
 // Rock Paper Scissors Game launcher
