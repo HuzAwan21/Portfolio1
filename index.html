@@ -79,7 +79,7 @@
   nav {
     position: fixed; top: 0; left: 0; right: 0; z-index: 100;
     display: flex; align-items: center; justify-content: space-between;
-    padding: 20px 48px;
+    padding: 12px 48px;
     backdrop-filter: blur(12px);
     background: rgba(12,12,14,0.7);
     border-bottom: 1px solid var(--border);
@@ -126,24 +126,142 @@
   }
   .nav-github:hover { color: var(--accent); }
 
-  /* Theme toggle button */
+  /* Theme toggle button - Vertical Pivot Design (Top-Only Display) */
   .theme-toggle {
+    position: relative;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: none;
     background: none;
-    border: 1px solid var(--border);
-    color: var(--muted);
-    font-size: 18px;
-    padding: 8px 10px;
     cursor: none;
-    border-radius: 4px;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.3s ease;
-    font-family: var(--mono);
+    margin: 0;
+    perspective: 1200px;
   }
-  .theme-toggle:hover {
-    border-color: var(--accent);
-    color: var(--accent);
+
+  .theme-toggle-bg {
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    background: none;
+    transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+    box-shadow: none;
+  }
+
+  :root.light-mode .theme-toggle-bg {
+    background: none;
+    box-shadow: none;
+  }
+
+  /* Rotation container - rotates around vertical axis */
+  .theme-toggle-rotator {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    transition: transform 0.9s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transform-style: preserve-3d;
+  }
+
+  /* Light mode: No rotation - sun visible at top */
+  :root.light-mode .theme-toggle-rotator {
+    transform: rotateX(0deg);
+  }
+
+  /* Dark mode: Rotate 180° to bring moon to top */
+  :root:not(.light-mode) .theme-toggle-rotator {
+    transform: rotateX(180deg);
+  }
+
+  /* Sun icon - positioned above center */
+  .theme-toggle-icon.sun {
+    position: absolute;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: #ffd700;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
+    filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5));
+    top: 0;
+    transition: opacity 0.4s ease;
+    z-index: 2;
+  }
+
+  /* Light mode: Sun visible */
+  :root.light-mode .theme-toggle-icon.sun {
+    opacity: 1;
+  }
+
+  /* Dark mode: Sun hidden */
+  :root:not(.light-mode) .theme-toggle-icon.sun {
+    opacity: 0;
+  }
+
+  .theme-toggle:hover .theme-toggle-icon.sun {
+    filter: drop-shadow(0 0 12px rgba(255, 215, 0, 0.7));
+  }
+
+  /* Moon icon - positioned below center */
+  .theme-toggle-icon.moon {
+    position: absolute;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: #e8e8ff;
+    text-shadow: 0 0 10px rgba(232, 232, 255, 0.5);
+    filter: drop-shadow(0 0 10px rgba(232, 232, 255, 0.4));
+    bottom: 0;
+    transition: opacity 0.4s ease;
+    z-index: 2;
+  }
+
+  /* Light mode: Moon hidden */
+  :root.light-mode .theme-toggle-icon.moon {
+    opacity: 0;
+  }
+
+  /* Dark mode: Moon visible */
+  :root:not(.light-mode) .theme-toggle-icon.moon {
+    opacity: 1;
+  }
+
+  .theme-toggle:hover .theme-toggle-icon.moon {
+    filter: drop-shadow(0 0 12px rgba(232, 232, 255, 0.7));
+  }
+
+  /* Outer glow effect */
+  .theme-toggle::before {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: 16px;
+    background: none;
+    transition: all 0.6s ease;
+    z-index: -1;
+  }
+
+  :root.light-mode .theme-toggle::before {
+    background: none;
+  }
+
+  .theme-toggle:hover .theme-toggle-bg {
+    box-shadow: none;
+  }
+
+  :root.light-mode .theme-toggle:hover .theme-toggle-bg {
+    box-shadow: none;
   }
 
   /* Intro Screen */
@@ -1022,15 +1140,14 @@
     }
 
     .theme-toggle {
-      padding: 6px 8px;
-      font-size: 14px;
-      border: none;
-      background: transparent;
-      color: var(--muted);
+      width: 32px;
+      height: 32px;
+      perspective: 1200px;
     }
 
-    .theme-toggle:active {
-      color: var(--accent);
+    .theme-toggle::before {
+      border-radius: 16px;
+      inset: -5px;
     }
 
     .nav-cta {
@@ -1349,7 +1466,13 @@
     <li><a href="#contact">Contact</a></li>
   </ul>
   <div style="display: flex; gap: 12px; align-items: center;">
-    <button class="theme-toggle" id="themeToggle" title="Toggle dark/light mode">🌙</button>
+    <button class="theme-toggle" id="themeToggle" title="Toggle dark/light mode">
+      <div class="theme-toggle-bg"></div>
+      <div class="theme-toggle-rotator">
+        <div class="theme-toggle-icon sun">☀</div>
+        <div class="theme-toggle-icon moon">☾</div>
+      </div>
+    </button>
     <a class="nav-github" href="https://github.com" target="_blank" title="Visit GitHub">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
         <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.6.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v 3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
@@ -2021,10 +2144,8 @@ const htmlElement = document.documentElement;
 const savedTheme = localStorage.getItem('theme') || 'dark';
 if (savedTheme === 'light') {
   htmlElement.classList.add('light-mode');
-  themeToggle.textContent = '☀️';
 } else {
   htmlElement.classList.remove('light-mode');
-  themeToggle.textContent = '🌙';
 }
 
 // Handle theme toggle
@@ -2032,7 +2153,6 @@ themeToggle.addEventListener('click', () => {
   htmlElement.classList.toggle('light-mode');
   const isLight = htmlElement.classList.contains('light-mode');
   localStorage.setItem('theme', isLight ? 'light' : 'dark');
-  themeToggle.textContent = isLight ? '☀️' : '🌙';
   
   // Update nav background immediately
   const nav = document.querySelector('nav');
