@@ -10,6 +10,9 @@
             padding: 0;
             box-sizing: border-box;
             cursor: url('assets/images/aquarium/indexFinger.png') 10 0, pointer;
+            -webkit-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
         }
 
         html {
@@ -26,6 +29,7 @@
             min-height: 100vh;
             padding: 20px;
             cursor: url('assets/images/aquarium/indexFinger.png') 10 0, pointer;
+            overflow: hidden;
         }
 
         .aquarium-container {
@@ -48,6 +52,9 @@
             width: 100%;
             height: auto;
             cursor: url('assets/images/aquarium/indexFinger.png') 10 0, pointer;
+            touch-action: none;
+            -webkit-user-select: none;
+            user-select: none;
         }
 
         .popup-message {
@@ -156,10 +163,18 @@
             box-shadow: 0 4px 15px rgba(0, 212, 255, 0.4);
             transition: all 0.3s ease;
             pointer-events: auto;
+            touch-action: manipulation;
+            -webkit-user-select: none;
+            user-select: none;
         }
 
         .feed-button:active {
             transform: translateX(-50%) scale(0.95);
+        }
+
+        .feed-button.holding {
+            background: linear-gradient(135deg, #00ff88 0%, #00dd66 100%);
+            box-shadow: 0 4px 20px rgba(0, 255, 136, 0.6);
         }
 
         @media (max-width: 768px) {
@@ -224,12 +239,40 @@
         resizeCanvas();
         window.addEventListener('resize', resizeCanvas);
 
+        // Preload all images for faster loading
+        const imagesToPreload = [
+            'assets/images/aquarium/indexFinger.png',
+            'assets/images/aquarium/exitButton.png',
+            'assets/images/aquarium/pressSpaceToFeed.png',
+            'assets/images/aquarium/thanksForSwimmingBy.png',
+            'assets/images/aquarium/jellyfish1.png',
+            'assets/images/aquarium/jellyfish2.png',
+            'assets/images/aquarium/clownfish.png',
+            'assets/images/aquarium/bettafish.png',
+            'assets/images/aquarium/angelfish.png',
+            'assets/images/aquarium/angelfish2.png',
+            'assets/images/aquarium/corydoras.png',
+            'assets/images/aquarium/discus.png',
+            'assets/images/aquarium/fancyGoldfish.png',
+            'assets/images/aquarium/goldfish.png',
+            'assets/images/aquarium/guppyfish.png',
+            'assets/images/aquarium/koifish.png',
+            'assets/images/aquarium/neontetra.png',
+            'assets/images/aquarium/zebradanio.png',
+            'assets/images/aquarium/pufferfish.png'
+        ];
+        imagesToPreload.forEach(src => {
+            const img = new Image();
+            img.src = src;
+        });
+
         // Load background video
         const backgroundVideo = document.createElement('video');
         backgroundVideo.src = 'assets/images/aquarium/aquariumBackground.mp4';
         backgroundVideo.loop = true;
         backgroundVideo.muted = true;
         backgroundVideo.autoplay = true;
+        backgroundVideo.preload = 'auto';
         let backgroundLoaded = false;
         backgroundVideo.oncanplay = () => {
             backgroundLoaded = true;
@@ -1951,9 +1994,13 @@
 
         // Touch screen support - same effect as mouse movement
         document.addEventListener('touchmove', (e) => {
-            e.preventDefault(); // Prevent scrolling while touching
+            // Only prevent default if touch is within canvas
             const touch = e.touches[0];
             const rect = canvas.getBoundingClientRect();
+            if (touch.clientX >= rect.left && touch.clientX <= rect.right &&
+                touch.clientY >= rect.top && touch.clientY <= rect.bottom) {
+                e.preventDefault();
+            }
             mouseX = touch.clientX - rect.left;
             mouseY = touch.clientY - rect.top;
         }, { passive: false });
@@ -2003,25 +2050,70 @@
             }
         });
 
-        // Feed button handler for mobile
-        document.getElementById('feedButton').addEventListener('click', () => {
-            // Rain food down within aquarium bounds
+        // Feed button handler for mobile - with continuous holding support
+        const feedButton = document.getElementById('feedButton');
+        let isFeedingInterval = null;
+        let isPressed = false;
+
+        function spawnFood() {
             for (let i = 0; i < 5; i++) {
                 const x = Math.random() * (aquariumBounds.right - aquariumBounds.left) + aquariumBounds.left;
                 const y = aquariumBounds.top + Math.random() * (aquariumBounds.bottom - aquariumBounds.top) * 0.2;
                 foods.push(new Food(x, y));
                 foodSpawned++;
             }
+        }
+
+        feedButton.addEventListener('mousedown', () => {
+            isPressed = true;
+            feedButton.classList.add('holding');
+            spawnFood();
+            isFeedingInterval = setInterval(spawnFood, 200);
         });
 
-        // Exit button handler
+        feedButton.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            isPressed = true;
+            feedButton.classList.add('holding');
+            spawnFood();
+            isFeedingInterval = setInterval(spawnFood, 200);
+        }, { passive: false });
+
+        function stopFeeding() {
+            if (isFeedingInterval) {
+                clearInterval(isFeedingInterval);
+                isFeedingInterval = null;
+            }
+            isPressed = false;
+            feedButton.classList.remove('holding');
+        }
+
+        feedButton.addEventListener('mouseup', stopFeeding);
+        feedButton.addEventListener('mouseleave', stopFeeding);
+        feedButton.addEventListener('touchend', stopFeeding);
+        feedButton.addEventListener('touchcancel', stopFeeding);
+
+        // Fallback for click
+        feedButton.addEventListener('click', () => {
+            if (!isPressed) {
+                spawnFood();
+            }
+        });
+
+        // Exit button handler - close window to return to portfolio
         document.getElementById('exitButton').addEventListener('click', () => {
             const popupMsg = document.getElementById('popupMessage');
             const thankYouMsg = document.getElementById('thankYouMessage');
             popupMsg.style.display = 'none';
             thankYouMsg.style.display = 'block';
             setTimeout(() => {
-                window.location.href = 'index.html';
+                // Close the window without reloading
+                if (window.opener) {
+                    window.close();
+                } else {
+                    // Fallback: if window.close() doesn't work, use history back
+                    window.history.back();
+                }
             }, 2000);
         });
 
@@ -2253,9 +2345,19 @@
             requestAnimationFrame(gameLoop);
         }
 
-        // Start the game
-        init();
-        gameLoop();
+        // Start the game with optimized initialization
+        window.addEventListener('load', () => {
+            init();
+            gameLoop();
+        });
+
+        // Fallback if load event doesn't fire
+        setTimeout(() => {
+            if (foods.length === 0) {
+                init();
+                gameLoop();
+            }
+        }, 1000);
     </script>
 </body>
 </html>
