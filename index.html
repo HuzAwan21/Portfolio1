@@ -444,13 +444,18 @@
     border-radius: 8px;
     padding: 16px 12px;
     text-align: center;
-    min-height: 140px;
+    height: 110px;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.3s ease;
+    transition: all 0.4s ease;
     position: relative;
-    overflow: hidden;
+    overflow: visible;
+    perspective: 1000px;
+  }
+
+  :root.light-mode .profile-card {
+    background-image: url('Pictures/blue_carpet.jpeg');
   }
 
   .profile-card::before {
@@ -462,17 +467,18 @@
     bottom: 0;
     background: rgba(0, 0, 0, 0.2);
     pointer-events: none;
+    transition: all 0.4s ease;
   }
 
-  .profile-card:hover {
-    border-color: var(--accent);
+  .profile-card:hover::before {
+    background: rgba(0, 0, 0, 0.15);
   }
 
   .profile-card h2 {
     font-family: 'Playfair Display', serif;
-    font-size: clamp(36px, 8vw, 64px);
+    font-size: clamp(30px, 6vw, 50px);
     color: #F5F1E8;
-    opacity: 0.75;
+    opacity: 1;
     font-weight: 700;
     letter-spacing: 0.08em;
     margin: 0;
@@ -483,11 +489,27 @@
     font-style: italic;
     text-transform: uppercase;
     line-height: 1.1;
+    transition: all 0.4s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .profile-card h2 span {
+    display: block;
+  }
+
+  .profile-card:hover h2 {
+    color: var(--accent);
+  }
+
+  :root.light-mode .profile-card:hover h2 {
+    color: var(--accent);
   }
 
   /* Profile Image */
   .profile-image {
-    width: 100%;
+    width:45%;
     aspect-ratio: 4 / 5;
     border-radius: 8px;
     overflow: hidden;
@@ -1172,7 +1194,7 @@
     <div class="hero-right">
       <!-- Name Card -->
       <div class="profile-card">
-        <h2>Huzaifa Ahmad Awan</h2>
+        <h2><span>Huzaifa</span><span>Ahmad Awan</span></h2>
       </div>
 
       <!-- Portrait Image -->
