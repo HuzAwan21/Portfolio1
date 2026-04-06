@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Huzaifa Ahmad Awan — Computer Science Student</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=DM+Mono:wght@400;500&family=Playfair+Display:ital,wght@0,700;1,700&family=UnifrakturCook:wght@400&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg: #0c0c0e;
@@ -413,6 +413,139 @@
   }
   @keyframes scrollLine { 0%{left:-100%} 100%{left:100%} }
 
+  /* Hero Wrapper - Two Column Layout */
+  .hero-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: flex-start;
+    width: 100%;
+    margin-bottom: 60px;
+  }
+
+  .hero-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .hero-right {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  /* Profile Card - Name */
+  .profile-card {
+    background-image: url('Pictures/carpet.jpeg');
+    background-size: cover;
+    background-position: center;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 12px;
+    text-align: center;
+    min-height: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .profile-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.2);
+    pointer-events: none;
+  }
+
+  .profile-card:hover {
+    border-color: var(--accent);
+  }
+
+  .profile-card h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(36px, 8vw, 64px);
+    color: #F5F1E8;
+    opacity: 0.75;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    margin: 0;
+    position: relative;
+    z-index: 1;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4),
+                 0 0 20px rgba(218, 165, 32, 0.2);
+    font-style: italic;
+    text-transform: uppercase;
+    line-height: 1.1;
+  }
+
+  /* Profile Image */
+  .profile-image {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+  }
+
+  .profile-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  /* Location Card with Canvas */
+  .location-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .location-card canvas {
+    width: 100%;
+    height: 180px;
+    background: radial-gradient(circle at 50% 50%, rgba(71,200,255,0.1) 0%, transparent 70%);
+    border-radius: 6px;
+  }
+
+  .location-info {
+    text-align: center;
+  }
+
+  .location-info h3 {
+    font-family: var(--display);
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+    margin: 0 0 8px 0;
+  }
+
+  .coords {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  .local-time {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--accent);
+    font-weight: 600;
+  }
+
   /* Sections */
   section { padding: 120px 48px; }
   .section-label {
@@ -703,6 +836,13 @@
     }
 
     .hero { padding: 0 24px; padding-top: 80px; }
+    .hero-wrapper {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+    .profile-image {
+      aspect-ratio: 3 / 4;
+    }
     section { padding: 80px 24px; }
     .about-grid { grid-template-columns: 1fr; gap: 40px; }
     .services-grid { grid-template-columns: 1fr; }
@@ -1006,22 +1146,52 @@
 <!-- HERO -->
 <section class="hero" id="hero">
   <div class="hero-bg-text">AWAN</div>
-  <div class="hero-content">
-    <div class="hero-badge"><div class="badge-dot"></div><span style="color: #10b981;">Open to internships & collaborations</span></div>
-    <h1 class="hero-title">
-      <span class="line">CS STUDENT</span>
-      <span class="line stroke">building</span>
-      <span class="line accent">intelligent solutions.</span>
-    </h1>
-    <p class="hero-sub">
-      Computer Science student at University of Saarland, specializing in <strong>System Programming, Theoretical Computer Science, Software Engineering and Compiler Construction</strong>.
-      Driven by curiosity to solve complex problems through innovative technology.
-    </p>
-    <div class="hero-actions">
-      <a class="btn-primary" href="#projects">View My Work <span>↗</span></a>
-      <a class="btn-ghost" href="#about">Learn More</a>
+  
+  <div class="hero-wrapper">
+    <!-- Left: Title & Content -->
+    <div class="hero-left">
+      <div class="hero-content">
+        <div class="hero-badge"><div class="badge-dot"></div><span style="color: #10b981;">Open to internships & collaborations</span></div>
+        <h1 class="hero-title">
+          <span class="line">CS STUDENT</span>
+          <span class="line stroke">building</span>
+          <span class="line accent">intelligent solutions.</span>
+        </h1>
+        <p class="hero-sub">
+          Computer Science student at University of Saarland, specializing in <strong>System Programming, Theoretical Computer Science, Software Engineering and Compiler Construction</strong>.
+          Driven by curiosity to solve complex problems through innovative technology.
+        </p>
+        <div class="hero-actions">
+          <a class="btn-primary" href="#projects">View My Work <span>↗</span></a>
+          <a class="btn-ghost" href="#about">Learn More</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Profile Card -->
+    <div class="hero-right">
+      <!-- Name Card -->
+      <div class="profile-card">
+        <h2>Huzaifa Ahmad Awan</h2>
+      </div>
+
+      <!-- Portrait Image -->
+      <div class="profile-image">
+        <img src="Pictures/Pic4.jpeg" alt="Huzaifa Ahmad Awan">
+      </div>
+
+      <!-- Location & Time Card -->
+      <div class="location-card">
+        <canvas id="worldMapCanvas" width="300" height="200"></canvas>
+        <div class="location-info">
+          <h3>Saarbrücken, Germany</h3>
+          <div class="coords">49.2387° N, 6.9958° E</div>
+          <div class="local-time">Loading...</div>
+        </div>
+      </div>
     </div>
   </div>
+
   <div class="hero-bottom">
     <div class="hero-stats">
       <div>
@@ -1408,6 +1578,104 @@ function initIntroScreen() {
 
 // Initialize intro on page load
 window.addEventListener('load', initIntroScreen);
+
+// World Map Animation
+function initWorldMap() {
+  const canvas = document.getElementById('worldMapCanvas');
+  if (!canvas) return;
+  
+  const ctx = canvas.getContext('2d');
+  const centerX = canvas.width / 2;
+  const centerY = canvas.height / 2;
+  const radius = 80;
+  let rotation = 0;
+
+  function drawGlobe() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Save context state
+    ctx.save();
+    ctx.translate(centerX, centerY);
+    ctx.rotate(rotation);
+    
+    // Draw globe circle
+    ctx.strokeStyle = 'rgba(71, 200, 255, 0.3)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(0, 0, radius, 0, Math.PI * 2);
+    ctx.stroke();
+    
+    // Draw latitude lines
+    ctx.strokeStyle = 'rgba(71, 200, 255, 0.15)';
+    ctx.lineWidth = 1;
+    for (let i = -2; i <= 2; i++) {
+      const y = (i / 2) * radius;
+      ctx.beginPath();
+      ctx.moveTo(-radius, y);
+      ctx.lineTo(radius, y);
+      ctx.stroke();
+    }
+    
+    // Draw longitude lines
+    for (let i = 0; i < 8; i++) {
+      const angle = (i / 8) * Math.PI * 2;
+      ctx.beginPath();
+      ctx.moveTo(Math.cos(angle) * radius, Math.sin(angle) * radius);
+      ctx.lineTo(Math.cos(angle + Math.PI) * radius, Math.sin(angle + Math.PI) * radius);
+      ctx.stroke();
+    }
+    
+    // Draw Saarbrücken location (approximate coordinates: 49.24°N, 6.99°E)
+    const sbLat = 49.2387;
+    const sbLon = 6.9958;
+    const x = (sbLon / 180) * radius * 0.8;
+    const y = -(sbLat / 90) * radius * 0.8;
+    
+    // Glow effect
+    ctx.fillStyle = 'rgba(232, 255, 71, 0.2)';
+    ctx.beginPath();
+    ctx.arc(x, y, 8, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Location dot
+    ctx.fillStyle = '#e8ff47';
+    ctx.beginPath();
+    ctx.arc(x, y, 4, 0, Math.PI * 2);
+    ctx.fill();
+    
+    ctx.restore();
+    
+    // Continuous rotation
+    rotation += 0.002;
+    requestAnimationFrame(drawGlobe);
+  }
+
+  drawGlobe();
+}
+
+// Update local time for Saarbrücken
+function updateLocationTime() {
+  const timeElement = document.querySelector('.local-time');
+  if (!timeElement) return;
+  
+  // Using German timezone (CET/CEST)
+  const germanTime = new Date().toLocaleString('en-US', { 
+    timeZone: 'Europe/Berlin',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false
+  });
+  
+  timeElement.textContent = germanTime + ' CET';
+}
+
+// Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+  initWorldMap();
+  updateLocationTime();
+  setInterval(updateLocationTime, 1000); // Update time every second
+});
 
 // Cursor
 // Cursor
