@@ -456,9 +456,9 @@
     grid-row: 2;
   }
 
-  .hero-right > .location-card {
-    grid-column: 1 / -1;
-    grid-row: 3;
+  .hero-right > .map-card {
+    grid-column: 0 / -1;
+    grid-row: 2 / 0;
   }
 
   /* Profile Card - Name */
@@ -551,47 +551,58 @@
   }
 
   /* Location Card with Canvas */
-  .location-card {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
-
-  .location-card canvas {
+  .map-card {
+    position: relative;
     width: 100%;
-    height: 180px;
-    background: radial-gradient(circle at 50% 50%, rgba(71,200,255,0.1) 0%, transparent 70%);
-    border-radius: 6px;
+    height: 100px;
+    border-radius: 8px;
+    overflow: hidden;
   }
 
-  .location-info {
-    text-align: center;
+  .map-card img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
   }
 
-  .location-info h3 {
+  .map-address {
+    position: absolute;
+    top: 16px;
+    left: -22px;
+    right: 0;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.2));
+    padding: 16px 20px 16px 28px;
+    text-align: left;
+  }
+
+  .map-address h3 {
     font-family: var(--display);
-    font-size: 18px;
+    font-size: 24px;
     font-weight: 700;
-    color: var(--text);
-    margin: 0 0 8px 0;
+    color: #F5F1E8;
+    margin: 0;
+    padding: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    line-height: 1;
   }
 
-  .coords {
+  .map-coords {
     font-family: var(--mono);
-    font-size: 11px;
-    color: var(--muted);
-    margin-bottom: 6px;
+    font-size: 13px;
+    color: #D4D1C8;
+    margin: 2px 0 2px 0;
+    padding: 0;
   }
 
-  .local-time {
+  .map-local-time {
     font-family: var(--mono);
     font-size: 12px;
-    color: var(--accent);
-    font-weight: 600;
+    color: #D4D1C8;
+    font-weight: 500;
+    margin: 0;
+    padding: 0;
   }
 
   /* Carousel */
@@ -1319,13 +1330,13 @@
         </div>
       </div>
 
-      <!-- Location & Time Card -->
-      <div class="location-card">
-        <canvas id="worldMapCanvas" width="300" height="200"></canvas>
-        <div class="location-info">
+      <!-- Map Card -->
+      <div class="map-card">
+        <img src="Pictures/map.png" alt="Location Map">
+        <div class="map-address">
           <h3>Saarbrücken, Germany</h3>
-          <div class="coords">49.2387° N, 6.9958° E</div>
-          <div class="local-time">Loading...</div>
+          <div class="map-coords">49.243641° N, 6.951207° E</div>
+          <div class="map-local-time">Loading...</div>
         </div>
       </div>
     </div>
@@ -1718,95 +1729,20 @@ function initIntroScreen() {
 // Initialize intro on page load
 window.addEventListener('load', initIntroScreen);
 
-// World Map Animation
-function initWorldMap() {
-  const canvas = document.getElementById('worldMapCanvas');
-  if (!canvas) return;
-  
-  const ctx = canvas.getContext('2d');
-  const centerX = canvas.width / 2;
-  const centerY = canvas.height / 2;
-  const radius = 80;
-  let rotation = 0;
-
-  function drawGlobe() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-    // Save context state
-    ctx.save();
-    ctx.translate(centerX, centerY);
-    ctx.rotate(rotation);
-    
-    // Draw globe circle
-    ctx.strokeStyle = 'rgba(71, 200, 255, 0.3)';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.arc(0, 0, radius, 0, Math.PI * 2);
-    ctx.stroke();
-    
-    // Draw latitude lines
-    ctx.strokeStyle = 'rgba(71, 200, 255, 0.15)';
-    ctx.lineWidth = 1;
-    for (let i = -2; i <= 2; i++) {
-      const y = (i / 2) * radius;
-      ctx.beginPath();
-      ctx.moveTo(-radius, y);
-      ctx.lineTo(radius, y);
-      ctx.stroke();
-    }
-    
-    // Draw longitude lines
-    for (let i = 0; i < 8; i++) {
-      const angle = (i / 8) * Math.PI * 2;
-      ctx.beginPath();
-      ctx.moveTo(Math.cos(angle) * radius, Math.sin(angle) * radius);
-      ctx.lineTo(Math.cos(angle + Math.PI) * radius, Math.sin(angle + Math.PI) * radius);
-      ctx.stroke();
-    }
-    
-    // Draw Saarbrücken location (approximate coordinates: 49.24°N, 6.99°E)
-    const sbLat = 49.2387;
-    const sbLon = 6.9958;
-    const x = (sbLon / 180) * radius * 0.8;
-    const y = -(sbLat / 90) * radius * 0.8;
-    
-    // Glow effect
-    ctx.fillStyle = 'rgba(232, 255, 71, 0.2)';
-    ctx.beginPath();
-    ctx.arc(x, y, 8, 0, Math.PI * 2);
-    ctx.fill();
-    
-    // Location dot
-    ctx.fillStyle = '#e8ff47';
-    ctx.beginPath();
-    ctx.arc(x, y, 4, 0, Math.PI * 2);
-    ctx.fill();
-    
-    ctx.restore();
-    
-    // Continuous rotation
-    rotation += 0.002;
-    requestAnimationFrame(drawGlobe);
-  }
-
-  drawGlobe();
-}
-
 // Update local time for Saarbrücken
-function updateLocationTime() {
-  const timeElement = document.querySelector('.local-time');
+function updateMapTime() {
+  const timeElement = document.querySelector('.map-local-time');
   if (!timeElement) return;
   
-  // Using German timezone (CET/CEST)
+  // Get local time for Berlin timezone
   const germanTime = new Date().toLocaleString('en-US', { 
     timeZone: 'Europe/Berlin',
     hour: '2-digit',
     minute: '2-digit',
-    second: '2-digit',
     hour12: false
   });
   
-  timeElement.textContent = germanTime + ' CET';
+  timeElement.textContent = `- ${germanTime}`;
 }
 
 // Carousel Functionality
@@ -1889,10 +1825,9 @@ function initCarousel() {
 
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
-  initWorldMap();
-  updateLocationTime();
+  updateMapTime();
   initCarousel();
-  setInterval(updateLocationTime, 1000); // Update time every second
+  setInterval(updateMapTime, 1000); // Update time every second
 });
 
 // Cursor
