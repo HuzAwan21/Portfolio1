@@ -605,6 +605,29 @@
     padding: 0;
   }
 
+  /* Radar Sweep Animation */
+  .map-radar-line {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 2px;
+    height: 100%;
+    background: linear-gradient(to right, transparent, #10b981, transparent);
+    box-shadow: 0 0 12px #10b981, 0 0 24px rgba(16, 185, 129, 0.4);
+    animation: radarSweep 4s linear infinite;
+    z-index: 1;
+  }
+
+  :root.light-mode .map-radar-line {
+    background: linear-gradient(to right, transparent, #47C8FF, transparent);
+    box-shadow: 0 0 12px #47C8FF, 0 0 24px rgba(71, 200, 255, 0.4);
+  }
+
+  @keyframes radarSweep {
+    0% { left: -2px; }
+    100% { left: 100%; }
+  }
+
   /* Carousel */
   .carousel-container {
     position: relative;
@@ -1333,6 +1356,7 @@
       <!-- Map Card -->
       <div class="map-card">
         <img src="Pictures/map.png" alt="Location Map">
+        <div class="map-radar-line"></div>
         <div class="map-address">
           <h3>Saarbrücken, Germany</h3>
           <div class="map-coords">49.243641° N, 6.951207° E</div>
@@ -1739,6 +1763,7 @@ function updateMapTime() {
     timeZone: 'Europe/Berlin',
     hour: '2-digit',
     minute: '2-digit',
+    second: '2-digit',
     hour12: false
   });
   
