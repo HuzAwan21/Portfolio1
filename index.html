@@ -902,10 +902,14 @@
   .map-local-time {
     font-family: var(--mono);
     font-size: 12px;
-    color: #D4D1C8;
+    color: var(--accent);
     font-weight: 500;
     margin: 0;
     padding: 0;
+  }
+
+  :root.light-mode .map-local-time {
+    color: #700303;
   }
 
   /* Radar Sweep Animation */
