@@ -3549,25 +3549,25 @@ const CATS = {
 };
 
 const SKILLS_RADAR = [
-  { label:"C",           level:0.90, cat:"language", icon:"⬡" },
-  { label:"MIPS",        level:0.8, cat:"Low-Level", icon:"⬡" },
-  { label:"C++",         level:0.87, cat:"language", icon:"⬡" },
-  { label:"Html",        level:0.75, cat:"frontend", icon:"⬡" },
-  { label:"Java",        level:0.94, cat:"language", icon:"⬡" },
-  { label:"Docker",      level:0.75, cat:"devops",   icon:"⬡" },
-  { label:"Python",      level:0.85, cat:"language", icon:"⬡" },
-  { label:"VS Code",     level:0.95, cat:"devops",   icon:"⬡" },
-  { label:"Scala",       level:0.70, cat:"language", icon:"⬡" },
-  { label:"Node.js",     level:0.50, cat:"backend",  icon:"⬡" },
-  { label:"OCaml",       level:0.80, cat:"language", icon:"⬡" },
-  { label:"Django",      level:0.65, cat:"backend",  icon:"⬡" },
-  { label:"LLVM",        level:0.75, cat:"devops",   icon:"⬡" },
-  { label:"Kotlin",      level:0.94, cat:"language", icon:"⬡" },
-  { label:"RISC-V",      level:0.85, cat:"Low-Level", icon:"⬡" },
-  { label:"IntelliJ",    level:0.75, cat:"devops",   icon:"⬡" },
-  { label:"Chisel",      level:0.85, cat:"Low-Level", icon:"⬡" },
-  { label:"SQL",         level:0.90, cat:"data",     icon:"⬡" },
-  { label:"Git",         level:0.95, cat:"devops",   icon:"⬡" },
+  { label:"C",           level:0.90, cat:"language", img:"https://upload.wikimedia.org/wikipedia/commons/1/19/C_Logo.png" },
+  { label:"MIPS",        level:0.8, cat:"Low-Level", img:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQdA_2Vi350-blMARDU4bOdXkXaanfyYmPVg&s" },
+  { label:"C++",         level:0.87, cat:"language", img:"https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/cplusplus/cplusplus-original.svg" },
+  { label:"Html",        level:0.75, cat:"frontend", img:"https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/html5/html5-original.svg" },
+  { label:"Java",        level:0.94, cat:"language", img:"https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/java/java-original.svg" },
+  { label:"Docker",      level:0.75, cat:"devops",   img:"https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/docker/docker-original.svg" },
+  { label:"Python",      level:0.85, cat:"language", img:"https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/python/python-original.svg" },
+  { label:"VS Code",     level:0.95, cat:"devops",   img:"https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vscode/vscode-original.svg" },
+  { label:"Scala",       level:0.70, cat:"language", img:"https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/scala/scala-original.svg" },
+  { label:"Node.js",     level:0.50, cat:"backend",  img:"https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nodejs/nodejs-original.svg" },
+  { label:"OCaml",       level:0.80, cat:"language", img:"https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/ocaml/ocaml-original.svg" },
+  { label:"Django",      level:0.65, cat:"backend",  img:"https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/django/django-plain.svg" },
+  { label:"LLVM",        level:0.75, cat:"devops",   img:"https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/llvm/llvm-original.svg" },
+  { label:"Kotlin",      level:0.94, cat:"language", img:"https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/kotlin/kotlin-original.svg" },
+  { label:"RISC-V",      level:0.85, cat:"Low-Level", img:"https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/RISC-V-logo-square.svg/1280px-RISC-V-logo-square.svg.png" },
+  { label:"IntelliJ",    level:0.75, cat:"devops",   img:"https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/intellij/intellij-original.svg" },
+  { label:"Chisel",      level:0.85, cat:"Low-Level", img:"https://chipyard.readthedocs.io/en/stable/_static/chipyard-logo.png" },
+  { label:"SQL",         level:0.90, cat:"data",     img:"https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/mysql/mysql-original.svg" },
+  { label:"Git",         level:0.95, cat:"devops",   img:"https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/git/git-original.svg" },
 ];
 
 const RINGS = [0.25, 0.5, 0.75, 1.0];
@@ -3601,6 +3601,14 @@ function initRadarChart() {
     const r = SKILLS_RADAR[i].level * R;
     return { x: CX + Math.cos(a) * r, y: CY + Math.sin(a) * r };
   }
+
+  // Preload images
+  const skillImages = {};
+  SKILLS_RADAR.forEach((skill, idx) => {
+    const img = new Image();
+    img.src = skill.img;
+    img.onload = () => { skillImages[idx] = img; };
+  });
 
   function draw() {
     const size = W;
@@ -3678,19 +3686,34 @@ function initRadarChart() {
       ctx.lineWidth = 2;
       ctx.stroke();
 
+      // Always show logo - always at full opacity, gets bigger when radar passes
       const a = angle(i);
       const labelR = R + 24 + g * 4;
       const lx = CX + Math.cos(a) * labelR;
       const ly = CY + Math.sin(a) * labelR;
 
-      const anchor = Math.abs(Math.cos(a)) < 0.15 ? 'center' : (Math.cos(a) > 0 ? 'left' : 'right');
-      ctx.font = `${g > 0.3 ? 500 : 400} ${g > 0.3 ? 12 : 11}px var(--display, sans-serif)`;
-      ctx.fillStyle = g > 0.3
-        ? (dark ? '#e8e6df' : '#1a1a18')
-        : textColor;
-      ctx.textAlign = anchor;
-      ctx.textBaseline = 'middle';
-      ctx.fillText(s.label, lx, ly);
+      // Draw image logo - always at 100% opacity
+      if (skillImages[i]) {
+        // Make MIPS logo bigger
+        const imgSize = 18 + g * 10;
+        const opacity = 1; // Always 100%
+        
+        ctx.globalAlpha = opacity;
+        // Align logo with the radial line (center on the axis)
+        ctx.drawImage(skillImages[i], lx - imgSize / 2, ly - imgSize / 2, imgSize, imgSize);
+        ctx.globalAlpha = 1;
+      }
+
+      // Draw skill name when glow is significant
+      if (g > 0.3) {
+        ctx.font = `${g > 0.5 ? 500 : 400} ${g > 0.5 ? 12 : 11}px var(--display, sans-serif)`;
+        ctx.fillStyle = g > 0.5
+          ? (dark ? '#e8e6df' : '#1a1a18')
+          : textColor;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+        ctx.fillText(s.label, lx, ly + 20);
+      }
     }
   }
 
@@ -3716,14 +3739,17 @@ function initRadarChart() {
   animateGlows();
 
   let pillTimeout;
-  function triggerSkill(i) {
+  function triggerSkill(i, isHovering = false) {
     for (let j = 0; j < N; j++) glowTargets[j] = 0;
     glowTargets[i] = 1;
     const s = SKILLS_RADAR[i];
     pill.textContent = `${s.label}  ${Math.round(s.level * 100)}%`;
     pill.className = 'visible';
     clearTimeout(pillTimeout);
-    pillTimeout = setTimeout(() => { pill.className = ''; }, 1200);
+    // Only set timeout if not hovering - keep pill visible while hovering
+    if (!isHovering) {
+      pillTimeout = setTimeout(() => { pill.className = ''; }, 1200);
+    }
   }
 
   function getSweepAngle() {
@@ -3734,9 +3760,15 @@ function initRadarChart() {
   }
 
   let lastHitIdx = -1;
+  let hoveredSkillIdx = -1;
 
   function checkSweepHit() {
     if (!R) return requestAnimationFrame(checkSweepHit);
+    // Don't let sweep arm interfere when hovering
+    if (hoveredSkillIdx !== -1) {
+      return requestAnimationFrame(checkSweepHit);
+    }
+    
     const sweepDeg = getSweepAngle();
     const sweepRad = (sweepDeg - 90 + 360) % 360;
 
@@ -3757,6 +3789,59 @@ function initRadarChart() {
     requestAnimationFrame(checkSweepHit);
   }
   checkSweepHit();
+
+  // Hover detection for skills on canvas
+  canvas.addEventListener('mousemove', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+
+    let closestIdx = -1, closestDist = Infinity;
+    
+    for (let i = 0; i < N; i++) {
+      const p = skillPos(i);
+      const distToDot = Math.sqrt((mouseX - p.x) ** 2 + (mouseY - p.y) ** 2);
+      
+      // Check distance to dot (radius ~8px including glow)
+      if (distToDot < 10) {
+        if (distToDot < closestDist) {
+          closestDist = distToDot;
+          closestIdx = i;
+        }
+      }
+      
+      // Check distance to label
+      const s = SKILLS_RADAR[i];
+      const a = angle(i);
+      const labelR = R + 24;
+      const lx = CX + Math.cos(a) * labelR;
+      const ly = CY + Math.sin(a) * labelR;
+      const distToLabel = Math.sqrt((mouseX - lx) ** 2 + (mouseY - ly) ** 2);
+      
+      if (distToLabel < 25) { // Adjustable hover radius for text
+        if (distToLabel < closestDist) {
+          closestDist = distToLabel;
+          closestIdx = i;
+        }
+      }
+    }
+
+    if (closestIdx !== -1 && closestIdx !== hoveredSkillIdx) {
+      hoveredSkillIdx = closestIdx;
+      // Pass true to indicate this is a hover interaction - keep pill visible
+      triggerSkill(closestIdx, true);
+    } else if (closestIdx === -1 && hoveredSkillIdx !== -1) {
+      hoveredSkillIdx = -1;
+      for (let j = 0; j < N; j++) glowTargets[j] = 0;
+      pill.className = '';
+    }
+  });
+
+  canvas.addEventListener('mouseleave', () => {
+    hoveredSkillIdx = -1;
+    for (let j = 0; j < N; j++) glowTargets[j] = 0;
+    pill.className = '';
+  });
 
   const legWrap = document.getElementById('legend-wrap');
   Object.entries(CATS).forEach(([k, color]) => {
