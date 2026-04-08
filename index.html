@@ -2532,7 +2532,64 @@
 
 <script>
 // Intro screen animation
+// Preload portfolio assets for both light and dark modes
+function preloadPortfolioAssets() {
+  const lightModeAssets = [
+    'Pictures/carpet.jpeg',
+    'Pictures/map_light.jpeg',
+    'Pictures/profile_bg.jpeg',
+    'Pictures/map.png'
+  ];
+
+  const darkModeAssets = [
+    'Pictures/blue_carpet.jpeg',
+    'Pictures/profile_bg.jpeg',
+    'Pictures/map.png'
+  ];
+
+  const carouselAssets = [
+    'Pictures/carousel/1.jpeg',
+    'Pictures/carousel/2.jpeg',
+    'Pictures/carousel/3.jpeg',
+    'Pictures/carousel/4.mp4',
+    'Pictures/carousel/5.jpeg'
+  ];
+
+  // Combine all assets
+  const allAssets = [...new Set([...lightModeAssets, ...darkModeAssets, ...carouselAssets])];
+
+  // Preload images and videos
+  allAssets.forEach(src => {
+    if (src.endsWith('.mp4')) {
+      const link = document.createElement('link');
+      link.rel = 'preload';
+      link.as = 'video';
+      link.href = src;
+      document.head.appendChild(link);
+      
+      // Also preload via video element
+      const video = document.createElement('video');
+      video.src = src;
+      video.style.display = 'none';
+      document.body.appendChild(video);
+    } else {
+      const link = document.createElement('link');
+      link.rel = 'preload';
+      link.as = 'image';
+      link.href = src;
+      document.head.appendChild(link);
+      
+      // Also load via img element to ensure cache
+      const img = new Image();
+      img.src = src;
+    }
+  });
+}
+
 function initIntroScreen() {
+  // Start preloading all portfolio assets immediately
+  preloadPortfolioAssets();
+
   const introName = document.getElementById('introName');
   const name = 'Huzaifa Awan';
   
