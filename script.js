@@ -13,15 +13,18 @@ function setupWelcomeScreen() {
     const backBtn = document.getElementById('backBtn');
     const continueBtn = document.getElementById('continueBtn');
     const portfolioMain = document.getElementById('portfolioMain');
-    
+
+    // Guard: welcome screen elements may not exist in the current layout
+    if (!welcomeScreen || !bannerName) return;
+
     // Click on banner name to trigger scroll gate reveal animation
     bannerName.addEventListener('click', showIntroScreen);
-    
+
     // Back button to return to welcome screen
     if (backBtn) {
         backBtn.addEventListener('click', backToWelcome);
     }
-    
+
     // Continue button to enter portfolio
     if (continueBtn) {
         continueBtn.addEventListener('click', enterPortfolio);
@@ -400,14 +403,4 @@ const observer = new IntersectionObserver((entries) => {
     });
 }, observerOptions);
 
-// ===== Add Animation Classes =====
-const style = document.createElement('style');
-style.textContent = `
-    .project-card {
-        opacity: 0;
-        animation: fadeInUp 0.6s ease forwards;
-    }
-`;
-document.head.appendChild(style);
-
-console.log("Portfolio loaded successfully!");
+// Animation classes for project cards are defined in styles.css

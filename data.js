@@ -11,7 +11,7 @@ const portfolioData = {
     profileImage: "https://via.placeholder.com/300?text=Huzaifa+Ahmad+Awan",
     
     // CV File URL (upload your CV and add the URL here)
-    cvUrl: "file:///c:/Users/awan2/Desktop/Huzaifa_Ka_Samaan/Arbeit/Lebenslauf/lebenslauf2025.pdf",
+    cvUrl: "./assets/documents/resume.pdf",
     
     // Skills
     skills: [
