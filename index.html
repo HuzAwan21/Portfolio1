@@ -720,20 +720,19 @@
       margin-bottom: 2px;
     }
     .nav-search {
-      width: 100%;
-      margin: 0;
-      max-width: 100%;
+      order: 10;
+      flex: 1 1 70%;
+      width: 70vw;
+      max-width: 320px;
+      min-width: 140px;
+      margin: 0 auto 0 0;
+      display: flex !important;
     }
     .nav-logo { font-size: 20px; cursor: pointer; }
     .nav-secondary { display: none !important; }
     .nav-links { display: none !important; }
     .nav-github { display: none !important; }
-    .nav-search {
-      display: flex !important;
-      flex: 1 1 100%;
-      margin: 0 8px 0 0;
-      max-width: 100%;
-    }
+    /* removed duplicate .nav-search rule */
     .search-input {
       width: 100%;
       min-width: 0;
