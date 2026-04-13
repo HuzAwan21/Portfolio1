@@ -702,10 +702,20 @@
     }
     nav > div:first-child {
       display: flex;
-      align-items: center;
-      gap: 8px;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 6px;
       min-width: 0;
       flex: 1;
+      width: 100%;
+    }
+    .nav-logo {
+      margin-bottom: 2px;
+    }
+    .nav-search {
+      width: 100%;
+      margin: 0;
+      max-width: 100%;
     }
     .nav-logo { font-size: 20px; cursor: pointer; }
     .nav-secondary { display: none !important; }
