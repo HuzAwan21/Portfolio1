@@ -2,15 +2,7 @@
   "items": [
     {
       "type": "image",
-      "src": "Pictures/carousel/3.jpeg"
-    },
-    {
-      "type": "image",
       "src": "Pictures/carousel/6.jpeg"
-    },
-    {
-      "type": "image",
-      "src": "Pictures/carousel/20.jpeg"
     },
     {
       "type": "image",
@@ -25,6 +17,6 @@
       "src": "Pictures/carousel/Pic13.jpeg"
     }
   ],
-  "generated": "2026-04-11T01:34:23.440Z",
-  "totalItems": 6
+  "generated": "2026-04-28T21:55:23.899Z",
+  "totalItems": 4
 }
