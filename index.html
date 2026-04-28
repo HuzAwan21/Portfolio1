@@ -52,9 +52,12 @@
       .theme-toggle { width: 28px; height: 28px; cursor: pointer; }
       .nav-cta { font-size: 10px; padding: 7px 10px; white-space: nowrap; cursor: pointer; }
       .hero {
-        padding: 72px 16px 0;
-        min-height: auto;
-        display: block;
+        padding: 72px 16px 0 !important;
+        min-height: auto !important;
+        display: block !important;
+        grid-template-rows: unset !important;
+        position: static !important;
+        overflow: visible !important;
       }
       .hero-bg-text { display: none; }
       .hero-wrapper {
