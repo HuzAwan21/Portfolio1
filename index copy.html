@@ -4576,12 +4576,6 @@
 
       const techsHtml = project.techs.map(tech => `<span class="project-tech-tag">${tech}</span>`).join('');
       const logoHtml = project.logo ? `<img src="${project.logo}" class="project-card-logo" alt="${project.name} logo">` : '';
-      
-      // Only show demo button for 2048 and Aquarium
-      const showDemoBtn = project.name === "2048 Game" || project.name === "VISIT MY AQUARIUM!";
-      const demoBtnHtml = showDemoBtn ? `<button class="project-card-btn primary" data-action="explore" data-index="${index}">
-          See Demo →
-        </button>` : '';
 
       card.innerHTML = `
     <div class="project-card-inner">
@@ -4593,7 +4587,9 @@
       </div>
       <p class="project-card-desc">${project.desc}</p>
       <div class="project-card-footer">
-        ${demoBtnHtml}
+        <button class="project-card-btn primary" data-action="explore" data-index="${index}">
+          See Demo →
+        </button>
         <a href="${project.github}" target="_blank" class="project-card-btn">
           ⌥ GitHub
         </a>
@@ -4602,26 +4598,24 @@
     </div>
   `;
 
-      // Attach click handler for explore button (only if it exists)
+      // Attach click handler for explore button
       const exploreBtn = card.querySelector('[data-action="explore"]');
-      if (exploreBtn) {
-        exploreBtn.addEventListener('click', (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          // If not front card, bring it to front
-          if (index !== cardCurrentIndex) {
-            goToCard(index);
-          } else {
-            // If front card, execute the action via safe dispatch map (no eval)
-            if (project.onclick) {
-              const fnName = project.onclick.replace('()', '');
-              if (PROJECT_ACTIONS[fnName]) PROJECT_ACTIONS[fnName]();
-            } else if (project.link && project.link !== 'javascript:void(0)') {
-              window.location.href = project.link;
-            }
+      exploreBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        // If not front card, bring it to front
+        if (index !== cardCurrentIndex) {
+          goToCard(index);
+        } else {
+          // If front card, execute the action via safe dispatch map (no eval)
+          if (project.onclick) {
+            const fnName = project.onclick.replace('()', '');
+            if (PROJECT_ACTIONS[fnName]) PROJECT_ACTIONS[fnName]();
+          } else if (project.link && project.link !== 'javascript:void(0)') {
+            window.location.href = project.link;
           }
-        });
-      }
+        }
+      });
 
       // Attach click handler for GitHub button
       const githubBtn = card.querySelector('a.project-card-btn');
