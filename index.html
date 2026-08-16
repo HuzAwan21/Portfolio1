@@ -103,7 +103,7 @@
       .profile-card { height: 76px; }
       .profile-card h2 { font-size: clamp(20px, 6vw, 32px); }
       .profile-image { aspect-ratio: 16/9; max-height: 220px; }
-      .carousel-container { display: none !important; }
+      .medallion { display: none !important; }
       .map-card { height: 84px; }
       .map-address { top: 8px; left: 0; padding: 8px 14px; }
       .map-address h3 { font-size: 16px; }
@@ -212,6 +212,8 @@
       --body: 'DM Sans', sans-serif;
       --mono: 'DM Mono', monospace;
       --illum: 'UnifrakturCook', cursive;
+      --rug-motif: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='140'%20height='140'%20viewBox='0%200%20140%20140'%3E%0A%3Cg%20fill='none'%20stroke='rgba%28201,162,39,0.16%29'%20stroke-width='1'%3E%0A%3Cpath%20d='M70%204%20L136%2070%20L70%20136%20L4%2070%20Z'/%3E%0A%3Cpath%20d='M70%2024%20L116%2070%20L70%20116%20L24%2070%20Z'/%3E%0A%3Cpath%20d='M70%2044%20L96%2070%20L70%2096%20L44%2070%20Z'/%3E%0A%3Ccircle%20cx='70'%20cy='70'%20r='5'/%3E%0A%3Cpath%20d='M0%2070%20H14%20M126%2070%20H140%20M70%200%20V14%20M70%20126%20V140'/%3E%0A%3Cpath%20d='M0%200%20L14%2014%20M140%200%20L126%2014%20M0%20140%20L14%20126%20M140%20140%20L126%20126'/%3E%0A%3C/g%3E%0A%3C/svg%3E");
+      --rug-ribbon: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='28'%20height='16'%20viewBox='0%200%2028%2016'%3E%0A%3Cg%20fill='rgba%28201,162,39,0.55%29'%3E%0A%3Cpath%20d='M0%2016%20L7%200%20L14%2016%20Z'/%3E%0A%3Cpath%20d='M14%2016%20L21%200%20L28%2016%20Z'/%3E%0A%3C/g%3E%0A%3Cg%20fill='none'%20stroke='rgba%28201,162,39,0.55%29'%20stroke-width='1'%3E%0A%3Cpath%20d='M0%202%20H28'/%3E%0A%3C/g%3E%0A%3C/svg%3E");
     }
 
     :root.light-mode {
@@ -224,6 +226,8 @@
       --text: #241a0f;
       --muted: #6b5a42;
       --stroke: rgba(36, 26, 15, 0.22);
+      --rug-motif: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='140'%20height='140'%20viewBox='0%200%20140%20140'%3E%0A%3Cg%20fill='none'%20stroke='rgba%28122,44,28,0.14%29'%20stroke-width='1'%3E%0A%3Cpath%20d='M70%204%20L136%2070%20L70%20136%20L4%2070%20Z'/%3E%0A%3Cpath%20d='M70%2024%20L116%2070%20L70%20116%20L24%2070%20Z'/%3E%0A%3Cpath%20d='M70%2044%20L96%2070%20L70%2096%20L44%2070%20Z'/%3E%0A%3Ccircle%20cx='70'%20cy='70'%20r='5'/%3E%0A%3Cpath%20d='M0%2070%20H14%20M126%2070%20H140%20M70%200%20V14%20M70%20126%20V140'/%3E%0A%3Cpath%20d='M0%200%20L14%2014%20M140%200%20L126%2014%20M0%20140%20L14%20126%20M140%20140%20L126%20126'/%3E%0A%3C/g%3E%0A%3C/svg%3E");
+      --rug-ribbon: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='28'%20height='16'%20viewBox='0%200%2028%2016'%3E%0A%3Cg%20fill='rgba%28122,44,28,0.5%29'%3E%0A%3Cpath%20d='M0%2016%20L7%200%20L14%2016%20Z'/%3E%0A%3Cpath%20d='M14%2016%20L21%200%20L28%2016%20Z'/%3E%0A%3C/g%3E%0A%3Cg%20fill='none'%20stroke='rgba%28122,44,28,0.5%29'%20stroke-width='1'%3E%0A%3Cpath%20d='M0%202%20H28'/%3E%0A%3C/g%3E%0A%3C/svg%3E");
     }
 
     /* Fine parchment grain, sitting over everything */
@@ -1191,7 +1195,7 @@
       grid-row: 2;
     }
 
-    .hero-right>.carousel-container {
+    .hero-right>.medallion {
       grid-column: 2;
       grid-row: 2;
     }
@@ -1465,95 +1469,92 @@
       }
     }
 
-    /* Carousel */
-    .carousel-container {
+    /* Portrait Medallion */
+    .medallion {
       position: relative;
       width: 100%;
-      height: 300px;
-      overflow: hidden;
-      border: none;
-      border-radius: 0;
-      background: transparent;
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       margin-top: -50px;
     }
 
-    .carousel-track {
-      display: flex;
-      gap: 0;
-      padding: 12px;
-      align-items: center;
-      justify-content: center;
+    .medallion-ring {
+      position: absolute;
+      inset: 0;
+      width: 100%;
       height: 100%;
-      transition: transform 0.5s ease;
+      pointer-events: none;
+      animation: medallionSpin 60s linear infinite;
     }
 
-    .carousel-item {
-      flex-shrink: 0;
-      border-radius: 6px;
+    @keyframes medallionSpin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .medallion-frame {
+      position: relative;
+      width: 68%;
+      aspect-ratio: 1;
+      border-radius: 50%;
       overflow: hidden;
-      border: 1px solid var(--border);
-      transition: all 0.5s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: var(--bg);
-      order: 1;
+      border: 3px solid var(--accent);
+      box-shadow: 0 0 0 6px var(--bg), 0 0 0 8px var(--border), 0 20px 50px rgba(0, 0, 0, 0.4);
+      transition: box-shadow 0.3s ease;
     }
 
-    .carousel-item.prev {
-      width: 80px;
-      height: 100px;
-      opacity: 0.6;
-      order: 0;
-      filter: blur(1px);
-      z-index: 0;
-      margin-right: -60px;
+    .medallion:hover .medallion-frame {
+      box-shadow: 0 0 0 6px var(--bg), 0 0 0 8px var(--accent), 0 20px 60px rgba(201, 162, 39, 0.25);
     }
 
-    .carousel-item.current {
-      width: 140px;
-      height: 160px;
-      opacity: 1;
-      border-color: var(--border);
-      box-shadow: none;
-      order: 1;
-      z-index: 1;
-      transition: all 0.3s ease;
+    .medallion-media {
+      position: relative;
+      width: 100%;
+      height: 100%;
     }
 
-    .carousel-container:hover .carousel-item.current {
-      border-color: var(--accent);
-      box-shadow: 0 0 20px rgba(201, 162, 39, 0.2);
-    }
-
-    .carousel-item.next {
-      width: 80px;
-      height: 100px;
-      opacity: 0.6;
-      order: 2;
-      filter: blur(1px);
-      z-index: 0;
-      margin-left: -60px;
-    }
-
-    .carousel-item img,
-    .carousel-item video {
+    .medallion-media img,
+    .medallion-media video {
+      position: absolute;
+      inset: 0;
       width: 100%;
       height: 100%;
       object-fit: cover;
+      opacity: 0;
+      transition: opacity 0.9s ease;
       pointer-events: none;
     }
 
-    .carousel-item video::-webkit-media-controls {
-      display: none !important;
+    .medallion-media img.active,
+    .medallion-media video.active {
+      opacity: 1;
     }
 
-    .carousel-item video::-webkit-media-controls-panel {
-      display: none !important;
+    .medallion-dots {
+      position: absolute;
+      bottom: -6px;
+      display: flex;
+      gap: 8px;
+      z-index: 2;
     }
 
-    .carousel-item video::-moz-media-controls {
-      display: none !important;
+    .medallion-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--border);
+      border: 1px solid var(--accent);
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+
+    .medallion-dot.active {
+      background: var(--accent);
+      width: 20px;
+      border-radius: 4px;
     }
 
     /* Sections */
@@ -1607,9 +1608,36 @@
       vertical-align: text-bottom;
     }
 
-    /* About */
+    /* =========================================
+       PERSIAN-RUG-INSPIRED ORNAMENTATION
+       Geometric lattice texture + guard-border
+       ribbon dividers, in the spirit of a woven
+       carpet's field and border bands.
+       ========================================= */
+    .about,
+    .projects,
+    #education,
+    #experience,
+    .rs,
+    .radar-section,
+    footer {
+      background-image: var(--rug-motif);
+      background-repeat: repeat;
+      background-position: center;
+    }
+
     .about {
-      background: var(--surface);
+      background-color: var(--surface);
+    }
+
+    .rug-divider {
+      height: 15px;
+      background-image: var(--rug-ribbon);
+      background-repeat: repeat-x;
+      background-position: center;
+      background-size: 28px 15px;
+      position: relative;
+      z-index: 2;
     }
 
     .about-grid {
@@ -1750,7 +1778,7 @@
 
     /* Projects */
     .projects {
-      background: var(--surface);
+      background-color: var(--surface);
       padding-bottom: 100px;
     }
 
@@ -2056,7 +2084,9 @@
     /* Contact */
     .contact {
       text-align: center;
-      background: linear-gradient(to bottom, var(--bg), #0a0705);
+      background-image: var(--rug-motif), linear-gradient(to bottom, var(--bg), #0a0705);
+      background-repeat: repeat, no-repeat;
+      background-position: center, center;
       position: relative;
       overflow: hidden;
     }
@@ -2275,21 +2305,6 @@
         aspect-ratio: 3 / 4;
       }
 
-      .carousel-container {
-        height: 200px;
-      }
-
-      .carousel-item.current {
-        width: 100px;
-        height: 120px;
-      }
-
-      .carousel-item.prev,
-      .carousel-item.next {
-        width: 60px;
-        height: 80px;
-      }
-
       section {
         padding: 80px 24px;
       }
@@ -2364,7 +2379,7 @@
     #education {
       width: 100%;
       padding: 1px 48px 120px;
-      background: var(--surface);
+      background-color: var(--surface);
       display: flex;
       flex-direction: column;
       align-items: left;
@@ -2608,7 +2623,7 @@
     #experience {
       width: 100%;
       padding: 1px 48px 120px;
-      background: var(--surface);
+      background-color: var(--surface);
       display: flex;
       flex-direction: column;
       align-items: left;
@@ -2987,7 +3002,7 @@
 
     .radar-section {
       padding: 100px 40px;
-      background: transparent;
+      background-color: transparent;
     }
 
     @media (max-width: 700px) {
@@ -3024,7 +3039,7 @@
      RESEARCH SECTION
   ============================================= */
     .rs {
-      background: var(--bg);
+      background-color: var(--bg);
       padding: 64px 48px;
       position: relative;
     }
@@ -3398,8 +3413,25 @@
             <img src="Pictures/profile_bg.jpeg" alt="Huzaifa Ahmad Awan" class="profile-img-main">
           </picture>
         </div>
-        <div class="carousel-container">
-          <div class="carousel-track" id="carouselTrack"></div>
+        <div class="medallion" id="medallion">
+          <svg class="medallion-ring" viewBox="0 0 220 220" aria-hidden="true">
+            <circle cx="110" cy="110" r="104" fill="none" stroke="var(--accent)" stroke-width="1" opacity="0.55"/>
+            <circle cx="110" cy="110" r="96" fill="none" stroke="var(--accent2)" stroke-width="1" opacity="0.4" stroke-dasharray="2 4"/>
+            <g stroke="var(--accent)" stroke-width="1.4" opacity="0.7">
+              <path d="M110 6 L114 18 L106 18 Z"/>
+              <path d="M110 214 L114 202 L106 202 Z"/>
+              <path d="M6 110 L18 114 L18 106 Z"/>
+              <path d="M214 110 L202 114 L202 106 Z"/>
+              <path d="M42 42 L52 48 L48 52 Z"/>
+              <path d="M178 42 L168 48 L172 52 Z"/>
+              <path d="M42 178 L52 172 L48 168 Z"/>
+              <path d="M178 178 L168 172 L172 168 Z"/>
+            </g>
+          </svg>
+          <div class="medallion-frame">
+            <div class="medallion-media" id="medallionMedia"></div>
+          </div>
+          <div class="medallion-dots" id="medallionDots"></div>
         </div>
         <div class="map-card">
           <img src="Pictures/map.png" alt="Location Map">
@@ -3549,6 +3581,7 @@
     </div>
   </div>
 
+  <div class="rug-divider"></div>
   <!-- ABOUT -->
   <section class="about" id="about">
     <div class="section-label reveal">Who I Am</div>
@@ -3589,6 +3622,7 @@
     </div>
   </section>
 
+  <div class="rug-divider"></div>
   <!-- EDUCATION TIMELINE -->
   <section id="education">
     <div class="edu-header">
@@ -3659,6 +3693,7 @@
     </div>
   </section>
 
+  <div class="rug-divider"></div>
   <!-- EXPERIENCE TIMELINE -->
   <section id="experience">
     <div class="exp-header">
@@ -3751,6 +3786,7 @@
     </div>
   </section>
 
+  <div class="rug-divider"></div>
   <!-- PROJECTS -->
   <section class="projects" id="projects">
     <div class="section-label reveal">Portfolio</div>
@@ -3763,6 +3799,7 @@
     </div>
   </section>
 
+  <div class="rug-divider"></div>
   <!-- RESEARCH SECTION -->
   <div class="rs">
     <div class="rs-eyebrow">Academic Work</div>
@@ -3863,6 +3900,7 @@
     </div>
   </div>
 
+  <div class="rug-divider"></div>
   <!-- SKILLS RADAR -->
   <section class="radar-section" id="skills">
     <div class="section-label reveal">Expertise</div>
@@ -3878,6 +3916,7 @@
     <div id="legend-wrap"></div>
   </section>
 
+  <div class="rug-divider"></div>
   <!-- CONTACT -->
   <section class="contact" id="contact">
     <div class="contact-bg"></div>
@@ -3897,6 +3936,7 @@
     </div>
   </section>
 
+  <div class="rug-divider"></div>
   <!-- FOOTER -->
   <footer>
     <span>© 2026 Huzaifa Ahmad Awan</span>
@@ -4028,12 +4068,13 @@
       timeElement.textContent = `- ${germanTime}`;
     }
 
-    // Carousel Functionality
-    function initCarousel() {
-      const carouselTrack = document.getElementById('carouselTrack');
-      if (!carouselTrack) return;
+    // Portrait Medallion — crossfading framed photo/video
+    function initMedallion() {
+      const media = document.getElementById('medallionMedia');
+      const dotsWrap = document.getElementById('medallionDots');
+      const medallion = document.getElementById('medallion');
+      if (!media || !dotsWrap || !medallion) return;
 
-      // Default fallback items
       const defaultItems = [
         { type: 'image', src: 'Pictures/carousel/1.jpeg' },
         { type: 'image', src: 'Pictures/carousel/2.jpeg' },
@@ -4042,142 +4083,64 @@
         { type: 'image', src: 'Pictures/carousel/5.jpeg' }
       ];
 
-      function loadCarousel(carouselItems) {
-        // Create carousel items
-        carouselItems.forEach((item, index) => {
-          const itemEl = document.createElement('div');
-          itemEl.className = 'carousel-item';
-          itemEl.dataset.index = index;
-
-          if (item.type === 'image') {
-            const img = document.createElement('img');
-            img.src = item.src;
-            img.alt = `Carousel item ${index + 1}`;
-            itemEl.appendChild(img);
-          } else if (item.type === 'video') {
-            const video = document.createElement('video');
-            video.src = item.src;
-            video.muted = true;
-            video.loop = true;
-            video.autoplay = false;
-            video.controls = false;
-            // Ensure controls stay disabled even when playing
-            video.addEventListener('play', () => {
-              video.controls = false;
-            });
-            itemEl.appendChild(video);
+      function load(items) {
+        const els = items.map((item, i) => {
+          let el;
+          if (item.type === 'video') {
+            el = document.createElement('video');
+            el.src = item.src;
+            el.muted = true;
+            el.loop = true;
+            el.playsInline = true;
+            el.controls = false;
+          } else {
+            el = document.createElement('img');
+            el.src = item.src;
+            el.alt = `Portrait ${i + 1}`;
           }
-
-          carouselTrack.appendChild(itemEl);
+          media.appendChild(el);
+          return el;
         });
 
-        let currentIndex = 0;
+        items.forEach((_, i) => {
+          const dot = document.createElement('div');
+          dot.className = 'medallion-dot' + (i === 0 ? ' active' : '');
+          dot.addEventListener('click', () => goTo(i));
+          dotsWrap.appendChild(dot);
+        });
 
-        function updateCarousel() {
-          const items = carouselTrack.querySelectorAll('.carousel-item');
-          const totalItems = items.length;
+        let current = 0;
+        let paused = false;
 
-          items.forEach((item, i) => {
-            item.classList.remove('prev', 'current', 'next');
-            item.style.display = ''; // Reset display
-
-            // Calculate relative position
-            let position = (i - currentIndex + totalItems) % totalItems;
-
-            if (position === 0) {
-              item.classList.add('current');
-              // Play video if it's a video
-              const video = item.querySelector('video');
-              if (video) {
-                video.controls = false;
-                video.play();
-              }
-            } else if (position === totalItems - 1) {
-              item.classList.add('prev');
-            } else if (position === 1) {
-              item.classList.add('next');
-            } else {
-              item.style.display = 'none';
-            }
-          });
+        function goTo(i) {
+          els[current].classList.remove('active');
+          if (els[current].tagName === 'VIDEO') els[current].pause();
+          current = i;
+          els[current].classList.add('active');
+          if (els[current].tagName === 'VIDEO') { els[current].currentTime = 0; els[current].play(); }
+          Array.from(dotsWrap.children).forEach((d, di) => d.classList.toggle('active', di === i));
         }
 
-        function rotateCarousel() {
-          currentIndex = (currentIndex + 1) % carouselItems.length;
-          updateCarousel();
-        }
+        goTo(0);
 
-        // Initialize carousel
-        updateCarousel();
+        const timer = setInterval(() => {
+          if (!paused && !document.hidden) goTo((current + 1) % els.length);
+        }, 4200);
 
-        // Carousel pause control
-        let carouselPaused = false;
-
-        // Rotate carousel every 3 seconds (only if not paused or tab hidden)
-        const _carouselTimer = setInterval(() => {
-          if (!carouselPaused && !document.hidden) {
-            rotateCarousel();
-          }
-        }, 3000);
-
-        // Pause/Resume on hover
-        const carouselContainer = document.querySelector('.carousel-container');
-        if (carouselContainer) {
-          carouselContainer.addEventListener('mouseenter', () => {
-            carouselPaused = true;
-            // Disable video looping when carousel pauses
-            const currentItem = carouselTrack.querySelector('.carousel-item.current');
-            if (currentItem) {
-              const video = currentItem.querySelector('video');
-              if (video) {
-                video.loop = false;
-              }
-            }
-          });
-
-          carouselContainer.addEventListener('mouseleave', () => {
-            carouselPaused = false;
-            // Re-enable video looping when carousel resumes
-            const currentItem = carouselTrack.querySelector('.carousel-item.current');
-            if (currentItem) {
-              const video = currentItem.querySelector('video');
-              if (video) {
-                video.loop = true;
-              }
-            }
-          });
-        }
+        medallion.addEventListener('mouseenter', () => { paused = true; });
+        medallion.addEventListener('mouseleave', () => { paused = false; });
       }
 
-      // Try to load from manifest.json, fall back to default items
-      fetch('Pictures/carousel/manifest.json?t=' + new Date().getTime())
-        .then(response => {
-          if (!response.ok) {
-            console.warn('Manifest not found, using default carousel items');
-            loadCarousel(defaultItems);
-            return null;
-          }
-          return response.json();
-        })
-        .then(data => {
-          if (data && data.items && data.items.length > 0) {
-            console.log('Loaded carousel with ' + data.items.length + ' items');
-            loadCarousel(data.items);
-          } else {
-            console.warn('No items in manifest, using default carousel items');
-            loadCarousel(defaultItems);
-          }
-        })
-        .catch(error => {
-          console.warn('Failed to load carousel manifest, using default items:', error);
-          loadCarousel(defaultItems);
-        });
+      fetch('Pictures/carousel/manifest.json?t=' + Date.now())
+        .then(r => r.ok ? r.json() : null)
+        .then(data => load((data && data.items && data.items.length) ? data.items : defaultItems))
+        .catch(() => load(defaultItems));
     }
 
     // Initialize when DOM is ready
     document.addEventListener('DOMContentLoaded', function () {
       updateMapTime();
-      initCarousel();
+      initMedallion();
       setInterval(updateMapTime, 1000); // Update time every second
     });
 
