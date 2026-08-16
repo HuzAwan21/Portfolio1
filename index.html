@@ -199,30 +199,43 @@
     }
 
     :root {
-      --bg: #0c0c0e;
-      --surface: #111115;
-      --surface2: #18181f;
-      --border: rgba(255, 255, 255, 0.07);
-      --accent: #e8ff47;
-      --accent2: #47c8ff;
-      --text: #f0f0f5;
-      --muted: #7070a0;
-      --stroke: rgba(255, 255, 255, 0.3);
-      --display: 'Bebas Neue', sans-serif;
+      --bg: #0d0b08;
+      --surface: #161310;
+      --surface2: #201a13;
+      --border: rgba(201, 162, 97, 0.16);
+      --accent: #c9a227;
+      --accent2: #963a24;
+      --text: #f2ead9;
+      --muted: #a3927a;
+      --stroke: rgba(242, 234, 217, 0.32);
+      --display: 'Playfair Display', serif;
       --body: 'DM Sans', sans-serif;
       --mono: 'DM Mono', monospace;
+      --illum: 'UnifrakturCook', cursive;
     }
 
     :root.light-mode {
-      --bg: #f8f9fa;
-      --surface: #eff1f5;
-      --surface2: #e8ecf1;
-      --border: rgba(0, 0, 0, 0.1);
-      --accent: #20c997;
-      --accent2: #0ea5e9;
-      --text: #1a1a1e;
-      --muted: #5a5a7a;
-      --stroke: rgba(0, 0, 0, 0.15);
+      --bg: #f2e9d8;
+      --surface: #ece0c7;
+      --surface2: #e3d5b3;
+      --border: rgba(58, 42, 20, 0.16);
+      --accent: #93611a;
+      --accent2: #7a2c1c;
+      --text: #241a0f;
+      --muted: #6b5a42;
+      --stroke: rgba(36, 26, 15, 0.22);
+    }
+
+    /* Fine parchment grain, sitting over everything */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 9997;
+      pointer-events: none;
+      opacity: 0.05;
+      mix-blend-mode: overlay;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
     }
 
     * {
@@ -470,7 +483,7 @@
       outline: none;
       border-color: var(--accent);
       background: rgba(255, 255, 255, 0.08);
-      box-shadow: 0 0 8px rgba(232, 255, 71, 0.2);
+      box-shadow: 0 0 8px rgba(201, 162, 39, 0.2);
     }
 
     :root.light-mode .search-input {
@@ -680,7 +693,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: #0b0b0d;
+      background: #0b0906;
       z-index: 10000;
       display: flex;
       align-items: center;
@@ -763,12 +776,13 @@
 
     .intro-name {
       font-family: var(--display);
-      font-weight: 900;
-      font-size: clamp(64px, 10vw, 128px);
-      line-height: 0.88;
-      letter-spacing: -0.02em;
-      text-transform: uppercase;
-      color: #fff;
+      font-weight: 700;
+      font-style: italic;
+      font-size: clamp(56px, 9vw, 118px);
+      line-height: 0.9;
+      letter-spacing: -0.01em;
+      text-transform: none;
+      color: #f2ead9;
       overflow: hidden;
     }
 
@@ -873,12 +887,35 @@
       bottom: -60px;
       left: -10px;
       font-family: var(--display);
+      font-style: italic;
       font-size: clamp(120px, 20vw, 260px);
       line-height: 1;
-      color: rgba(255, 255, 255, 0.025);
+      color: rgba(242, 234, 217, 0.025);
       pointer-events: none;
       user-select: none;
       white-space: nowrap;
+      z-index: 0;
+    }
+
+    #heroCanvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.6;
+    }
+
+    :root.light-mode #heroCanvas {
+      opacity: 0.35;
+      mix-blend-mode: multiply;
+    }
+
+    .hero-wrapper,
+    .hero-bottom {
+      position: relative;
+      z-index: 1;
     }
 
     .hero-content {
@@ -922,14 +959,15 @@
     .badge-dot {
       width: 8px;
       height: 8px;
-      background: #10b981;
+      background: #6b8f5e;
       border-radius: 50%;
       animation: pulse 2s infinite;
+      box-shadow: 0 0 8px rgba(107, 143, 94, 0.5);
     }
 
     :root.light-mode .badge-dot {
-      background: #ffd700;
-      box-shadow: 0 0 8px rgba(255, 215, 0, 0.4), 0 0 12px rgba(255, 215, 0, 0.2);
+      background: #7a5a1e;
+      box-shadow: 0 0 8px rgba(122, 90, 30, 0.4), 0 0 12px rgba(122, 90, 30, 0.2);
     }
 
     @keyframes pulse {
@@ -989,6 +1027,7 @@
     .hero-title .stroke {
       -webkit-text-stroke: 2px var(--stroke);
       color: transparent;
+      font-style: italic;
     }
 
     .hero-sub {
@@ -1031,7 +1070,7 @@
 
     .btn-primary:hover {
       transform: translateY(-2px);
-      box-shadow: 0 12px 40px rgba(232, 255, 71, 0.3);
+      box-shadow: 0 12px 40px rgba(201, 162, 39, 0.3);
     }
 
     .btn-ghost {
@@ -1205,7 +1244,7 @@
 
     .profile-card:hover {
       border-color: var(--accent);
-      box-shadow: 0 0 20px rgba(232, 255, 71, 0.35);
+      box-shadow: 0 0 20px rgba(201, 162, 39, 0.35);
     }
 
     .profile-card:hover::before {
@@ -1260,9 +1299,45 @@
       width: 100%;
       aspect-ratio: 4 / 5;
       border-radius: 8px;
-      overflow: hidden;
+      overflow: visible;
       background: transparent;
       transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .profile-image::before,
+    .profile-image::after {
+      content: '';
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      border: 1.5px solid var(--accent);
+      opacity: 0;
+      transition: opacity 0.35s ease, transform 0.35s ease;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .profile-image::before {
+      top: -8px;
+      left: -8px;
+      border-right: none;
+      border-bottom: none;
+      transform: translate(6px, 6px);
+    }
+
+    .profile-image::after {
+      bottom: -8px;
+      right: -8px;
+      border-left: none;
+      border-top: none;
+      transform: translate(-6px, -6px);
+    }
+
+    .profile-image:hover::before,
+    .profile-image:hover::after {
+      opacity: 0.85;
+      transform: translate(0, 0);
     }
 
     .profile-image img {
@@ -1270,6 +1345,7 @@
       height: 100%;
       object-fit: cover;
       object-position: center;
+      border-radius: 8px;
       transition: all 0.3s ease;
       cursor: pointer;
     }
@@ -1293,7 +1369,7 @@
 
     .map-card:hover {
       border-color: var(--accent);
-      box-shadow: 0 0 20px rgba(232, 255, 71, 0.35);
+      box-shadow: 0 0 20px rgba(201, 162, 39, 0.35);
     }
 
     :root.light-mode .map-card:hover {
@@ -1368,15 +1444,15 @@
       left: 0;
       width: 2px;
       height: 100%;
-      background: linear-gradient(to right, transparent, #10b981, transparent);
-      box-shadow: 0 0 12px #10b981, 0 0 24px rgba(16, 185, 129, 0.4);
+      background: linear-gradient(to right, transparent, #c9a227, transparent);
+      box-shadow: 0 0 12px #c9a227, 0 0 24px rgba(201, 162, 39, 0.4);
       animation: radarSweep 4s linear infinite;
       z-index: 1;
     }
 
     :root.light-mode .map-radar-line {
-      background: linear-gradient(to right, transparent, #47C8FF, transparent);
-      box-shadow: 0 0 12px #47C8FF, 0 0 24px rgba(71, 200, 255, 0.4);
+      background: linear-gradient(to right, transparent, #7a2c1c, transparent);
+      box-shadow: 0 0 12px #7a2c1c, 0 0 24px rgba(122, 44, 28, 0.4);
     }
 
     @keyframes radarSweep {
@@ -1447,7 +1523,7 @@
 
     .carousel-container:hover .carousel-item.current {
       border-color: var(--accent);
-      box-shadow: 0 0 20px rgba(232, 255, 71, 0.2);
+      box-shadow: 0 0 20px rgba(201, 162, 39, 0.2);
     }
 
     .carousel-item.next {
@@ -1550,6 +1626,16 @@
       font-size: 17px;
     }
 
+    .about-text p:first-of-type::first-letter {
+      font-family: var(--illum);
+      font-size: 58px;
+      line-height: 1;
+      float: left;
+      padding: 4px 10px 0 0;
+      color: var(--accent);
+      text-shadow: 0 0 18px rgba(201, 162, 39, 0.25);
+    }
+
     .about-text p strong {
       color: var(--text);
     }
@@ -1570,7 +1656,7 @@
 
     .pillar:hover {
       border-left-color: var(--accent);
-      background: rgba(232, 255, 71, 0.04);
+      background: rgba(201, 162, 39, 0.04);
     }
 
     .pillar-title {
@@ -1658,7 +1744,7 @@
     }
 
     .service:hover .tag {
-      border-color: rgba(232, 255, 71, 0.3);
+      border-color: rgba(201, 162, 39, 0.3);
       color: var(--text);
     }
 
@@ -1719,7 +1805,39 @@
 
     .project-card:hover .project-card-inner {
       border-color: var(--accent);
-      box-shadow: 0 30px 80px rgba(232, 255, 71, 0.15);
+      box-shadow: 0 30px 80px rgba(201, 162, 39, 0.18);
+    }
+
+    .project-card-inner::before,
+    .project-card-inner::after {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      border: 1.5px solid var(--accent);
+      opacity: 0;
+      transition: opacity 0.35s ease;
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    .project-card-inner::before {
+      top: 10px;
+      left: 10px;
+      border-right: none;
+      border-bottom: none;
+    }
+
+    .project-card-inner::after {
+      bottom: 10px;
+      right: 10px;
+      border-left: none;
+      border-top: none;
+    }
+
+    .project-card:hover .project-card-inner::before,
+    .project-card:hover .project-card-inner::after {
+      opacity: 0.7;
     }
 
     .project-card-header {
@@ -1760,9 +1878,9 @@
       text-transform: uppercase;
       padding: 3px 8px;
       border-radius: 3px;
-      background: rgba(232, 255, 71, 0.1);
+      background: rgba(201, 162, 39, 0.1);
       color: var(--accent);
-      border: 1px solid rgba(232, 255, 71, 0.3);
+      border: 1px solid rgba(201, 162, 39, 0.3);
     }
 
     .project-card-desc {
@@ -1808,13 +1926,13 @@
     .project-card-btn:hover {
       border-color: var(--accent);
       color: var(--accent);
-      background: rgba(232, 255, 71, 0.05);
+      background: rgba(201, 162, 39, 0.05);
     }
 
     .project-card-btn.primary {
       border-color: var(--accent);
       color: var(--accent);
-      background: rgba(232, 255, 71, 0.1);
+      background: rgba(201, 162, 39, 0.1);
     }
 
     .project-card-btn.primary:hover {
@@ -1927,7 +2045,7 @@
     }
 
     .stack-item:hover {
-      background: rgba(232, 255, 71, 0.04);
+      background: rgba(201, 162, 39, 0.04);
       color: var(--accent);
     }
 
@@ -1938,7 +2056,7 @@
     /* Contact */
     .contact {
       text-align: center;
-      background: linear-gradient(to bottom, var(--bg), #0a0e14);
+      background: linear-gradient(to bottom, var(--bg), #0a0705);
       position: relative;
       overflow: hidden;
     }
@@ -1946,7 +2064,7 @@
     .contact-bg {
       position: absolute;
       inset: 0;
-      background: radial-gradient(ellipse at 50% 120%, rgba(71, 200, 255, 0.06) 0%, transparent 70%);
+      background: radial-gradient(ellipse at 50% 120%, rgba(201, 162, 39, 0.08) 0%, transparent 70%);
       pointer-events: none;
     }
 
@@ -2436,7 +2554,7 @@
 
     .edu-institution:hover {
       color: var(--accent);
-      text-shadow: 0 0 8px rgba(232, 255, 71, 0.3);
+      text-shadow: 0 0 8px rgba(201, 162, 39, 0.3);
     }
 
     .edu-desc {
@@ -2470,7 +2588,7 @@
     .edu-tag:hover {
       border-color: var(--accent);
       color: var(--accent);
-      box-shadow: 0 0 12px rgba(232, 255, 71, 0.4), inset 0 0 8px rgba(232, 255, 71, 0.1);
+      box-shadow: 0 0 12px rgba(201, 162, 39, 0.4), inset 0 0 8px rgba(201, 162, 39, 0.1);
     }
 
     .edu-entry.active .edu-tag {
@@ -2481,7 +2599,7 @@
     .edu-entry.active .edu-tag:hover {
       border-color: var(--accent);
       color: var(--accent);
-      box-shadow: 0 0 12px rgba(232, 255, 71, 0.4), inset 0 0 8px rgba(232, 255, 71, 0.1);
+      box-shadow: 0 0 12px rgba(201, 162, 39, 0.4), inset 0 0 8px rgba(201, 162, 39, 0.1);
     }
 
     /* =========================================
@@ -2672,7 +2790,7 @@
 
     .exp-company:hover {
       color: var(--accent);
-      text-shadow: 0 0 8px rgba(232, 255, 71, 0.3);
+      text-shadow: 0 0 8px rgba(201, 162, 39, 0.3);
     }
 
     .exp-desc {
@@ -2705,7 +2823,7 @@
     .exp-tag:hover {
       border-color: var(--accent);
       color: var(--accent);
-      box-shadow: 0 0 12px rgba(232, 255, 71, 0.4), inset 0 0 8px rgba(232, 255, 71, 0.1);
+      box-shadow: 0 0 12px rgba(201, 162, 39, 0.4), inset 0 0 8px rgba(201, 162, 39, 0.1);
     }
 
     .exp-entry.active .exp-tag {
@@ -2716,7 +2834,7 @@
     .exp-entry.active .exp-tag:hover {
       border-color: var(--accent);
       color: var(--accent);
-      box-shadow: 0 0 12px rgba(232, 255, 71, 0.4), inset 0 0 8px rgba(232, 255, 71, 0.1);
+      box-shadow: 0 0 12px rgba(201, 162, 39, 0.4), inset 0 0 8px rgba(201, 162, 39, 0.1);
     }
 
     /* RADAR CHART SECTION */
@@ -2792,7 +2910,7 @@
       bottom: 0;
       width: 2px;
       height: 100%;
-      background: linear-gradient(to top, #1D9E75, transparent);
+      background: linear-gradient(to top, #c9a227, transparent);
       transform-origin: bottom center;
       border-radius: 1px;
     }
@@ -2814,7 +2932,7 @@
       bottom: 0;
       width: 2px;
       height: 100%;
-      background: linear-gradient(to top, #1D9E75aa, transparent);
+      background: linear-gradient(to top, #c9a227aa, transparent);
       transform-origin: bottom center;
       border-radius: 1px;
       animation: trail-fade 0.6s linear forwards;
@@ -2915,7 +3033,7 @@
       content: '';
       position: absolute;
       inset: 0;
-      background-image: linear-gradient(rgba(232, 255, 71, 0.012) 1px, transparent 1px), linear-gradient(90deg, rgba(232, 255, 71, 0.012) 1px, transparent 1px);
+      background-image: linear-gradient(rgba(201, 162, 39, 0.012) 1px, transparent 1px), linear-gradient(90deg, rgba(201, 162, 39, 0.012) 1px, transparent 1px);
       background-size: 60px 60px;
       pointer-events: none;
     }
@@ -3003,6 +3121,25 @@
       transform: scaleX(1);
     }
 
+    .rs-card::before {
+      content: '';
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      width: 18px;
+      height: 18px;
+      border: 1.5px solid var(--accent);
+      border-top: none;
+      border-left: none;
+      opacity: 0;
+      transition: opacity 0.35s ease;
+      pointer-events: none;
+    }
+
+    .rs-card:hover::before {
+      opacity: 0.6;
+    }
+
     .rs-card-title {
       font-family: var(--display);
       font-size: 26px;
@@ -3016,7 +3153,7 @@
     }
 
     .rs-theorem {
-      background: rgba(232, 255, 71, 0.04);
+      background: rgba(201, 162, 39, 0.04);
       border-left: 2px solid var(--accent);
       padding: 14px 16px;
       font-family: var(--mono);
@@ -3055,7 +3192,7 @@
     .rs-tag:hover {
       border-color: var(--accent);
       color: var(--accent);
-      background: rgba(232, 255, 71, 0.07);
+      background: rgba(201, 162, 39, 0.07);
     }
 
     .rs-btn {
@@ -3080,13 +3217,13 @@
     .rs-btn:hover {
       border-color: var(--accent);
       color: var(--accent);
-      background: rgba(232, 255, 71, 0.05);
+      background: rgba(201, 162, 39, 0.05);
     }
 
     .rs-btn.primary {
       border-color: var(--accent);
       color: var(--accent);
-      background: rgba(232, 255, 71, 0.1);
+      background: rgba(201, 162, 39, 0.1);
     }
 
     .rs-btn.primary:hover {
@@ -3114,7 +3251,7 @@
     .rs-dot {
       width: 6px;
       height: 6px;
-      background: #10b981;
+      background: #6b8f5e;
       border-radius: 50%;
       animation: pulse 2s infinite;
     }
@@ -3223,6 +3360,7 @@
 
   <!-- HERO (from index_alternative.html, mobile parity) -->
   <section class="hero" id="hero">
+    <canvas id="heroCanvas"></canvas>
     <div class="hero-bg-text">AWAN</div>
     <div class="hero-wrapper">
       <!-- Left: Title & Content -->
@@ -3230,7 +3368,7 @@
         <div class="hero-content">
           <div style="display: flex; align-items: center; gap: 24px;">
             <div class="hero-badge-vertical">
-              <span style="color: #10b981; writing-mode: vertical-rl; transform: rotate(180deg);">Open to internships &amp; collaborations</span>
+              <span style="color: #8a9f6e; writing-mode: vertical-rl; transform: rotate(180deg);">Open to internships &amp; collaborations</span>
               <div class="badge-dot"></div>
             </div>
             <h1 class="hero-title">
@@ -4043,6 +4181,127 @@
       setInterval(updateMapTime, 1000); // Update time every second
     });
 
+    // =========================================
+    // HERO SIGNATURE — GOLD INK MARBLING
+    // Slow drifting gold/sienna ink filaments, like
+    // pigment dropped in water (ebru marbling), gently
+    // pulled toward the cursor.
+    // =========================================
+    (function initHeroInk() {
+      const canvas = document.getElementById('heroCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const hero = document.getElementById('hero');
+      let w, h, dpr;
+      let particles = [];
+      let mouseX = -9999, mouseY = -9999;
+      let running = true;
+
+      const PALETTE_DARK = ['201,162,39', '150,58,36', '122,44,28', '107,143,94'];
+      const PALETTE_LIGHT = ['147,97,26', '122,44,28', '107,143,94'];
+
+      function isLight() {
+        return document.documentElement.classList.contains('light-mode');
+      }
+
+      function resize() {
+        dpr = Math.min(window.devicePixelRatio || 1, 2);
+        w = hero.clientWidth;
+        h = hero.clientHeight;
+        canvas.width = w * dpr;
+        canvas.height = h * dpr;
+        canvas.style.width = w + 'px';
+        canvas.style.height = h + 'px';
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.fillStyle = isLight() ? 'rgba(242,233,216,1)' : 'rgba(13,11,8,1)';
+        ctx.fillRect(0, 0, w, h);
+        initParticles();
+      }
+
+      function initParticles() {
+        const palette = isLight() ? PALETTE_LIGHT : PALETTE_DARK;
+        const count = Math.max(18, Math.round((w * h) / 90000));
+        particles = [];
+        for (let i = 0; i < count; i++) {
+          particles.push({
+            x: Math.random() * w,
+            y: Math.random() * h,
+            a: Math.random() * Math.PI * 2,
+            speed: 0.25 + Math.random() * 0.35,
+            color: palette[i % palette.length],
+            life: Math.random() * 200
+          });
+        }
+      }
+
+      function fieldAngle(x, y, t) {
+        // Layered sine flow field — gives smooth, painterly drift
+        let a = Math.sin(x * 0.0022 + t) * 1.3 + Math.cos(y * 0.0021 - t * 0.8) * 1.3;
+        // Gentle pull toward the cursor, like ink drawn by a needle
+        const dx = mouseX - x, dy = mouseY - y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 420 && dist > 1) {
+          const pull = (1 - dist / 420) * 0.9;
+          a += Math.atan2(dy, dx) * 0 + (Math.atan2(dy, dx) - a) * pull * 0.6;
+        }
+        return a;
+      }
+
+      let t = 0;
+      function draw() {
+        if (!running) return;
+        t += 0.0016;
+
+        // Very faint fade for long, painterly trails
+        ctx.fillStyle = isLight() ? 'rgba(242,233,216,0.035)' : 'rgba(13,11,8,0.035)';
+        ctx.fillRect(0, 0, w, h);
+
+        particles.forEach(p => {
+          const angle = fieldAngle(p.x, p.y, t);
+          const nx = p.x + Math.cos(angle) * p.speed;
+          const ny = p.y + Math.sin(angle) * p.speed;
+
+          ctx.beginPath();
+          ctx.moveTo(p.x, p.y);
+          ctx.lineTo(nx, ny);
+          ctx.strokeStyle = `rgba(${p.color},${isLight() ? 0.10 : 0.16})`;
+          ctx.lineWidth = 1.1;
+          ctx.stroke();
+
+          p.x = nx; p.y = ny;
+          p.life++;
+
+          if (p.x < -20 || p.x > w + 20 || p.y < -20 || p.y > h + 20 || p.life > 900) {
+            p.x = Math.random() * w;
+            p.y = Math.random() * h;
+            p.life = 0;
+          }
+        });
+
+        requestAnimationFrame(draw);
+      }
+
+      hero.addEventListener('mousemove', e => {
+        const rect = hero.getBoundingClientRect();
+        mouseX = e.clientX - rect.left;
+        mouseY = e.clientY - rect.top;
+      });
+      hero.addEventListener('mouseleave', () => { mouseX = -9999; mouseY = -9999; });
+
+      document.addEventListener('visibilitychange', () => {
+        running = !document.hidden;
+        if (running) requestAnimationFrame(draw);
+      });
+
+      window.addEventListener('resize', resize);
+      // Repaint the base wash on theme toggle so old-theme ink doesn't linger
+      const themeObserver = new MutationObserver(() => resize());
+      themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+
+      resize();
+      requestAnimationFrame(draw);
+    })();
+
     // Cursor
     // Cursor
     const cursor = document.getElementById('cursor');
@@ -4812,12 +5071,12 @@
     // =========================================
 
     const CATS = {
-      frontend: "#FFD700",
-      backend: "#00BB00",
-      language: "#FF3333",
-      data: "#001F3F",
-      devops: "#FFA500",
-      "Low-Level": "#FF1493",
+      frontend: "#c9a227",
+      backend: "#6b8f5e",
+      language: "#963a24",
+      data: "#3c3018",
+      devops: "#b5772e",
+      "Low-Level": "#7a2c1c",
     };
 
     const SKILLS_RADAR = [
@@ -4927,9 +5186,9 @@
           else ctx.lineTo(p.x, p.y);
         }
         ctx.closePath();
-        ctx.fillStyle = dark ? 'rgba(55,138,221,0.08)' : 'rgba(29,158,117,0.09)';
+        ctx.fillStyle = dark ? 'rgba(201,162,39,0.08)' : 'rgba(147,97,26,0.09)';
         ctx.fill();
-        ctx.strokeStyle = dark ? 'rgba(55,138,221,0.55)' : 'rgba(29,158,117,0.28)';
+        ctx.strokeStyle = dark ? 'rgba(201,162,39,0.55)' : 'rgba(147,97,26,0.28)';
         ctx.lineWidth = 1;
         ctx.stroke();
 
