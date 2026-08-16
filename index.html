@@ -2015,19 +2015,29 @@
 
     @media (max-width: 768px) {
 
+      /* Hard safety net: nothing on the page is allowed to force
+         horizontal scroll / misalignment on mobile, no matter what. */
+      html, body {
+        max-width: 100vw;
+        overflow-x: hidden;
+      }
+
       /* Mobile nav layout */
       nav {
-        padding: 16px 24px;
+        padding: 10px 16px;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 12px;
+        gap: 8px;
       }
 
       nav>div:first-child {
         display: flex;
-        align-items: center;
-        gap: 16px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+        min-width: 0;
+        flex: 1;
       }
 
       .nav-logo {
@@ -2086,13 +2096,27 @@
       }
 
       .nav-search {
-        display: none;
+        order: 10;
+        flex: 0 1 96px;
+        width: 96px;
+        max-width: 30vw;
+        min-width: 60px;
+        margin: 0 auto 0 0;
+        display: flex !important;
+      }
+
+      .search-input {
+        width: 100%;
+        min-width: 0;
+        font-size: 12px;
+        padding: 6px 8px;
       }
 
       nav>div:last-child {
         display: flex;
-        gap: 12px;
+        gap: 8px;
         align-items: center;
+        flex-shrink: 0;
         margin-left: auto;
       }
 
@@ -2113,14 +2137,30 @@
         white-space: nowrap;
       }
 
+      /* The hero was min-height:100vh + a 2-row grid, which on mobile
+         browsers fights with the dynamic viewport (the URL bar showing
+         and hiding changes 100vh), and forces content into a fixed
+         layout shape it doesn't actually fit. Letting it flow as a
+         normal block removes that whole class of jumpiness/misalignment. */
       .hero {
-        padding: 0 24px;
-        padding-top: 80px;
+        padding: 72px 16px 0;
+        min-height: auto;
+        display: block;
+        grid-template-rows: unset;
+        position: static;
+        overflow: visible;
+      }
+
+      .hero-bg-text {
+        display: none;
       }
 
       .hero-wrapper {
-        grid-template-columns: 1fr;
-        gap: 40px;
+        display: flex;
+        flex-direction: column;
+        grid-template-columns: unset;
+        gap: 24px;
+        margin-bottom: 24px;
       }
 
       .hero-heading {
@@ -2128,9 +2168,21 @@
         overflow: visible;
       }
 
+      /* The rotated vertical badge only really works with real
+         vertical space to breathe in; on a stacked mobile layout it
+         just crowds the title, so it's dropped rather than squeezed. */
+      .hero-badge-vertical {
+        display: none !important;
+      }
+
       .hero-title {
         font-size: clamp(32px, 11vw, 64px);
+        margin-top: 0;
         margin-bottom: 16px;
+      }
+
+      .hero-lower {
+        padding-top: 0;
       }
 
       .profile-image {
@@ -2141,22 +2193,52 @@
         display: none !important;
       }
 
+      /* Was a 2-column grid with each child explicitly placed by
+         grid-column/grid-row. On mobile that leaves gaps and stray
+         placement once the medallion is hidden. A plain flex column
+         with every child's grid placement reset avoids that entirely. */
       .hero-right {
-        grid-template-columns: 1fr;
+        display: flex;
+        flex-direction: column;
+        grid-template-columns: unset;
+        gap: 12px;
       }
 
-      .hero-right>.profile-image {
-        grid-column: 1;
+      .hero-right > * {
+        grid-column: unset !important;
+        grid-row: unset !important;
+        margin-top: 0 !important;
       }
 
-      .hero-right>.map-card {
-        grid-column: 1;
-        grid-row: 3;
-        margin-top: 0;
+      .profile-card {
+        height: 76px;
+      }
+
+      .profile-card h2 {
+        font-size: clamp(20px, 6vw, 32px);
+      }
+
+      .map-card {
+        height: 84px;
+      }
+
+      .map-address {
+        top: 8px;
+        left: 0;
+        padding: 8px 14px;
+      }
+
+      .map-address h3 {
+        font-size: 16px;
+      }
+
+      .map-coords,
+      .map-local-time {
+        font-size: 10px;
       }
 
       section {
-        padding: 80px 24px;
+        padding: 56px 16px;
       }
 
       .about-grid {
@@ -2183,6 +2265,13 @@
 
       .project-card-desc {
         font-size: 12px;
+      }
+
+      /* Left at its desktop 150x150, this logo overlaps the card's
+         own text once the card shrinks to mobile width. */
+      .project-card-logo {
+        width: 80px;
+        height: 80px;
       }
 
       .hero-bottom {
@@ -2220,6 +2309,36 @@
       .project-card-btn {
         padding: 6px 12px;
         font-size: 10px;
+      }
+    }
+
+    @media (max-width: 400px) {
+      .hero-title {
+        font-size: 34px;
+      }
+
+      .card-stack {
+        height: 460px;
+      }
+
+      .project-card-inner {
+        padding: 16px 12px;
+      }
+
+      .project-card-title {
+        font-size: 16px;
+      }
+
+      .contact-title {
+        font-size: clamp(38px, 12vw, 52px);
+      }
+
+      .hero-stats {
+        gap: 14px;
+      }
+
+      .map-address h3 {
+        font-size: 13px;
       }
     }
 
