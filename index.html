@@ -1006,13 +1006,13 @@
       grid-row: 2;
     }
 
-    .hero-right>.medallion {
-      grid-column: 2;
+    .hero-right>div:nth-child(2) {
+      grid-column: 1;
       grid-row: 2;
     }
 
-    .hero-right>div:nth-child(2) {
-      grid-column: 1;
+    .hero-right>.gh-mosaic {
+      grid-column: 2;
       grid-row: 2;
     }
 
@@ -1170,6 +1170,32 @@
       transform: scale(1.02);
     }
 
+    /* Day/night profile photo — two stacked images cross-fading based
+       on theme, same pattern as the sun/moon theme-toggle icons. */
+    .profile-pic {
+      position: absolute;
+      inset: 0;
+      display: block;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.4s ease;
+    }
+
+    .profile-pic-night {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    :root.light-mode .profile-pic-day {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    :root.light-mode .profile-pic-night {
+      opacity: 0;
+      visibility: hidden;
+    }
+
     /* Aquarium Icon Link */
     /* Location Card with Canvas */
     .map-card {
@@ -1280,8 +1306,15 @@
       }
     }
 
-    /* Portrait Medallion */
-    .medallion {
+    /* GitHub activity mosaic — sits where the old portrait carousel
+       used to be. Real contribution data, laid out as a near-square
+       woven-swatch grid (rather than GitHub's literal wide calendar
+       strip) so it reads as a small rug fragment rather than a widget.
+       Cell color ramps from the background up through both accent
+       colors, so the "heatmap" is built entirely out of the site's own
+       palette. Falls back to a quiet generative pattern if the data
+       can't be fetched, so the space never looks broken. */
+    .gh-mosaic {
       position: relative;
       width: 100%;
       aspect-ratio: 1;
@@ -1291,81 +1324,70 @@
       margin-top: -50px;
     }
 
-    .medallion-ring {
-      position: absolute;
-      inset: 0;
+    .gh-mosaic-link {
+      display: block;
+      width: 84%;
+      aspect-ratio: 1;
+      text-decoration: none;
+    }
+
+    .gh-mosaic-frame {
+      position: relative;
       width: 100%;
       height: 100%;
-      pointer-events: none;
-      animation: medallionSpin 60s linear infinite;
-    }
-
-    @keyframes medallionSpin {
-      to {
-        transform: rotate(360deg);
-      }
-    }
-
-    .medallion-frame {
-      position: relative;
-      width: 68%;
-      aspect-ratio: 1;
-      border-radius: 50%;
-      overflow: hidden;
-      border: 3px solid var(--accent);
+      border-radius: 16px;
+      border: 1px solid var(--accent);
+      background:
+        repeating-linear-gradient(135deg, rgba(201, 162, 39, 0.05) 0px, rgba(201, 162, 39, 0.05) 2px, transparent 2px, transparent 10px),
+        var(--bg);
       box-shadow: 0 0 0 6px var(--bg), 0 0 0 8px var(--border), 0 20px 50px rgba(0, 0, 0, 0.4);
-      transition: box-shadow 0.3s ease;
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0.85;
+      transition: box-shadow 0.3s ease, opacity 0.3s ease;
     }
 
-    .medallion:hover .medallion-frame {
+    .gh-mosaic-link:hover .gh-mosaic-frame {
+      opacity: 1;
       box-shadow: 0 0 0 6px var(--bg), 0 0 0 8px var(--accent), 0 20px 60px rgba(201, 162, 39, 0.25);
     }
 
-    .medallion-media {
-      position: relative;
+    .gh-grid {
+      display: grid;
       width: 100%;
       height: 100%;
+      gap: 2px;
     }
 
-    .medallion-media img,
-    .medallion-media video {
+    .gh-cell {
+      border-radius: 2px;
+      background: var(--border);
+      transition: transform 0.25s ease, opacity 0.25s ease;
+    }
+
+    .gh-mosaic-link:hover .gh-cell {
+      transform: scale(0.92);
+    }
+
+    .gh-mosaic-label {
       position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
+      left: 50%;
+      bottom: -20px;
+      transform: translateX(-50%);
+      white-space: nowrap;
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.05em;
+      color: var(--muted);
       opacity: 0;
-      transition: opacity 0.9s ease;
+      transition: opacity 0.3s ease;
       pointer-events: none;
     }
 
-    .medallion-media img.active,
-    .medallion-media video.active {
-      opacity: 1;
-    }
-
-    .medallion-dots {
-      position: absolute;
-      bottom: -6px;
-      display: flex;
-      gap: 8px;
-      z-index: 2;
-    }
-
-    .medallion-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: var(--border);
-      border: 1px solid var(--accent);
-      cursor: pointer;
-      transition: all 0.25s ease;
-    }
-
-    .medallion-dot.active {
-      background: var(--accent);
-      width: 20px;
-      border-radius: 4px;
+    .gh-mosaic-link:hover .gh-mosaic-label {
+      opacity: 0.7;
     }
 
     /* Sections */
@@ -2175,14 +2197,14 @@
         aspect-ratio: 3 / 4;
       }
 
-      .medallion {
-        display: none !important;
+      .gh-mosaic {
+        display: none;
       }
 
       /* Was a 2-column grid with each child explicitly placed by
          grid-column/grid-row. On mobile that leaves gaps and stray
-         placement once the medallion is hidden. A plain flex column
-         with every child's grid placement reset avoids that entirely. */
+         placement, so a plain flex column with every child's grid
+         placement reset avoids that entirely. */
       .hero-right {
         display: flex;
         flex-direction: column;
@@ -3352,30 +3374,22 @@
           <h2><span>Huzaifa</span><span>Ahmad Awan</span></h2>
         </div>
         <div class="profile-image">
-          <picture>
+          <picture class="profile-pic profile-pic-day">
             <source srcset="Pictures/profile_bg_mobile.jpeg" media="(max-width: 768px)">
-            <img src="Pictures/profile_bg.jpeg" alt="Huzaifa Ahmad Awan" class="profile-img-main">
+            <img src="Pictures/profile_bg_day.jpeg" alt="Huzaifa Ahmad Awan" class="profile-img-main">
+          </picture>
+          <picture class="profile-pic profile-pic-night">
+            <source srcset="Pictures/profile_bg_mobile.jpeg" media="(max-width: 768px)">
+            <img src="Pictures/profile_bg_night.jpeg" alt="Huzaifa Ahmad Awan" class="profile-img-main">
           </picture>
         </div>
-        <div class="medallion" id="medallion">
-          <svg class="medallion-ring" viewBox="0 0 220 220" aria-hidden="true">
-            <circle cx="110" cy="110" r="104" fill="none" stroke="var(--accent)" stroke-width="1" opacity="0.55"/>
-            <circle cx="110" cy="110" r="96" fill="none" stroke="var(--accent2)" stroke-width="1" opacity="0.4" stroke-dasharray="2 4"/>
-            <g stroke="var(--accent)" stroke-width="1.4" opacity="0.7">
-              <path d="M110 6 L114 18 L106 18 Z"/>
-              <path d="M110 214 L114 202 L106 202 Z"/>
-              <path d="M6 110 L18 114 L18 106 Z"/>
-              <path d="M214 110 L202 114 L202 106 Z"/>
-              <path d="M42 42 L52 48 L48 52 Z"/>
-              <path d="M178 42 L168 48 L172 52 Z"/>
-              <path d="M42 178 L52 172 L48 168 Z"/>
-              <path d="M178 178 L168 172 L172 168 Z"/>
-            </g>
-          </svg>
-          <div class="medallion-frame">
-            <div class="medallion-media" id="medallionMedia"></div>
-          </div>
-          <div class="medallion-dots" id="medallionDots"></div>
+        <div class="gh-mosaic" id="ghMosaic">
+          <a class="gh-mosaic-link" href="https://github.com/HuzaifaAhmadAwan" target="_blank" rel="noopener noreferrer" title="GitHub activity">
+            <div class="gh-mosaic-frame">
+              <div class="gh-grid" id="ghGrid" aria-hidden="true"></div>
+            </div>
+            <span class="gh-mosaic-label" id="ghMosaicLabel">GitHub activity</span>
+          </a>
         </div>
         <div class="map-card">
           <img src="Pictures/map.png" alt="Location Map">
@@ -3906,26 +3920,18 @@
       const lightModeAssets = [
         'Pictures/carpet.jpeg',
         'Pictures/map_light.jpeg',
-        'Pictures/profile_bg.jpeg',
+        'Pictures/profile_bg_day.jpeg',
         'Pictures/map.png'
       ];
 
       const darkModeAssets = [
         'Pictures/blue_carpet.jpeg',
-        'Pictures/profile_bg.jpeg',
+        'Pictures/profile_bg_night.jpeg',
         'Pictures/map.png'
       ];
 
-      const carouselAssets = [
-        'Pictures/carousel/1.jpeg',
-        'Pictures/carousel/2.jpeg',
-        'Pictures/carousel/3.jpeg',
-        'Pictures/carousel/4.mp4',
-        'Pictures/carousel/5.jpeg'
-      ];
-
       // Combine all assets
-      const allAssets = [...new Set([...lightModeAssets, ...darkModeAssets, ...carouselAssets])];
+      const allAssets = [...new Set([...lightModeAssets, ...darkModeAssets])];
 
       // Preload images and videos
       allAssets.forEach(src => {
@@ -4023,79 +4029,106 @@
       timeElement.textContent = `- ${germanTime}`;
     }
 
-    // Portrait Medallion — crossfading framed photo/video
-    function initMedallion() {
-      const media = document.getElementById('medallionMedia');
-      const dotsWrap = document.getElementById('medallionDots');
-      const medallion = document.getElementById('medallion');
-      if (!media || !dotsWrap || !medallion) return;
+    // GitHub activity mosaic — real contribution data laid out as a
+    // near-square woven-swatch grid instead of GitHub's literal wide
+    // calendar strip, colored using the site's own accent palette so
+    // the "heatmap" is built entirely out of colors already in use
+    // elsewhere. Falls back to a quiet generative wave pattern if the
+    // data can't be fetched (offline, API down, rate-limited), so the
+    // space never looks broken.
+    function initGithubMosaic() {
+      const grid = document.getElementById('ghGrid');
+      const label = document.getElementById('ghMosaicLabel');
+      if (!grid) return;
 
-      const defaultItems = [
-        { type: 'image', src: 'Pictures/carousel/1.jpeg' },
-        { type: 'image', src: 'Pictures/carousel/2.jpeg' },
-        { type: 'image', src: 'Pictures/carousel/3.jpeg' },
-        { type: 'video', src: 'Pictures/carousel/4.mp4' },
-        { type: 'image', src: 'Pictures/carousel/5.jpeg' }
+      const GH_USERNAME = 'HuzaifaAhmadAwan';
+      const CACHE_KEY = 'ghMosaicCache_v1';
+      const CACHE_TTL = 6 * 60 * 60 * 1000; // 6 hours — avoids hammering the API on every visit
+
+      // Background up through both accent colors — the same ramp used
+      // everywhere else on the site, just applied as a heatmap.
+      const LEVEL_COLORS = [
+        'rgba(201, 162, 39, 0.08)', // level 0 — no contributions
+        'rgba(150, 58, 36, 0.45)',  // level 1
+        'rgba(150, 58, 36, 0.85)', // level 2
+        'rgba(201, 162, 39, 0.65)', // level 3
+        'rgba(201, 162, 39, 1)'    // level 4 — most active
       ];
 
-      function load(items) {
-        const els = items.map((item, i) => {
-          let el;
-          if (item.type === 'video') {
-            el = document.createElement('video');
-            el.src = item.src;
-            el.muted = true;
-            el.loop = true;
-            el.playsInline = true;
-            el.controls = false;
-          } else {
-            el = document.createElement('img');
-            el.src = item.src;
-            el.alt = `Portrait ${i + 1}`;
-          }
-          media.appendChild(el);
-          return el;
+      function render(levels, total) {
+        const n = levels.length;
+        const cols = Math.max(1, Math.ceil(Math.sqrt(n)));
+        grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+        grid.innerHTML = '';
+        const frag = document.createDocumentFragment();
+        levels.forEach((lvl) => {
+          const cell = document.createElement('div');
+          cell.className = 'gh-cell';
+          cell.style.background = LEVEL_COLORS[Math.min(4, Math.max(0, lvl))];
+          frag.appendChild(cell);
         });
-
-        items.forEach((_, i) => {
-          const dot = document.createElement('div');
-          dot.className = 'medallion-dot' + (i === 0 ? ' active' : '');
-          dot.addEventListener('click', () => goTo(i));
-          dotsWrap.appendChild(dot);
-        });
-
-        let current = 0;
-        let paused = false;
-
-        function goTo(i) {
-          els[current].classList.remove('active');
-          if (els[current].tagName === 'VIDEO') els[current].pause();
-          current = i;
-          els[current].classList.add('active');
-          if (els[current].tagName === 'VIDEO') { els[current].currentTime = 0; els[current].play(); }
-          Array.from(dotsWrap.children).forEach((d, di) => d.classList.toggle('active', di === i));
+        grid.appendChild(frag);
+        if (label) {
+          label.textContent = total != null ? `${total.toLocaleString()} contributions` : 'GitHub activity';
         }
-
-        goTo(0);
-
-        const timer = setInterval(() => {
-          if (!paused && !document.hidden) goTo((current + 1) % els.length);
-        }, 4200);
-
-        medallion.addEventListener('mouseenter', () => { paused = true; });
-        medallion.addEventListener('mouseleave', () => { paused = false; });
       }
 
-      fetch('Pictures/carousel/manifest.json?t=' + Date.now())
-        .then(r => r.ok ? r.json() : null)
-        .then(data => load((data && data.items && data.items.length) ? data.items : defaultItems))
-        .catch(() => load(defaultItems));
+      // A calm, deterministic wave pattern — used only if the real
+      // data can't be fetched, so the widget still looks intentional
+      // rather than broken or empty.
+      function renderFallback() {
+        const n = 371;
+        const levels = [];
+        for (let i = 0; i < n; i++) {
+          const wave = Math.sin(i * 0.18) * 0.5 + Math.sin(i * 0.05) * 0.5;
+          levels.push(Math.round(((wave + 1) / 2) * 3));
+        }
+        render(levels, null);
+      }
+
+      function fromCache() {
+        try {
+          const raw = localStorage.getItem(CACHE_KEY);
+          if (!raw) return null;
+          const parsed = JSON.parse(raw);
+          if (!parsed || Date.now() - parsed.time > CACHE_TTL) return null;
+          return parsed.data;
+        } catch (e) {
+          return null;
+        }
+      }
+
+      function toCache(data) {
+        try {
+          localStorage.setItem(CACHE_KEY, JSON.stringify({ time: Date.now(), data }));
+        } catch (e) {
+          // Storage full/unavailable — not worth failing over for this.
+        }
+      }
+
+      const cached = fromCache();
+      if (cached) {
+        render(cached.levels, cached.total);
+        return;
+      }
+
+      fetch(`https://github-contributions-api.jogruber.de/v4/${GH_USERNAME}?y=last`)
+        .then((r) => (r.ok ? r.json() : Promise.reject(new Error('bad response'))))
+        .then((data) => {
+          const contributions = (data && data.contributions) || [];
+          if (!contributions.length) throw new Error('empty');
+          const levels = contributions.map((d) => d.level);
+          const total = contributions.reduce((sum, d) => sum + (d.count || 0), 0);
+          render(levels, total);
+          toCache({ levels, total });
+        })
+        .catch(() => renderFallback());
     }
 
     // Initialize when DOM is ready
     document.addEventListener('DOMContentLoaded', function () {
       updateMapTime();
-      initMedallion();
+      initGithubMosaic();
       setInterval(updateMapTime, 1000); // Update time every second
     });
 
