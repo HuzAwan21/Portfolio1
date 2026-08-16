@@ -2085,6 +2085,10 @@
         display: none;
       }
 
+      .nav-search {
+        display: none;
+      }
+
       nav>div:last-child {
         display: flex;
         gap: 12px;
@@ -4000,6 +4004,15 @@
     // Light mode: soft drifting clouds instead.
     // No sun or moon — stars/clouds only.
     // =========================================
+    // Shared mobile guard for the two full-screen decorative canvases below.
+    // On phones, high devicePixelRatio + large particle counts made these
+    // two always-on rAF loops repaint far more pixels per frame than the
+    // GPU could keep up with, which is what showed up as page-wide lag.
+    function isLowPowerViewport() {
+      return window.innerWidth <= 768;
+    }
+    const prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
     (function initCelestial() {
       const canvas = document.getElementById('celestialCanvas');
       if (!canvas) return;
@@ -4018,7 +4031,10 @@
       }
 
       function resize() {
-        dpr = Math.min(window.devicePixelRatio || 1, 2);
+        // Cap pixel density harder on mobile — a 3x-DPI phone painting a
+        // full-screen gradient + starfield every frame at full resolution
+        // is the main source of the reported mobile lag.
+        dpr = Math.min(window.devicePixelRatio || 1, isLowPowerViewport() ? 1 : 2);
         w = window.innerWidth;
         h = window.innerHeight;
         canvas.width = w * dpr;
@@ -4032,7 +4048,10 @@
       }
 
       function initStars() {
-        const count = Math.max(160, Math.round((w * h) / 2400));
+        const mobile = isLowPowerViewport();
+        const count = mobile
+          ? Math.max(60, Math.round((w * h) / 6000))
+          : Math.max(160, Math.round((w * h) / 2400));
         stars = [];
         for (let i = 0; i < count; i++) {
           const bright = Math.random() < 0.09; // a handful of standout stars
@@ -4050,7 +4069,9 @@
       }
 
       function initClouds() {
-        const count = Math.max(11, Math.round(w / 160));
+        const count = isLowPowerViewport()
+          ? Math.max(5, Math.round(w / 260))
+          : Math.max(11, Math.round(w / 160));
         clouds = [];
         for (let i = 0; i < count; i++) {
           const depth = Math.random();
@@ -4338,7 +4359,10 @@
       }
 
       function resize() {
-        dpr = Math.min(window.devicePixelRatio || 1, 2);
+        // Same mobile-density cap as the celestial canvas — this layer
+        // repaints the full screen with a destination-out fill every
+        // frame, which is the costliest part of the two canvases on phones.
+        dpr = Math.min(window.devicePixelRatio || 1, isLowPowerViewport() ? 1 : 2);
         w = window.innerWidth;
         h = window.innerHeight;
         canvas.width = w * dpr;
@@ -4352,7 +4376,9 @@
 
       function initParticles() {
         const palette = isLight() ? PALETTE_LIGHT : PALETTE_DARK;
-        const count = Math.max(18, Math.round((w * h) / 90000));
+        const count = isLowPowerViewport()
+          ? Math.max(8, Math.round((w * h) / 220000))
+          : Math.max(18, Math.round((w * h) / 90000));
         particles = [];
         for (let i = 0; i < count; i++) {
           particles.push({
@@ -5047,6 +5073,7 @@
       // Allow dragging from anywhere on the card, including buttons
       card.addEventListener('mousedown', (e) => {
         isDragging = true;
+        dragIsTouch = false;
         dragStartX = e.clientX;
         dragStartY = e.clientY;
         dragOffsetX = 0;
@@ -5055,11 +5082,13 @@
 
       card.addEventListener('touchstart', (e) => {
         isDragging = true;
+        dragIsTouch = true;
         dragStartX = e.touches[0].clientX;
         dragStartY = e.touches[0].clientY;
         dragOffsetX = 0;
         dragOffsetY = 0;
-      });
+        touchIntent = null;
+      }, { passive: true });
 
       return card;
     }
@@ -5070,18 +5099,23 @@
       dragStartY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
       dragOffsetX = 0;
       dragOffsetY = 0;
+      touchIntent = null;
     }
+
+    // Tracks whether an in-progress touch gesture has resolved to a
+    // horizontal card-swipe or a vertical page-scroll. Left null until
+    // enough movement has happened to tell the two apart, so a finger
+    // resting on a card doesn't block the page from scrolling.
+    let touchIntent = null;
+    let dragIsTouch = false;
 
     function moveDrag(e) {
       if (!isDragging) return;
 
-      // Prevent scrolling when dragging on touch devices
-      if (e.type.includes('touch')) {
-        e.preventDefault();
-      }
+      const isTouch = e.type.includes('touch');
 
       let currentX, currentY;
-      if (e.type.includes('touch')) {
+      if (isTouch) {
         if (!e.touches || !e.touches[0]) return;
         currentX = e.touches[0].clientX;
         currentY = e.touches[0].clientY;
@@ -5092,10 +5126,30 @@
 
       dragOffsetX = currentX - dragStartX;
       dragOffsetY = currentY - dragStartY;
+
+      if (!isTouch) return;
+
+      // Decide gesture intent once the finger has moved enough to tell
+      const absX = Math.abs(dragOffsetX);
+      const absY = Math.abs(dragOffsetY);
+      if (touchIntent === null && (absX > 8 || absY > 8)) {
+        touchIntent = absX > absY ? 'horizontal' : 'vertical';
+      }
+
+      if (touchIntent === 'horizontal') {
+        // Committed to a card swipe — take over the gesture from here
+        e.preventDefault();
+      } else if (touchIntent === 'vertical') {
+        // Committed to a page scroll — hand the gesture back to the browser
+        isDragging = false;
+        dragOffsetX = 0;
+        dragOffsetY = 0;
+      }
     }
 
     function endDrag(e) {
       isDragging = false;
+      touchIntent = null;
 
       const threshold = 15;
       const absX = Math.abs(dragOffsetX);
@@ -5109,8 +5163,9 @@
         } else if (dragOffsetX < -threshold) {
           nextCard();
         }
-      } else if (absY > absX && absY > threshold) {
-        // Vertical drag
+      } else if (!dragIsTouch && absY > absX && absY > threshold) {
+        // Vertical drag — mouse only. On touch this is a page scroll,
+        // not a swipe, so it's intentionally not treated as one here.
         if (dragOffsetY > threshold) {
           prevCard();
         } else if (dragOffsetY < -threshold) {
@@ -5385,6 +5440,25 @@
       const glowTargets = {};
       let animFrame;
 
+      // These two rAF loops previously ran forever from page load,
+      // including while the radar chart was scrolled far off-screen —
+      // one of them (checkSweepHit) reads computed style + a DOMMatrix
+      // every single frame, which is real, constant background cost.
+      // Pausing them outside the viewport removes that tax on mobile.
+      let radarSectionVisible = true;
+      const radarVisibilityObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          radarSectionVisible = entry.isIntersecting;
+          if (radarSectionVisible) {
+            cancelAnimationFrame(animFrame);
+            animateGlows();
+            cancelAnimationFrame(sweepFrame);
+            checkSweepHit();
+          }
+        });
+      }, { threshold: 0 });
+      radarVisibilityObserver.observe(wrap);
+
       function animateGlows() {
         let dirty = false;
         for (let i = 0; i < N; i++) {
@@ -5399,14 +5473,14 @@
           }
         }
         if (dirty) draw();
-        // Pause loop when tab is hidden to save CPU/GPU resources
-        if (!document.hidden) {
+        // Pause loop when tab is hidden or scrolled off-screen to save CPU/GPU resources
+        if (!document.hidden && radarSectionVisible) {
           animFrame = requestAnimationFrame(animateGlows);
         }
       }
       // Restart glow loop when tab becomes visible again
       document.addEventListener('visibilitychange', () => {
-        if (!document.hidden) { cancelAnimationFrame(animFrame); animateGlows(); }
+        if (!document.hidden && radarSectionVisible) { cancelAnimationFrame(animFrame); animateGlows(); }
       });
       animateGlows();
 
@@ -5436,8 +5510,8 @@
 
       let sweepFrame;
       function checkSweepHit() {
-        // Pause loop when tab is hidden to save CPU/GPU resources
-        if (document.hidden) return;
+        // Pause loop when tab is hidden or the section is off-screen
+        if (document.hidden || !radarSectionVisible) return;
         if (!R) { sweepFrame = requestAnimationFrame(checkSweepHit); return; }
         // Don't let sweep arm interfere when hovering
         if (hoveredSkillIdx !== -1) {
@@ -5466,7 +5540,7 @@
       }
       // Restart sweep loop when tab becomes visible again
       document.addEventListener('visibilitychange', () => {
-        if (!document.hidden) { cancelAnimationFrame(sweepFrame); checkSweepHit(); }
+        if (!document.hidden && radarSectionVisible) { cancelAnimationFrame(sweepFrame); checkSweepHit(); }
       });
       checkSweepHit();
 
