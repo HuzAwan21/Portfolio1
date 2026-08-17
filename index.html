@@ -111,6 +111,33 @@
       border-color: var(--accent2);
     }
 
+    /* Drag affordance for the tech-stack marquee — dashed ring while
+       hovering (hints it's grabbable), solid smaller ring while
+       actively being dragged. */
+    .cursor.grab-hint {
+      width: 8px;
+      height: 8px;
+    }
+
+    .cursor-ring.grab-hint {
+      width: 46px;
+      height: 46px;
+      border-style: dashed;
+    }
+
+    .cursor.grabbing {
+      width: 14px;
+      height: 14px;
+      background: var(--accent2);
+    }
+
+    .cursor-ring.grabbing {
+      width: 26px;
+      height: 26px;
+      border-color: var(--accent2);
+      border-style: solid;
+    }
+
     @media (max-width: 768px) {
 
       .cursor,
@@ -1857,10 +1884,25 @@
       gap: 0;
       width: max-content;
       animation: marquee 30s linear infinite;
+      touch-action: pan-y;
+      user-select: none;
+    }
+
+    .stack-item img {
+      -webkit-user-drag: none;
+      user-drag: none;
     }
 
     .stack-track:hover {
       animation-play-state: paused;
+    }
+
+    /* Fully disables the marquee animation while dragging/coasting, so
+       the manually-set inline transform can drive the position instead.
+       Needs !important since a merely-paused CSS animation would still
+       win over an inline transform for the property it animates. */
+    .stack-track.stack-dragging {
+      animation: none !important;
     }
 
     @keyframes marquee {
@@ -1881,7 +1923,6 @@
       white-space: nowrap;
       color: var(--muted);
       transition: all 0.2s;
-      cursor: default;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -4478,7 +4519,17 @@
     const cursor = document.getElementById('cursor');
     const ring = document.getElementById('cursorRing');
     let mx = 0, my = 0, rx = 0, ry = 0;
-    document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; cursor.style.left = mx + 'px'; cursor.style.top = my + 'px'; });
+    // Shared so anything driving a pointer-captured drag (the stack
+    // marquee) can keep the custom cursor authoritatively in sync
+    // itself, rather than relying on plain "mousemove" — which pointer
+    // capture can retarget/suppress in ways that make the dot appear
+    // to jump back to the drag's start point once you let go.
+    function syncCursorPos(x, y) {
+      mx = x; my = y;
+      cursor.style.left = mx + 'px';
+      cursor.style.top = my + 'px';
+    }
+    document.addEventListener('mousemove', e => syncCursorPos(e.clientX, e.clientY));
     function animRing() { rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12; ring.style.left = rx + 'px'; ring.style.top = ry + 'px'; requestAnimationFrame(animRing); }
     animRing();
 
@@ -4494,6 +4545,172 @@
         ring.classList.remove('active');
       });
     });
+
+    // Tech-stack marquee — draggable "wipe" interaction. Hovering it
+    // already pauses the auto-scroll (CSS :hover rule); this lets the
+    // visitor scrub the strip back and forth by hand instead, wrapping
+    // around seamlessly since the track's content loops, then hands
+    // control back to the auto-scroll once they let go and move away.
+    (function initStackDrag() {
+      const wrapEl = document.querySelector('.stack-wrap');
+      const track = document.querySelector('.stack-track');
+      if (!wrapEl || !track) return;
+
+      // Belt-and-suspenders against the browser's native "drag this
+      // image out" behavior — the CSS -webkit-user-drag hint alone
+      // doesn't reliably stop it, and once a native drag starts it
+      // hijacks mouse handling (feels like the cursor gets dragged)
+      // and freezes :hover updates on the page until it ends.
+      track.querySelectorAll('img').forEach((img) => { img.draggable = false; });
+      track.addEventListener('dragstart', (e) => e.preventDefault());
+
+      let dragging = false;
+      let currentX = 0;
+      let lastX = 0;
+      let lastTime = 0;
+      let velocity = 0;
+      let halfWidth = track.scrollWidth / 2;
+      let momentumRaf = null;
+
+      function getTranslateX() {
+        const transform = window.getComputedStyle(track).transform;
+        if (!transform || transform === 'none') return 0;
+        const match = transform.match(/matrix\(([^)]+)\)/);
+        if (!match) return 0;
+        const parts = match[1].split(',').map(parseFloat);
+        return parts[4] || 0;
+      }
+
+      // Keeps the translate within one loop's width so dragging feels
+      // endless in either direction, same trick the CSS marquee uses.
+      function wrapX(x) {
+        if (halfWidth <= 0) return x;
+        while (x <= -halfWidth) x += halfWidth;
+        while (x > 0) x -= halfWidth;
+        return x;
+      }
+
+      function setGrabHint(on) {
+        cursor.classList.toggle('grab-hint', on);
+        ring.classList.toggle('grab-hint', on);
+      }
+
+      function setGrabbing(on) {
+        cursor.classList.toggle('grabbing', on);
+        ring.classList.toggle('grabbing', on);
+      }
+
+      // Hands back off to the CSS marquee from wherever the drag left
+      // off, using a negative animation-delay so there's no jump. Only
+      // the delay is set inline — animation-play-state is left alone
+      // so the stylesheet's :hover-pause rule keeps working afterward.
+      function resumeMarquee() {
+        halfWidth = track.scrollWidth / 2;
+        const duration = 30; // matches the CSS animation's 30s
+        const progress = halfWidth > 0 ? (((-currentX) % halfWidth) + halfWidth) % halfWidth / halfWidth : 0;
+        track.classList.remove('stack-dragging');
+        track.style.transform = '';
+        track.style.animationDelay = `-${(progress * duration).toFixed(3)}s`;
+      }
+
+      function onPointerDown(e) {
+        if (e.pointerType === 'mouse' && e.button !== 0) return;
+        if (momentumRaf) { cancelAnimationFrame(momentumRaf); momentumRaf = null; }
+        dragging = true;
+        halfWidth = track.scrollWidth / 2;
+        currentX = wrapX(getTranslateX());
+        lastX = e.clientX;
+        lastTime = performance.now();
+        velocity = 0;
+        track.classList.add('stack-dragging');
+        track.style.transform = `translateX(${currentX}px)`;
+        track.setPointerCapture(e.pointerId);
+        setGrabbing(true);
+        syncCursorPos(e.clientX, e.clientY);
+        e.preventDefault();
+      }
+
+      function onPointerMove(e) {
+        if (!dragging) return;
+        const now = performance.now();
+        const dx = e.clientX - lastX;
+        const dt = Math.max(1, now - lastTime);
+        velocity = dx / dt;
+        currentX = wrapX(currentX + dx);
+        track.style.transform = `translateX(${currentX}px)`;
+        lastX = e.clientX;
+        lastTime = now;
+        // Pointer capture can retarget/suppress plain "mousemove" while
+        // active, so drive the custom cursor from this event directly
+        // instead of trusting that listener to keep up.
+        syncCursorPos(e.clientX, e.clientY);
+      }
+
+      function onPointerUp(e) {
+        if (!dragging) return;
+        dragging = false;
+        setGrabbing(false);
+        syncCursorPos(e.clientX, e.clientY);
+        try { track.releasePointerCapture(e.pointerId); } catch (err) { /* already released */ }
+
+        // Brief momentum coast so a fast swipe still feels like a
+        // "wipe" rather than stopping dead, then hand off to the
+        // regular marquee.
+        let v = velocity * 16; // approx px per animation frame
+        function coast() {
+          v *= 0.94;
+          currentX = wrapX(currentX + v);
+          track.style.transform = `translateX(${currentX}px)`;
+          if (Math.abs(v) > 0.4) {
+            momentumRaf = requestAnimationFrame(coast);
+          } else {
+            momentumRaf = null;
+            resumeMarquee();
+          }
+        }
+        if (Math.abs(v) > 0.4) {
+          momentumRaf = requestAnimationFrame(coast);
+        } else {
+          resumeMarquee();
+        }
+      }
+
+      wrapEl.addEventListener('pointerenter', () => { if (!dragging) setGrabHint(true); });
+      wrapEl.addEventListener('pointerleave', () => setGrabHint(false));
+      track.addEventListener('pointerdown', onPointerDown);
+      track.addEventListener('pointermove', onPointerMove);
+      track.addEventListener('pointerup', onPointerUp);
+      track.addEventListener('pointercancel', onPointerUp);
+
+      // Two-finger trackpad swipe — browsers report this as wheel
+      // events with a horizontal deltaX. Only takes over when the
+      // gesture is more horizontal than vertical, so normal page
+      // scrolling over the strip is left completely alone.
+      let wheelIdleTimer = null;
+      function onWheel(e) {
+        if (dragging) return;
+        if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
+        e.preventDefault();
+        if (momentumRaf) { cancelAnimationFrame(momentumRaf); momentumRaf = null; }
+        if (!track.classList.contains('stack-dragging')) {
+          halfWidth = track.scrollWidth / 2;
+          currentX = wrapX(getTranslateX());
+          track.classList.add('stack-dragging');
+        }
+        currentX = wrapX(currentX - e.deltaX);
+        track.style.transform = `translateX(${currentX}px)`;
+        setGrabbing(true);
+        syncCursorPos(e.clientX, e.clientY);
+        clearTimeout(wheelIdleTimer);
+        wheelIdleTimer = setTimeout(() => {
+          setGrabbing(false);
+          resumeMarquee();
+        }, 200);
+      }
+      wrapEl.addEventListener('wheel', onWheel, { passive: false });
+
+      window.addEventListener('resize', () => { halfWidth = track.scrollWidth / 2; });
+    })();
 
     // Typing effect for roles
     const roles = [
