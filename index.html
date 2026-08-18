@@ -2311,7 +2311,7 @@
          on narrow phones — long strings like "Computer Science
          Student." or the typing roles below it would need to wrap. */
       .section-title {
-        font-size: clamp(26px, 7.5vw, 48px);
+        font-size: clamp(30px, 8.5vw, 52px);
       }
 
       /* Give the typed role room to actually wrap onto a second line
@@ -3078,7 +3078,7 @@
 
     @media (max-width: 700px) {
       #radar-wrap {
-        max-width: 400px;
+        max-width: 440px;
         margin-bottom: 8px;
       }
 
@@ -3087,7 +3087,9 @@
       }
 
       .radar-section {
-        padding: 60px 20px 80px;
+        /* Tighter side padding than other mobile sections — gives the
+           chart itself more room to grow within its aspect-ratio box. */
+        padding: 60px 12px 80px;
       }
     }
 
@@ -5618,7 +5620,7 @@
         // right up against the legend underneath. Shrinking R on small
         // canvases gives that fixed overhead more room before it ever
         // reaches the canvas's own edge.
-        R = size * (size <= 420 ? 0.28 : 0.38);
+        R = size * (size <= 460 ? 0.30 : 0.38);
         draw();
       }
 
@@ -5720,7 +5722,7 @@
           // small canvas they're scaled down too — otherwise the
           // bottom-most logos/labels end up crowding (or clipping
           // against) the canvas's own edge, right next to the legend.
-          const small = W <= 420;
+          const small = W <= 460;
           const a = angle(i);
           const labelR = R + (small ? 16 : 24) + g * (small ? 2 : 4);
           const lx = CX + Math.cos(a) * labelR;
