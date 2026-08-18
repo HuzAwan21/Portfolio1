@@ -3010,6 +3010,22 @@
       display: flex;
       align-items: center;
       gap: 5px;
+      padding: 3px 9px;
+      border-radius: 100px;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    .leg-item:hover {
+      color: var(--text);
+      background: rgba(201, 162, 39, 0.08);
+    }
+
+    /* Clicked/"locked" category — stays highlighted until toggled off
+       or another category is clicked. */
+    .leg-item.leg-active {
+      color: var(--text);
+      background: rgba(201, 162, 39, 0.16);
+      font-weight: 600;
     }
 
     .leg-dot {
@@ -5736,13 +5752,52 @@
       let lastHitIdx = -1;
       let hoveredSkillIdx = -1;
 
+      // Category legend highlight — hovering a category previews it,
+      // clicking locks it on until it's clicked again or another
+      // category is picked. hoverCatKey always wins over activeCatKey
+      // while the mouse is actually over a legend item.
+      let hoverCatKey = null;
+      let activeCatKey = null;
+
+      function applyCategoryHighlight(catKey) {
+        clearTimeout(pillTimeout);
+        for (let j = 0; j < N; j++) {
+          glowTargets[j] = SKILLS_RADAR[j].cat === catKey ? 1 : 0;
+        }
+        const matching = SKILLS_RADAR.filter((s) => s.cat === catKey);
+        const avg = matching.length
+          ? matching.reduce((sum, s) => sum + s.level, 0) / matching.length
+          : 0;
+        pill.textContent = `${catKey}  ${Math.round(avg * 100)}% avg`;
+        pill.className = 'visible';
+      }
+
+      function clearCategoryHighlight() {
+        for (let j = 0; j < N; j++) glowTargets[j] = 0;
+        pill.className = '';
+      }
+
+      // Re-applies whichever highlight should currently be showing —
+      // an individually-hovered node always wins, then legend
+      // hover/lock, then nothing.
+      function refreshCategoryState() {
+        if (hoveredSkillIdx !== -1) return;
+        const key = hoverCatKey || activeCatKey;
+        if (key) {
+          applyCategoryHighlight(key);
+        } else {
+          clearCategoryHighlight();
+        }
+      }
+
       let sweepFrame;
       function checkSweepHit() {
         // Pause loop when tab is hidden or the section is off-screen
         if (document.hidden || !radarSectionVisible) return;
         if (!R) { sweepFrame = requestAnimationFrame(checkSweepHit); return; }
-        // Don't let sweep arm interfere when hovering
-        if (hoveredSkillIdx !== -1) {
+        // Don't let sweep arm interfere when hovering a node or a
+        // category legend item
+        if (hoveredSkillIdx !== -1 || hoverCatKey || activeCatKey) {
           sweepFrame = requestAnimationFrame(checkSweepHit);
           return;
         }
@@ -5814,22 +5869,50 @@
           triggerSkill(closestIdx, true);
         } else if (closestIdx === -1 && hoveredSkillIdx !== -1) {
           hoveredSkillIdx = -1;
-          for (let j = 0; j < N; j++) glowTargets[j] = 0;
-          pill.className = '';
+          // Fall back to any active/hovered category highlight instead
+          // of just going blank.
+          refreshCategoryState();
         }
       });
 
       canvas.addEventListener('mouseleave', () => {
         hoveredSkillIdx = -1;
-        for (let j = 0; j < N; j++) glowTargets[j] = 0;
-        pill.className = '';
+        refreshCategoryState();
       });
 
       const legWrap = document.getElementById('legend-wrap');
       Object.entries(CATS).forEach(([k, color]) => {
         const el = document.createElement('div');
         el.className = 'leg-item';
+        el.setAttribute('role', 'button');
+        el.setAttribute('tabindex', '0');
+        el.title = `Highlight ${k} skills`;
         el.innerHTML = `<span class="leg-dot" style="background:${color}"></span><span>${k}</span>`;
+
+        el.addEventListener('mouseenter', () => {
+          hoverCatKey = k;
+          refreshCategoryState();
+          cursor.classList.add('active');
+          ring.classList.add('active');
+        });
+        el.addEventListener('mouseleave', () => {
+          hoverCatKey = null;
+          refreshCategoryState();
+          cursor.classList.remove('active');
+          ring.classList.remove('active');
+        });
+        el.addEventListener('click', () => {
+          activeCatKey = activeCatKey === k ? null : k;
+          legWrap.querySelectorAll('.leg-item').forEach((item) => item.classList.remove('leg-active'));
+          if (activeCatKey) el.classList.add('leg-active');
+          refreshCategoryState();
+        });
+        el.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            el.click();
+          }
+        });
         legWrap.appendChild(el);
       });
 
