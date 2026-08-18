@@ -1872,6 +1872,23 @@
       margin-top: 20px;
     }
 
+    /* Mobile has no mouse to drag/scroll with, just touch — swap the
+       hint copy accordingly instead of describing desktop-only
+       interactions. */
+    .stack-hint-mobile {
+      display: none;
+    }
+
+    @media (max-width: 768px) {
+      .stack-hint-desktop {
+        display: none;
+      }
+
+      .stack-hint-mobile {
+        display: block;
+      }
+    }
+
     /* Tech stack */
     .stack-wrap {
       overflow: hidden;
@@ -3844,7 +3861,8 @@
     <div class="card-stack-container">
       <div class="card-stack" id="cardStack"></div>
       <div class="stack-indicators" id="stackIndicators"></div>
-      <p class="stack-hint">Drag • Scroll • Click Cards</p>
+      <p class="stack-hint stack-hint-desktop">Drag • Scroll • Click Cards</p>
+      <p class="stack-hint stack-hint-mobile">Swipe • Click Cards</p>
     </div>
   </section>
 
