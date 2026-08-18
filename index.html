@@ -1189,7 +1189,6 @@
       object-position: center;
       border-radius: 8px;
       transition: all 0.3s ease;
-      cursor: pointer;
     }
 
     .profile-image img:hover {
@@ -1356,6 +1355,7 @@
       width: 84%;
       aspect-ratio: 1;
       text-decoration: none;
+      cursor: none;
     }
 
     .gh-mosaic-frame {
@@ -4560,6 +4560,21 @@
         cursor.classList.remove('active');
         ring.classList.remove('active');
       });
+    });
+
+    // Global "closing ring" feedback — the same grabbing treatment
+    // built for the tech-stack marquee, applied everywhere: the ring
+    // closes in while a mouse button is held (covers clicks and
+    // drags), then reopens on release. Deliberately not wired to
+    // regular page scrolling — that fired on every normal scroll and
+    // felt distracting rather than useful.
+    document.addEventListener('mousedown', () => {
+      cursor.classList.add('grabbing');
+      ring.classList.add('grabbing');
+    });
+    document.addEventListener('mouseup', () => {
+      cursor.classList.remove('grabbing');
+      ring.classList.remove('grabbing');
     });
 
     // Tech-stack marquee — draggable "wipe" interaction. Hovering it
