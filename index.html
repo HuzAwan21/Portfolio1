@@ -2290,6 +2290,26 @@
         padding: 56px 16px;
       }
 
+      /* Base clamp() bottoms out at 48px, which never actually shrinks
+         on narrow phones — long strings like "Computer Science
+         Student." or the typing roles below it would need to wrap. */
+      .section-title {
+        font-size: clamp(26px, 7.5vw, 48px);
+      }
+
+      /* Give the typed role room to actually wrap onto a second line
+         instead of getting clipped — a fixed min-height (rather than
+         "auto") keeps the layout from jumping as shorter/longer roles
+         cycle through. */
+      #typing-text {
+        white-space: normal;
+        overflow: visible;
+        height: auto;
+        min-height: 2.3em;
+        line-height: 1.15;
+        vertical-align: top;
+      }
+
       .about-grid {
         grid-template-columns: 1fr;
         gap: 40px;
@@ -3042,6 +3062,11 @@
     @media (max-width: 700px) {
       #radar-wrap {
         max-width: 400px;
+        margin-bottom: 8px;
+      }
+
+      #legend-wrap {
+        margin-top: 2.5rem;
       }
 
       .radar-section {
@@ -5568,7 +5593,14 @@
         canvas.height = size * devicePixelRatio;
         ctx.scale(devicePixelRatio, devicePixelRatio);
         W = size; CX = size / 2; CY = size / 2;
-        R = size * 0.38;
+        // The logo/label offsets beyond R are fixed pixel amounts, so
+        // on a small (mobile) canvas they eat up a much bigger share
+        // of the space — that's what pushed the two bottom-most logos
+        // (19 skills means two land almost exactly at the bottom)
+        // right up against the legend underneath. Shrinking R on small
+        // canvases gives that fixed overhead more room before it ever
+        // reaches the canvas's own edge.
+        R = size * (size <= 420 ? 0.28 : 0.38);
         draw();
       }
 
@@ -5666,15 +5698,20 @@
           ctx.stroke();
 
           // Always show logo - always at full opacity, gets bigger when radar passes
+          // These offsets are fixed pixel amounts on top of R, so on a
+          // small canvas they're scaled down too — otherwise the
+          // bottom-most logos/labels end up crowding (or clipping
+          // against) the canvas's own edge, right next to the legend.
+          const small = W <= 420;
           const a = angle(i);
-          const labelR = R + 24 + g * 4;
+          const labelR = R + (small ? 16 : 24) + g * (small ? 2 : 4);
           const lx = CX + Math.cos(a) * labelR;
           const ly = CY + Math.sin(a) * labelR;
 
           // Draw image logo - always at 100% opacity
           if (skillImages[i]) {
             // Make MIPS logo bigger
-            const imgSize = 18 + g * 10;
+            const imgSize = (small ? 14 : 18) + g * (small ? 6 : 10);
             const opacity = 1; // Always 100%
 
             ctx.globalAlpha = opacity;
@@ -5691,7 +5728,7 @@
               : textColor;
             ctx.textAlign = 'center';
             ctx.textBaseline = 'top';
-            ctx.fillText(s.label, lx, ly + 20);
+            ctx.fillText(s.label, lx, ly + (small ? 14 : 20));
           }
         }
       }
