@@ -3078,7 +3078,7 @@
 
     @media (max-width: 700px) {
       #radar-wrap {
-        max-width: 440px;
+        max-width: 480px;
         margin-bottom: 8px;
       }
 
@@ -3089,7 +3089,7 @@
       .radar-section {
         /* Tighter side padding than other mobile sections — gives the
            chart itself more room to grow within its aspect-ratio box. */
-        padding: 60px 12px 80px;
+        padding: 60px 8px 80px;
       }
     }
 
@@ -5364,6 +5364,15 @@
         // Only trigger if clicking on card content, not on buttons or links
         const isButton = e.target.closest('.project-card-btn') || e.target.closest('a');
         if (!isButton) {
+          // touchstart is registered passive (see below), so it can't
+          // preventDefault — meaning the browser still synthesizes a
+          // "click" after every touch swipe. Without this guard, a
+          // real swipe on mobile advanced the stack via endDrag() and
+          // then advanced it AGAIN via this synthetic click.
+          if (suppressNextClick) {
+            suppressNextClick = false;
+            return;
+          }
           e.stopPropagation();
           // If clicking the front card, go to next card. Otherwise, bring this card to front.
           if (index === cardCurrentIndex) {
@@ -5412,6 +5421,12 @@
     // resting on a card doesn't block the page from scrolling.
     let touchIntent = null;
     let dragIsTouch = false;
+    // Set right after a real touch swipe advances the stack, so the
+    // synthetic "click" the browser fires afterward (touchstart is
+    // passive, so it can't be suppressed the normal way) doesn't
+    // advance it a second time. Cleared by the click handler itself,
+    // or after a short timeout as a safety net if no click follows.
+    let suppressNextClick = false;
 
     function moveDrag(e) {
       if (!isDragging) return;
@@ -5458,23 +5473,33 @@
       const threshold = 15;
       const absX = Math.abs(dragOffsetX);
       const absY = Math.abs(dragOffsetY);
+      let navigated = false;
 
       // Determine which direction has more movement
       if (absX > absY && absX > threshold) {
         // Horizontal drag
         if (dragOffsetX > threshold) {
           prevCard();
+          navigated = true;
         } else if (dragOffsetX < -threshold) {
           nextCard();
+          navigated = true;
         }
       } else if (!dragIsTouch && absY > absX && absY > threshold) {
         // Vertical drag — mouse only. On touch this is a page scroll,
         // not a swipe, so it's intentionally not treated as one here.
         if (dragOffsetY > threshold) {
           prevCard();
+          navigated = true;
         } else if (dragOffsetY < -threshold) {
           nextCard();
+          navigated = true;
         }
+      }
+
+      if (navigated && dragIsTouch) {
+        suppressNextClick = true;
+        setTimeout(() => { suppressNextClick = false; }, 400);
       }
 
       dragOffsetX = 0;
