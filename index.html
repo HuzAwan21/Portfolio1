@@ -2359,6 +2359,9 @@
 
       .project-card-inner {
         padding: 24px 20px 20px;
+        /* Desktop's 60px blur is costly to raster on repeat during the
+           transform transition — trim it down for mobile GPUs. */
+        box-shadow: 0 10px 24px rgba(0, 0, 0, 0.3);
       }
 
       .project-card-title {
@@ -2956,11 +2959,20 @@
       }
     }
 
+    .radar-layout {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 48px;
+    }
+
     #radar-wrap {
       position: relative;
-      width: 100%;
-      max-width: 540px;
-      margin: 1.2rem auto 0;
+      width: 480px;
+      max-width: 100%;
+      flex-shrink: 1;
+      margin: 1.2rem 0 0;
       aspect-ratio: 1;
     }
 
@@ -3050,10 +3062,12 @@
 
     #legend-wrap {
       display: flex;
-      flex-wrap: wrap;
+      flex-direction: column;
+      flex-wrap: nowrap;
+      align-items: flex-start;
       justify-content: center;
-      gap: 8px 16px;
-      margin-top: 1rem;
+      gap: 10px;
+      margin-top: 0;
       font-family: var(--display);
       font-size: 12px;
       color: var(--muted);
@@ -3093,12 +3107,22 @@
     }
 
     @media (max-width: 700px) {
+      .radar-layout {
+        flex-direction: column;
+        gap: 0;
+      }
+
       #radar-wrap {
+        width: 100%;
         max-width: 480px;
         margin-bottom: 8px;
       }
 
       #legend-wrap {
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
         margin-top: 2.5rem;
       }
 
@@ -3991,14 +4015,16 @@
     <div class="section-label reveal">Expertise</div>
     <div class="section-title reveal reveal-delay-1">Technical Skills.</div>
 
-    <div id="radar-wrap">
-      <canvas id="radar-canvas"></canvas>
-      <div id="sweep-layer">
-        <div id="sweep-arm"></div>
+    <div class="radar-layout">
+      <div id="radar-wrap">
+        <canvas id="radar-canvas"></canvas>
+        <div id="sweep-layer">
+          <div id="sweep-arm"></div>
+        </div>
+        <div id="skill-pill"></div>
       </div>
-      <div id="skill-pill"></div>
+      <div id="legend-wrap"></div>
     </div>
-    <div id="legend-wrap"></div>
   </section>
 
   <div class="rug-divider"></div>
@@ -5314,7 +5340,7 @@
       card.dataset.index = index;
 
       const techsHtml = project.techs.map(tech => `<span class="project-tech-tag">${tech}</span>`).join('');
-      const logoHtml = project.logo ? `<img src="${project.logo}" class="project-card-logo" alt="${project.name} logo">` : '';
+      const logoHtml = project.logo ? `<img src="${project.logo}" class="project-card-logo" alt="${project.name} logo" width="150" height="150" decoding="async">` : '';
       
       // Only show demo button for 2048 and Aquarium
       const showDemoBtn = project.name === "2048 Game" || project.name === "VISIT MY AQUARIUM!";
