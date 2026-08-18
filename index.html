@@ -5920,6 +5920,13 @@
           activeCatKey = activeCatKey === k ? null : k;
           legWrap.querySelectorAll('.leg-item').forEach((item) => item.classList.remove('leg-active'));
           if (activeCatKey) el.classList.add('leg-active');
+          // The mouse is necessarily still hovering this item when it's
+          // clicked, so hoverCatKey was already "k" — without this,
+          // refreshCategoryState's hover-wins-over-lock logic would
+          // keep showing the highlight even after unlocking, making it
+          // look like the click did nothing. Re-syncing it here means
+          // a fresh mouseenter/mouseleave decides the preview from now on.
+          hoverCatKey = activeCatKey;
           refreshCategoryState();
         });
         el.addEventListener('keydown', (e) => {
@@ -5929,6 +5936,19 @@
           }
         });
         legWrap.appendChild(el);
+      });
+
+      // Clicking any legend item still toggles/switches the lock (its
+      // own click handler above), but clicking anything else at all —
+      // another part of the page, the canvas, blank space — should
+      // also release a locked category, not just re-clicking the same
+      // item.
+      document.addEventListener('click', (e) => {
+        if (!activeCatKey) return;
+        if (e.target.closest('.leg-item')) return;
+        activeCatKey = null;
+        legWrap.querySelectorAll('.leg-item').forEach((item) => item.classList.remove('leg-active'));
+        refreshCategoryState();
       });
 
       window.addEventListener('resize', () => {
